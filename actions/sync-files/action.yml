@@ -1,0 +1,25 @@
+name: Synchronize files
+description: Synchronize source files while applying an rsync exclusion list
+inputs:
+  exclude-file:
+    description: Path to the rsync exclusion list
+    required: true
+  destination-directory:
+    description: Destination directory
+    required: false
+    default: destination-repo
+runs:
+  using: composite
+  steps:
+    - name: Synchronize files
+      shell: bash
+      env:
+        EXCLUDE_FILE: ${{ inputs.exclude-file }}
+        DESTINATION_DIRECTORY: ${{ inputs.destination-directory }}
+      run: |
+        rsync -av --delete \
+          --exclude '.git' \
+          --exclude 'destination-repo' \
+          --exclude '.github/workflows/mirror-repository.yml' \
+          --exclude-from "$EXCLUDE_FILE" \
+          ./ "$DESTINATION_DIRECTORY/"

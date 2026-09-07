@@ -1,0 +1,22 @@
+name: Verify repository access
+description: Verify that a token can push to a GitHub repository
+inputs:
+  token:
+    description: GitHub token
+    required: true
+  repository:
+    description: Destination repository in owner/name format
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Check push permission
+      shell: bash
+      env:
+        TOKEN: ${{ inputs.token }}
+        REPOSITORY: ${{ inputs.repository }}
+      run: |
+        curl --fail --silent --show-error \
+          --header "Authorization: Bearer ${TOKEN}" \
+          "https://api.github.com/repos/${REPOSITORY}" \
+          | jq -e '.permissions.push == true' > /dev/null

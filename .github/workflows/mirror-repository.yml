@@ -1,0 +1,62 @@
+name: Mirror repository
+
+on:
+  workflow_call:
+    inputs:
+      destination-repository:
+        description: 'Owner and name of the destination repository'
+        required: true
+        type: string
+      exclude-file:
+        description: 'Path to the rsync exclude file in the source repository'
+        required: true
+        type: string
+    secrets:
+      PUBLIC_REPO_TOKEN:
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          lfs: true
+          persist-credentials: false
+
+      - name: Verify destination access
+        uses: Sunnymoon724/kozae-forge/actions/verify-repository@main
+        with:
+          token: ${{ secrets.PUBLIC_REPO_TOKEN }}
+          repository: ${{ inputs.destination-repository }}
+
+      - name: Clone destination repository
+        env:
+          TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
+          DESTINATION: ${{ inputs.destination-repository }}
+        run: |
+          git clone "https://x-access-token:${TOKEN}@github.com/${DESTINATION}.git" destination-repo
+          git -C destination-repo lfs install
+
+      - name: Upload LFS objects
+        uses: Sunnymoon724/kozae-forge/actions/upload-lfs@main
+        with:
+          token: ${{ secrets.PUBLIC_REPO_TOKEN }}
+          repository: ${{ inputs.destination-repository }}
+
+      - name: Synchronize allowed files
+        uses: Sunnymoon724/kozae-forge/actions/sync-files@main
+        with:
+          exclude-file: ${{ inputs.exclude-file }}
+          destination-directory: destination-repo
+
+      - name: Commit and push
+        uses: Sunnymoon724/kozae-forge/actions/commit-push@main
+        with:
+          destination-directory: destination-repo

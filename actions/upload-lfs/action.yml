@@ -1,0 +1,24 @@
+name: Upload Git LFS objects
+description: Upload Git LFS objects to a destination repository
+inputs:
+  token:
+    description: GitHub token
+    required: true
+  repository:
+    description: Destination repository in owner/name format
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Upload LFS objects
+      shell: bash
+      env:
+        TOKEN: ${{ inputs.token }}
+        REPOSITORY: ${{ inputs.repository }}
+      run: |
+        git config --global credential.helper "store --file $RUNNER_TEMP/github-credentials"
+        printf "https://x-access-token:%s@github.com\n" "$TOKEN" > "$RUNNER_TEMP/github-credentials"
+        git config --global lfs.https://github.com/.locksverify false
+        git config --global "lfs.https://github.com/${REPOSITORY}.git/info/lfs.access" basic
+        git remote add public "https://github.com/${REPOSITORY}.git"
+        git lfs push --all public main
