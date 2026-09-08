@@ -1,0 +1,51 @@
+name: Write content
+description: Write text or copy a source file to a target path
+inputs:
+  file-path:
+    description: Target file path relative to the workspace
+    required: true
+  content:
+    description: Text to write to the target file
+    required: false
+    default: ''
+  source-file:
+    description: Existing file to copy when content is not provided
+    required: false
+    default: ''
+  commit:
+    description: Commit the changed file
+    required: false
+    default: false
+  push:
+    description: Push the commit to the current branch
+    required: false
+    default: false
+runs:
+  using: composite
+  steps:
+    - name: Write content
+      shell: bash
+      env:
+        FILE_PATH: ${{ inputs.file-path }}
+        CONTENT: ${{ inputs.content }}
+        SOURCE_FILE: ${{ inputs.source-file }}
+        COMMIT: ${{ inputs.commit }}
+        PUSH: ${{ inputs.push }}
+      run: |
+        set -euo pipefail
+        mkdir -p "$(dirname "$FILE_PATH")"
+        if [ -n "$SOURCE_FILE" ]; then
+          cp "$SOURCE_FILE" "$FILE_PATH"
+        else
+          printf '%s\n' "$CONTENT" > "$FILE_PATH"
+        fi
+        if [ "$COMMIT" = "true" ]; then
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$FILE_PATH"
+          git commit -m "docs: add generated content" || exit 0
+        fi
+        if [ "$PUSH" = "true" ]; then
+          git push origin "HEAD:${GITHUB_REF_NAME}"
+        fi
+

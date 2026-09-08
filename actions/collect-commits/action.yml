@@ -1,0 +1,40 @@
+name: Collect commits
+description: Collect commits from the previous day
+inputs:
+  timezone:
+    description: IANA timezone used to determine yesterday
+    required: false
+    default: Asia/Seoul
+outputs:
+  has-content:
+    description: Whether commits were found
+    value: ${{ steps.collect.outputs.has-content }}
+  date:
+    description: Date covered by the collected commits
+    value: ${{ steps.collect.outputs.date }}
+  commits-file:
+    description: File containing the collected commits
+    value: ${{ steps.collect.outputs.commits-file }}
+runs:
+  using: composite
+  steps:
+    - id: collect
+      shell: bash
+      env:
+        TIMEZONE: ${{ inputs.timezone }}
+      run: |
+        set -euo pipefail
+        export TZ="$TIMEZONE"
+        TODAY="$(date +%F)"
+        YESTERDAY="$(date -d 'yesterday' +%F)"
+        COMMITS_FILE="commits-${YESTERDAY}.txt"
+        COMMITS="$(git log --since="${YESTERDAY} 00:00" --until="${TODAY} 00:00" --format='- %s (%h)' "$GITHUB_SHA")"
+        echo "date=$YESTERDAY" >> "$GITHUB_OUTPUT"
+        echo "commits-file=$COMMITS_FILE" >> "$GITHUB_OUTPUT"
+        printf '%s\n' "$COMMITS" > "$COMMITS_FILE"
+        if [ -z "$COMMITS" ]; then
+          echo "has-content=false" >> "$GITHUB_OUTPUT"
+        else
+          echo "has-content=true" >> "$GITHUB_OUTPUT"
+        fi
+

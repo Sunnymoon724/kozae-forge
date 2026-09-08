@@ -1,0 +1,69 @@
+name: Generate content
+description: Generate content with an OpenAI-compatible AI API
+inputs:
+  date:
+    description: Date used for the default output file name
+    required: true
+  api-url:
+    description: OpenAI-compatible chat completions endpoint
+    required: true
+  model:
+    description: AI model name
+    required: true
+  content:
+    description: Input content to summarize or transform
+    required: false
+    default: ''
+  source-file:
+    description: File containing input content
+    required: false
+    default: ''
+  prompt:
+    description: Instructions for generating the output
+    required: true
+  output-file:
+    description: File where the generated content will be written
+    required: false
+    default: ''
+  api-key:
+    description: API key for the AI provider
+    required: true
+outputs:
+  file-name:
+    description: Generated Markdown file name
+    value: ${{ steps.generate.outputs.file-name }}
+runs:
+  using: composite
+  steps:
+    - id: generate
+      shell: bash
+      env:
+        API_URL: ${{ inputs.api-url }}
+        DATE: ${{ inputs.date }}
+        MODEL: ${{ inputs.model }}
+        CONTENT: ${{ inputs.content }}
+        SOURCE_FILE: ${{ inputs.source-file }}
+        PROMPT: ${{ inputs.prompt }}
+        OUTPUT_FILE: ${{ inputs.output-file }}
+        API_KEY: ${{ inputs.api-key }}
+      run: |
+        set -euo pipefail
+        if [ -z "$OUTPUT_FILE" ]; then
+          OUTPUT_FILE="${DATE}-development-log.md"
+        fi
+        if [ -n "$SOURCE_FILE" ]; then
+          CONTENT="$(cat "$SOURCE_FILE")"
+        fi
+        REQUEST="$(jq -n \
+          --arg model "$MODEL" \
+          --arg system "$PROMPT" \
+          --arg content "$CONTENT" \
+          '{model: $model, messages: [{role: "system", content: $system}, {role: "user", content: $content}]}' \
+        )"
+        RESPONSE="$(curl --fail-with-body --silent --show-error \
+          -X POST "$API_URL" \
+          -H "Authorization: Bearer $API_KEY" \
+          -H 'Content-Type: application/json' \
+          --data "$REQUEST")"
+        echo "$RESPONSE" | jq -e -r '.choices[0].message.content' > "$OUTPUT_FILE"
+        echo "file-name=$OUTPUT_FILE" >> "$GITHUB_OUTPUT"

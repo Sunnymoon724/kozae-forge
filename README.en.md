@@ -9,4 +9,3 @@ A collection of commonly used GitHub Actions.
 ## ✨ Available feature
 
 - [Repository mirroring](Documents/MirrorPublic/mirror-repository.en.md)
-- [Wiki synchronization](Documents/SyncWiki/sync-wiki.en.md)

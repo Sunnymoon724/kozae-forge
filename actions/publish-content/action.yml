@@ -1,0 +1,26 @@
+name: Publish content
+description: Publish content to an external webhook
+inputs:
+  file-name:
+    description: Source content file
+    required: true
+  publish-url:
+    description: External webhook URL
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Publish content
+      shell: bash
+      env:
+        FILE_NAME: ${{ inputs.file-name }}
+        PUBLISH_URL: ${{ inputs.publish-url }}
+      run: |
+        set -euo pipefail
+        CONTENT="$(cat "$FILE_NAME")"
+        DATE="$(basename "$FILE_NAME" | cut -d- -f1-3)"
+        jq -n --arg date "$DATE" --arg content "$CONTENT" \
+          '{date: $date, content: $content}' \
+          | curl --fail-with-body --silent --show-error \
+              -X POST -H 'Content-Type: application/json' \
+              --data-binary @- "$PUBLISH_URL"

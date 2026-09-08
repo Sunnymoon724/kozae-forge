@@ -1,14 +1,19 @@
 # KoZae Forge
 
-## 📖 Overview
+[English](README.en.md) | [한국어](README.ko.md)
 
-Reusable GitHub Actions and workflows for KoZae projects. ⚙️
+A collection of reusable GitHub Actions for KoZae projects.
 
-## 📚 Documentation
+<p>
+  <img src="https://img.shields.io/badge/version-0.1.0-0f766e" alt="Version 0.1.0">
+  <img src="https://img.shields.io/badge/GitHub%20Actions-2088FF?logo=githubactions&logoColor=white" alt="GitHub Actions">
+  <img src="https://img.shields.io/badge/license-MIT-111827" alt="MIT License">
+</p>
 
-- [한국어 문서](README.ko.md)
-- [English documentation](README.en.md)
+## 🕒 CHANGELOG
 
-## 📄 License
+[CHANGELOG](CHANGEDLOG.md)
 
-MIT License. See [LICENSE](LICENSE).
+## 📄 LICENSE
+
+[MIT LICENSE](LICENSE)

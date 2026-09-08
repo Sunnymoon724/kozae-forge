@@ -9,4 +9,3 @@
 ## ✨ 제공 기능
 
 - [저장소 미러링](Documents/MirrorPublic/mirror-repository.ko.md)
-- [Wiki 동기화](Documents/SyncWiki/sync-wiki.ko.md)
