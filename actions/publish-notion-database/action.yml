@@ -1,0 +1,49 @@
+name: Publish Notion Database
+description: Create or update a Notion database entry from a content file
+inputs:
+  content-file:
+    description: File containing the content to publish
+    required: true
+  data-source-id:
+    description: Notion database data source ID
+    required: true
+  title-property:
+    description: Database title property name
+    required: true
+  title:
+    description: Entry title used to find, create, or update the entry
+    required: true
+  notion-token:
+    description: Notion integration token
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Publish Notion database entry
+      shell: bash
+      env:
+        CONTENT_FILE: ${{ inputs.content-file }}
+        DATA_SOURCE_ID: ${{ inputs.data-source-id }}
+        TITLE_PROPERTY: ${{ inputs.title-property }}
+        TITLE: ${{ inputs.title }}
+        NOTION_TOKEN: ${{ inputs.notion-token }}
+      run: |
+        set -euo pipefail
+        content="$(cat "$CONTENT_FILE")"
+        headers=(-H "Authorization: Bearer $NOTION_TOKEN" -H 'Content-Type: application/json' -H 'Notion-Version: 2022-06-28')
+        search_payload="$(jq -n --arg query "$TITLE" '{query: $query, page_size: 100}')"
+        existing_id="$(curl --fail-with-body --silent --show-error -X POST 'https://api.notion.com/v1/search' "${headers[@]}" --data "$search_payload" | \
+          jq -r --arg source "$DATA_SOURCE_ID" --arg property "$TITLE_PROPERTY" --arg title "$TITLE" '.results[] | select(.object == "page" and .parent.data_source_id == $source and (.properties[$property].title[0].plain_text // "") == $title) | .id' | head -n 1)"
+        if [ -n "$existing_id" ]; then
+          blocks="$(curl --fail-with-body --silent --show-error -X GET "https://api.notion.com/v1/blocks/$existing_id/children?page_size=100" "${headers[@]}" | jq -r '.results[].id')"
+          while IFS= read -r block_id; do
+            [ -z "$block_id" ] && continue
+            curl --fail-with-body --silent --show-error -X PATCH "https://api.notion.com/v1/blocks/$block_id" "${headers[@]}" --data '{"archived":true}' >/dev/null
+          done <<< "$blocks"
+          payload="$(jq -n --arg content "$content" '{children: [{object: "block", type: "paragraph", paragraph: {rich_text: [{type: "text", text: {content: $content}}]}}]}')"
+          curl --fail-with-body --silent --show-error -X PATCH "https://api.notion.com/v1/blocks/$existing_id/children" "${headers[@]}" --data "$payload"
+        else
+          payload="$(jq -n --arg source "$DATA_SOURCE_ID" --arg property "$TITLE_PROPERTY" --arg title "$TITLE" --arg content "$content" \
+            '{parent: {data_source_id: $source}, properties: {($property): {title: [{type: "text", text: {content: $title}}]}}, children: [{object: "block", type: "paragraph", paragraph: {rich_text: [{type: "text", text: {content: $content}}]}}]}')"
+          curl --fail-with-body --silent --show-error -X POST 'https://api.notion.com/v1/pages' "${headers[@]}" --data "$payload"
+        fi
