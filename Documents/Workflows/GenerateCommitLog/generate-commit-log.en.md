@@ -19,6 +19,7 @@ jobs:
       provider: openai
       api-base: https://api.openai.com/v1
       model: gpt-4o-mini
+      author: Jane Doe
       prompt: Write a Markdown development log from the commit history.
     secrets:
       API_KEY: ${{ secrets.API_KEY }}

@@ -11,6 +11,11 @@ on:
         required: false
         default: Asia/Seoul
         type: string
+      author:
+        description: Optional commit author name or email filter
+        required: false
+        default: ''
+        type: string
       provider:
         required: true
         type: string
@@ -71,6 +76,7 @@ jobs:
           start-time: ${{ steps.time-range.outputs.start-time }}
           end-time: ${{ steps.time-range.outputs.end-time }}
           timezone: ${{ inputs.timezone }}
+          author: ${{ inputs.author }}
 
       - id: generate
         if: steps.collect.outputs.has-content == 'true'

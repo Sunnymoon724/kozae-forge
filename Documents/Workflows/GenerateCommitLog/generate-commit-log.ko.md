@@ -19,6 +19,7 @@ jobs:
       provider: openai
       api-base: https://api.openai.com/v1
       model: gpt-4o-mini
+      author: 홍길동
       prompt: 커밋 기록을 바탕으로 한국어 개발일지를 Markdown으로 작성해줘.
     secrets:
       API_KEY: ${{ secrets.API_KEY }}
