@@ -1,0 +1,44 @@
+name: Save content
+
+on:
+  workflow_call:
+    inputs:
+      file-directory:
+        required: false
+        default: Documents/Blog
+        type: string
+      branch:
+        required: false
+        default: main
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  save-content:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch }}
+      - uses: actions/download-artifact@v4
+        with:
+          name: generated-content
+          path: .generated-content
+      - name: Save content
+        shell: bash
+        env:
+          FILE_DIRECTORY: ${{ inputs.file-directory }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$FILE_DIRECTORY"
+          cp .generated-content/*.md "$FILE_DIRECTORY/"
+      - uses: Sunnymoon724/kozae-forge/actions/commit-changes@main
+        with:
+          destination-directory: .
+          message: Save generated content
+      - uses: Sunnymoon724/kozae-forge/actions/push-changes@main
+        with:
+          destination-directory: .
+          branch: ${{ inputs.branch }}

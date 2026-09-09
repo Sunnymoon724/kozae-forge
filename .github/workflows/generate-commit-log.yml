@@ -3,10 +3,6 @@ name: Generate commit log
 on:
   workflow_call:
     inputs:
-      file-directory:
-        required: false
-        default: Documents/Blog
-        type: string
       branch:
         required: false
         default: main
@@ -14,18 +10,6 @@ on:
       timezone:
         required: false
         default: Asia/Seoul
-        type: string
-      save-file:
-        required: false
-        default: true
-        type: boolean
-      publish:
-        required: false
-        default: false
-        type: boolean
-      publish-url:
-        required: false
-        default: ''
         type: string
       api-url:
         required: true
@@ -37,20 +21,28 @@ on:
         required: true
         type: string
       output-file:
-        description: Output file name or path; defaults to YYYY-MM-DD-development-log.md
+        description: Output file name; defaults to YYYY-MM-DD-development-log.md
         required: false
         default: ''
         type: string
     secrets:
       AI_API_KEY:
         required: true
+    outputs:
+      has-content:
+        value: ${{ jobs.generate.outputs.has-content }}
+      file-name:
+        value: ${{ jobs.generate.outputs.file-name }}
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  generate-commit-log:
+  generate:
     runs-on: ubuntu-latest
+    outputs:
+      has-content: ${{ steps.collect.outputs.has-content }}
+      file-name: ${{ steps.generate.outputs.file-name }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -89,25 +81,9 @@ jobs:
           output-file: ${{ inputs.output-file }}
           api-key: ${{ secrets.AI_API_KEY }}
 
-      - if: inputs.save-file && steps.collect.outputs.has-content == 'true'
-        uses: Sunnymoon724/kozae-forge/actions/copy-file@main
+      - name: Upload generated content
+        if: steps.collect.outputs.has-content == 'true'
+        uses: actions/upload-artifact@v4
         with:
-          file-path: ${{ inputs.file-directory }}/${{ steps.generate.outputs.file-name }}
-          source-file: ${{ steps.generate.outputs.file-name }}
-
-      - if: inputs.save-file && steps.collect.outputs.has-content == 'true'
-        uses: Sunnymoon724/kozae-forge/actions/commit-changes@main
-        with:
-          destination-directory: .
-
-      - if: inputs.save-file && steps.collect.outputs.has-content == 'true'
-        uses: Sunnymoon724/kozae-forge/actions/push-changes@main
-        with:
-          destination-directory: .
-          branch: ${{ inputs.branch }}
-
-      - if: inputs.publish && steps.collect.outputs.has-content == 'true'
-        uses: Sunnymoon724/kozae-forge/actions/publish-content@main
-        with:
-          file-name: ${{ steps.generate.outputs.file-name }}
-          publish-url: ${{ inputs.publish-url }}
+          name: generated-content
+          path: ${{ steps.generate.outputs.file-name }}
