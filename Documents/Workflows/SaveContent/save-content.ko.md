@@ -9,17 +9,10 @@
 
 ## 2. 사용 방법
 
+`generate-commit-log`처럼 먼저 `generated-content` Artifact를 생성하는 Job이 있어야 합니다.
+
 ```yaml
 jobs:
-  generate:
-    uses: Sunnymoon724/kozae-forge/.github/workflows/generate-commit-log.yml@main
-    with:
-      api-url: https://api.openai.com/v1/chat/completions
-      model: gpt-4o-mini
-      prompt: 커밋 기록을 바탕으로 한국어 개발일지를 Markdown으로 작성해줘.
-    secrets:
-      AI_API_KEY: ${{ secrets.AI_API_KEY }}
-
   save:
     needs: generate
     uses: Sunnymoon724/kozae-forge/.github/workflows/save-content.yml@main
@@ -27,6 +20,8 @@ jobs:
       file-directory: Documents/Blog
       branch: main
 ```
+
+`file-directory`의 기본값은 `Documents/Blog`입니다.
 
 ## 3. 사용 Action
 

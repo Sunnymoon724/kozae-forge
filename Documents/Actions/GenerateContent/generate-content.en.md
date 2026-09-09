@@ -7,7 +7,8 @@ A GitHub Action that sends input text to an OpenAI-compatible Chat Completions A
 | Name | Required | Default | Description |
 |---|---:|---|---|
 | `date` | Yes | - | Date used by the default output filename |
-| `api-url` | Yes | - | Chat Completions API endpoint |
+| `provider` | Yes | - | AI provider name (`openai` or `openai-compatible`) |
+| `api-base` | Yes | - | AI API base URL |
 | `model` | Yes | - | Model name |
 | `content` | Conditional | Empty | Input text passed directly |
 | `source-file` | Conditional | Empty | File containing the input text |
@@ -24,12 +25,13 @@ Use either `content` or `source-file`. When both are provided, `source-file` tak
   uses: Sunnymoon724/kozae-forge/actions/generate-content@main
   with:
     date: 2026-09-09
-    api-url: https://api.openai.com/v1/chat/completions
+    provider: openai
+    api-base: https://api.openai.com/v1
     model: gpt-4o-mini
     content: ${{ steps.collect.outputs.commits }}
     prompt: Write a Markdown development log from the commit history.
     output-file: 2026-09-08-development-log.md
-    api-key: ${{ secrets.AI_API_KEY }}
+    api-key: ${{ secrets.API_KEY }}
 ```
 
 ## Outputs

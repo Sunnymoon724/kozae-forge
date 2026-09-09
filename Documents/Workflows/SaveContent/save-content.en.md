@@ -9,17 +9,10 @@
 
 ## 2. Usage
 
+A previous job, such as `generate-commit-log`, must create the `generated-content` artifact first.
+
 ```yaml
 jobs:
-  generate:
-    uses: Sunnymoon724/kozae-forge/.github/workflows/generate-commit-log.yml@main
-    with:
-      api-url: https://api.openai.com/v1/chat/completions
-      model: gpt-4o-mini
-      prompt: Write a Markdown development log from the commit history.
-    secrets:
-      AI_API_KEY: ${{ secrets.AI_API_KEY }}
-
   save:
     needs: generate
     uses: Sunnymoon724/kozae-forge/.github/workflows/save-content.yml@main
@@ -27,6 +20,8 @@ jobs:
       file-directory: Documents/Blog
       branch: main
 ```
+
+The default `file-directory` is `Documents/Blog`.
 
 ## 3. Actions used
 

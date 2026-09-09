@@ -7,7 +7,8 @@
 | 이름 | 필수 | 기본값 | 설명 |
 |---|---:|---|---|
 | `date` | 예 | - | 기본 출력 파일명에 사용할 날짜 |
-| `api-url` | 예 | - | AI API의 Chat Completions 엔드포인트 |
+| `provider` | 예 | - | AI 제공자 이름 (`openai` 또는 `openai-compatible`) |
+| `api-base` | 예 | - | AI API 기본 URL |
 | `model` | 예 | - | 사용할 모델명 |
 | `content` | 조건부 | 빈 값 | 직접 전달할 원문 |
 | `source-file` | 조건부 | 빈 값 | 원문이 들어 있는 파일 |
@@ -30,12 +31,13 @@
   uses: Sunnymoon724/kozae-forge/actions/generate-content@main
   with:
     date: 2026-09-09
-    api-url: https://api.openai.com/v1/chat/completions
+    provider: openai
+    api-base: https://api.openai.com/v1
     model: gpt-4o-mini
     content: ${{ steps.collect.outputs.commits }}
     prompt: 커밋 기록을 바탕으로 한국어 개발일지를 Markdown으로 작성해줘.
     output-file: 2026-09-08-development-log.md
-    api-key: ${{ secrets.AI_API_KEY }}
+    api-key: ${{ secrets.API_KEY }}
 ```
 
 ## 출력 예시

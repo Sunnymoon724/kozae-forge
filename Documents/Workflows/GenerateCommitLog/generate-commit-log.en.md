@@ -16,11 +16,12 @@ jobs:
   generate:
     uses: Sunnymoon724/kozae-forge/.github/workflows/generate-commit-log.yml@main
     with:
-      api-url: https://api.openai.com/v1/chat/completions
+      provider: openai
+      api-base: https://api.openai.com/v1
       model: gpt-4o-mini
       prompt: Write a Markdown development log from the commit history.
     secrets:
-      AI_API_KEY: ${{ secrets.AI_API_KEY }}
+      API_KEY: ${{ secrets.API_KEY }}
 ```
 
 Download the artifact in a later job:

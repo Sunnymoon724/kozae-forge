@@ -11,7 +11,10 @@ on:
         required: false
         default: Asia/Seoul
         type: string
-      api-url:
+      provider:
+        required: true
+        type: string
+      api-base:
         required: true
         type: string
       model:
@@ -26,7 +29,7 @@ on:
         default: ''
         type: string
     secrets:
-      AI_API_KEY:
+      API_KEY:
         required: true
     outputs:
       has-content:
@@ -73,13 +76,14 @@ jobs:
         if: steps.collect.outputs.has-content == 'true'
         uses: Sunnymoon724/kozae-forge/actions/generate-content@main
         with:
-          api-url: ${{ inputs.api-url }}
+          provider: ${{ inputs.provider }}
+          api-base: ${{ inputs.api-base }}
           model: ${{ inputs.model }}
           date: ${{ steps.time-range.outputs.date }}
           content: ${{ steps.collect.outputs.commits }}
           prompt: ${{ inputs.prompt }}
           output-file: ${{ inputs.output-file }}
-          api-key: ${{ secrets.AI_API_KEY }}
+          api-key: ${{ secrets.API_KEY }}
 
       - name: Upload generated content
         if: steps.collect.outputs.has-content == 'true'

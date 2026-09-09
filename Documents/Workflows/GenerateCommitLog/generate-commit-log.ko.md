@@ -16,11 +16,12 @@ jobs:
   generate:
     uses: Sunnymoon724/kozae-forge/.github/workflows/generate-commit-log.yml@main
     with:
-      api-url: https://api.openai.com/v1/chat/completions
+      provider: openai
+      api-base: https://api.openai.com/v1
       model: gpt-4o-mini
       prompt: 커밋 기록을 바탕으로 한국어 개발일지를 Markdown으로 작성해줘.
     secrets:
-      AI_API_KEY: ${{ secrets.AI_API_KEY }}
+      API_KEY: ${{ secrets.API_KEY }}
 ```
 
 생성 결과를 후속 Job에서 사용하려면 Artifact를 다운로드합니다.

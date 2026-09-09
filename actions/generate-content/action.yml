@@ -4,8 +4,11 @@ inputs:
   date:
     description: Date used for the default output file name
     required: true
-  api-url:
-    description: OpenAI-compatible chat completions endpoint
+  provider:
+    description: AI provider name
+    required: true
+  api-base:
+    description: OpenAI-compatible API base URL
     required: true
   model:
     description: AI model name
@@ -38,7 +41,8 @@ runs:
     - id: generate
       shell: bash
       env:
-        API_URL: ${{ inputs.api-url }}
+        PROVIDER: ${{ inputs.provider }}
+        API_BASE: ${{ inputs.api-base }}
         DATE: ${{ inputs.date }}
         MODEL: ${{ inputs.model }}
         CONTENT: ${{ inputs.content }}
@@ -54,6 +58,10 @@ runs:
         if [ -n "$SOURCE_FILE" ]; then
           CONTENT="$(cat "$SOURCE_FILE")"
         fi
+        case "$PROVIDER" in
+          openai|openai-compatible) API_URL="${API_BASE%/}/chat/completions" ;;
+          *) echo "Unsupported provider: $PROVIDER"; exit 1 ;;
+        esac
         REQUEST="$(jq -n \
           --arg model "$MODEL" \
           --arg system "$PROMPT" \
