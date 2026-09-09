@@ -54,7 +54,16 @@ runs:
         fi
         existing_id="$(jq -r --arg property "$TITLE_PROPERTY" --arg title "$TITLE" '.results[] | select((.properties[$property].title[0].plain_text // "") == $title) | .id' <<< "$query_body" | head -n 1)"
         if [ -n "$existing_id" ]; then
-          blocks="$(curl --fail-with-body --silent --show-error -X GET "https://api.notion.com/v1/blocks/$existing_id/children?page_size=100" "${headers[@]}" | jq -r '.results[].id')"
+          echo "Existing Notion page found: $existing_id"
+          blocks_response="$(curl --silent --show-error -X GET "https://api.notion.com/v1/blocks/$existing_id/children?page_size=100" "${headers[@]}" -w $'\nHTTP_STATUS:%{http_code}')"
+          blocks_status="${blocks_response##*$'\n'HTTP_STATUS:}"
+          blocks_body="${blocks_response%$'\n'HTTP_STATUS:*}"
+          if [ "$blocks_status" -lt 200 ] || [ "$blocks_status" -ge 300 ]; then
+            echo "Notion page blocks query failed (HTTP $blocks_status):" >&2
+            echo "$blocks_body" >&2
+            exit 1
+          fi
+          blocks="$(jq -r '.results[].id' <<< "$blocks_body")"
           while IFS= read -r block_id; do
             [ -z "$block_id" ] && continue
             curl --fail-with-body --silent --show-error -X PATCH "https://api.notion.com/v1/blocks/$block_id" "${headers[@]}" --data '{"archived":true}' >/dev/null
