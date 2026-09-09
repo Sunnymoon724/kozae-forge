@@ -12,6 +12,8 @@ A GitHub Action that updates a matching database entry or creates one when it do
 | `title` | Yes | - | Entry title to find or create |
 | `group-property` | Yes | - | Database property used for grouping |
 | `group-value` | Yes | - | Group value assigned to that property |
+| `date-property` | No | Empty | Date property name |
+| `date` | No | Empty | Date to save in `YYYY-MM-DD` format |
 | `notion-token` | Yes | - | Notion Integration Token |
 
 ## Input example
@@ -25,5 +27,7 @@ A GitHub Action that updates a matching database entry or creates one when it do
     title: 2026-09-09
     group-property: Status
     group-value: Daily report
+    date-property: Date
+    date: 2026-09-09
     notion-token: ${{ secrets.NOTION_TOKEN }}
 ```

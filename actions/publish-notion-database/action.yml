@@ -19,6 +19,14 @@ inputs:
   group-value:
     description: Select value used for grouping database entries
     required: true
+  date-property:
+    description: Optional date property name
+    required: false
+    default: ''
+  date:
+    description: Optional date in YYYY-MM-DD format
+    required: false
+    default: ''
   notion-token:
     description: Notion integration token
     required: true
@@ -34,6 +42,8 @@ runs:
         TITLE: ${{ inputs.title }}
         GROUP_PROPERTY: ${{ inputs.group-property }}
         GROUP_VALUE: ${{ inputs.group-value }}
+        DATE_PROPERTY: ${{ inputs.date-property }}
+        DATE: ${{ inputs.date }}
         NOTION_TOKEN: ${{ inputs.notion-token }}
       run: |
         set -euo pipefail
@@ -41,6 +51,10 @@ runs:
         headers=(-H "Authorization: Bearer $NOTION_TOKEN" -H 'Content-Type: application/json' -H 'Notion-Version: 2026-03-11')
         if [ -z "$GROUP_PROPERTY" ] || [ -z "$GROUP_VALUE" ]; then
           echo "group-property and group-value are required" >&2
+          exit 1
+        fi
+        if { [ -n "$DATE_PROPERTY" ] && [ -z "$DATE" ]; } || { [ -z "$DATE_PROPERTY" ] && [ -n "$DATE" ]; }; then
+          echo "date-property and date must be provided together" >&2
           exit 1
         fi
         query_payload="$(jq -n '{page_size: 100}')"
@@ -84,13 +98,13 @@ runs:
             [ -z "$block_id" ] && continue
             curl --fail-with-body --silent --show-error -X PATCH "https://api.notion.com/v1/blocks/$block_id" "${headers[@]}" --data '{"in_trash":true}' >/dev/null
           done <<< "$blocks"
-          property_payload="$(jq -n --arg property "$GROUP_PROPERTY" --arg value "$GROUP_VALUE" '{properties: {($property): {select: {name: $value}}}}')"
+          property_payload="$(jq -n --arg group_property "$GROUP_PROPERTY" --arg group_value "$GROUP_VALUE" --arg date_property "$DATE_PROPERTY" --arg date "$DATE" '{properties: ({($group_property): {select: {name: $group_value}}} + (if $date_property == "" then {} else {($date_property): {date: {start: $date}}} end))}')"
           curl --fail-with-body --silent --show-error -X PATCH "https://api.notion.com/v1/pages/$existing_id" "${headers[@]}" --data "$property_payload" >/dev/null
           content_payload="$(jq -n --arg content "$content" '{children: [{object: "block", type: "paragraph", paragraph: {rich_text: [{type: "text", text: {content: $content}}]}}]}')"
           curl --fail-with-body --silent --show-error -X PATCH "https://api.notion.com/v1/blocks/$existing_id/children" "${headers[@]}" --data "$content_payload"
         else
-          payload="$(jq -n --arg source "$DATA_SOURCE_ID" --arg property "$TITLE_PROPERTY" --arg title "$TITLE" --arg group "$GROUP_PROPERTY" --arg value "$GROUP_VALUE" --arg content "$content" \
-            '{parent: {data_source_id: $source}, properties: {($property): {title: [{type: "text", text: {content: $title}}]}, ($group): {select: {name: $value}}}, children: [{object: "block", type: "paragraph", paragraph: {rich_text: [{type: "text", text: {content: $content}}]}}]}')"
+          payload="$(jq -n --arg source "$DATA_SOURCE_ID" --arg property "$TITLE_PROPERTY" --arg title "$TITLE" --arg group "$GROUP_PROPERTY" --arg value "$GROUP_VALUE" --arg date_property "$DATE_PROPERTY" --arg date "$DATE" --arg content "$content" \
+            '{parent: {data_source_id: $source}, properties: ({($property): {title: [{type: "text", text: {content: $title}}]}, ($group): {select: {name: $value}}} + (if $date_property == "" then {} else {($date_property): {date: {start: $date}}} end)), children: [{object: "block", type: "paragraph", paragraph: {rich_text: [{type: "text", text: {content: $content}}]}}]}')"
           create_response="$(curl --silent --show-error -X POST 'https://api.notion.com/v1/pages' "${headers[@]}" --data "$payload" -w $'\nHTTP_STATUS:%{http_code}')"
           create_status="${create_response##*$'\n'HTTP_STATUS:}"
           create_body="${create_response%$'\n'HTTP_STATUS:*}"
