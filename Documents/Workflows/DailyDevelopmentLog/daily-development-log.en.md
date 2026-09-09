@@ -2,7 +2,11 @@
 
 A reusable workflow that creates the previous day's development log from commit history.
 
-## Usage
+## 1. Process
+
+The workflow calculates the time range, collects commits, generates content with AI, and optionally saves or publishes the result.
+
+## 2. Usage
 
 Add the following job to the source repository workflow.
 
@@ -51,3 +55,12 @@ Documents/Blog/YYYY-MM-DD-development-log.md
 ```
 
 The current version creates a Markdown file from commit messages. An AI summarization step can be connected later.
+
+## 3. Actions used
+
+- `collect-commits`
+- `generate-content`
+- `write-content` or `copy-file`
+- `commit-changes`
+- `push-changes`
+- `publish-content`

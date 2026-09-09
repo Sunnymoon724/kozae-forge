@@ -2,7 +2,7 @@
 
 전날의 커밋을 수집하고, 글을 생성한 뒤 선택적으로 파일 저장 또는 외부 게시를 수행하는 재사용 Workflow입니다.
 
-## 처리 흐름
+## 1. 처리 방법
 
 ```text
 collect-commits
@@ -17,7 +17,7 @@ generate-content
 - `write-content`: 생성된 글을 지정한 경로에 저장하고 커밋·푸시합니다.
 - `publish-content`: 생성된 글을 외부 Webhook으로 전송합니다.
 
-## 사용법
+## 2. 사용 방법
 
 원본 저장소의 Workflow에 다음 작업을 추가합니다.
 
@@ -37,12 +37,12 @@ jobs:
       api-url: https://api.openai.com/v1/chat/completions
       model: gpt-4o-mini
       prompt: 커밋 기록을 바탕으로 한국어 개발일지를 Markdown으로 작성합니다.
-    secrets:
-      AI_API_KEY: ${{ secrets.AI_API_KEY }}
       branch: main
       timezone: Asia/Seoul
       save-file: true
       publish: false
+    secrets:
+      AI_API_KEY: ${{ secrets.AI_API_KEY }}
 ```
 
 파일 저장과 외부 게시 여부를 선택할 수 있습니다.
@@ -86,3 +86,12 @@ Documents/Blog/YYYY-MM-DD-development-log.md
 ```
 
 현재 `generate-content`는 수집된 커밋 메시지를 Markdown 형식으로 정리합니다. AI를 이용한 자연어 요약은 해당 Action에 연결할 수 있도록 단계가 분리되어 있습니다.
+
+## 3. 사용 Action
+
+- `collect-commits`
+- `generate-content`
+- `write-content` 또는 `copy-file`
+- `commit-changes`
+- `push-changes`
+- `publish-content`

@@ -56,7 +56,13 @@ jobs:
           exclude-file: ${{ inputs.exclude-file }}
           destination-directory: destination-repo
 
-      - name: Commit and push
-        uses: Sunnymoon724/kozae-forge/actions/commit-push@main
+      - name: Commit changes
+        uses: Sunnymoon724/kozae-forge/actions/commit-changes@main
         with:
           destination-directory: destination-repo
+
+      - name: Push changes
+        uses: Sunnymoon724/kozae-forge/actions/push-changes@main
+        with:
+          destination-directory: destination-repo
+          branch: main

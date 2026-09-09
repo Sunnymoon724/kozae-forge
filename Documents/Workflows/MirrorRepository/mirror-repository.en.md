@@ -2,13 +2,13 @@
 
 Synchronize changes from one repository to a destination repository while applying an exclusion list.
 
-## 🧭 Table of contents
+## 1. Process
 
-- [Usage](#usage)
+The workflow checks the destination repository, clones it, uploads Git LFS objects, synchronizes files using the exclusion list, then commits and pushes the changes.
 
-## Usage
+## 2. Usage
 
-### 1. Token setup
+### Token setup
 
 Add a `PUBLIC_REPO_TOKEN` Actions secret to the source repository.
 
@@ -24,12 +24,12 @@ Secret name:
 PUBLIC_REPO_TOKEN
 ```
 
-### 2. Exclusion list
+### Exclusion list
 
 Create an exclusion list file in the source repository.
 
 ```text
-Sources/public-exclude.list
+Sources/mirror-exclude.list
 ```
 
 Add one file or folder to exclude from the public copy per line.
@@ -42,7 +42,7 @@ path/to/private-file.ext
 *.local
 ```
 
-### 3. Destination repository
+### Destination repository
 
 Set the destination repository in `OWNER/DESTINATION-REPOSITORY` format.
 
@@ -52,7 +52,7 @@ Format:
 OWNER/DESTINATION-REPOSITORY
 ```
 
-### 4. Add the workflow
+### Add the workflow
 
 Create `.github/workflows/mirror-repository.yml` in the source repository:
 
@@ -69,7 +69,15 @@ jobs:
     uses: Sunnymoon724/kozae-forge/.github/workflows/mirror-repository.yml@main
     with:
       destination-repository: OWNER/DESTINATION-REPOSITORY
-      exclude-file: Sources/public-exclude.list
+      exclude-file: Sources/mirror-exclude.list
     secrets:
       PUBLIC_REPO_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
 ```
+
+## 3. Actions used
+
+- `verify-repository`
+- `upload-lfs`
+- `sync-files`
+- `commit-changes`
+- `push-changes`

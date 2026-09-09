@@ -57,9 +57,24 @@ jobs:
           fetch-depth: 0
           ref: ${{ inputs.branch }}
 
+      - id: time-range
+        shell: bash
+        env:
+          TIMEZONE: ${{ inputs.timezone }}
+        run: |
+          export TZ="$TIMEZONE"
+          START_TIME="$(date -d 'yesterday 00:00' '+%F %H:%M')"
+          END_TIME="$(date -d 'today 00:00' '+%F %H:%M')"
+          DATE="$(date -d 'yesterday' +%F)"
+          echo "start-time=$START_TIME" >> "$GITHUB_OUTPUT"
+          echo "end-time=$END_TIME" >> "$GITHUB_OUTPUT"
+          echo "date=$DATE" >> "$GITHUB_OUTPUT"
+
       - id: collect
         uses: Sunnymoon724/kozae-forge/actions/collect-commits@main
         with:
+          start-time: ${{ steps.time-range.outputs.start-time }}
+          end-time: ${{ steps.time-range.outputs.end-time }}
           timezone: ${{ inputs.timezone }}
 
       - id: generate
@@ -68,19 +83,28 @@ jobs:
         with:
           api-url: ${{ inputs.api-url }}
           model: ${{ inputs.model }}
-          date: ${{ steps.collect.outputs.date }}
-          source-file: ${{ steps.collect.outputs.commits-file }}
+          date: ${{ steps.time-range.outputs.date }}
+          content: ${{ steps.collect.outputs.commits }}
           prompt: ${{ inputs.prompt }}
           output-file: ${{ inputs.output-file }}
           api-key: ${{ secrets.AI_API_KEY }}
 
       - if: inputs.save-file && steps.collect.outputs.has-content == 'true'
-        uses: Sunnymoon724/kozae-forge/actions/write-content@main
+        uses: Sunnymoon724/kozae-forge/actions/copy-file@main
         with:
           file-path: ${{ inputs.file-directory }}/${{ steps.generate.outputs.file-name }}
           source-file: ${{ steps.generate.outputs.file-name }}
-          commit: true
-          push: true
+
+      - if: inputs.save-file && steps.collect.outputs.has-content == 'true'
+        uses: Sunnymoon724/kozae-forge/actions/commit-changes@main
+        with:
+          destination-directory: .
+
+      - if: inputs.save-file && steps.collect.outputs.has-content == 'true'
+        uses: Sunnymoon724/kozae-forge/actions/push-changes@main
+        with:
+          destination-directory: .
+          branch: ${{ inputs.branch }}
 
       - if: inputs.publish && steps.collect.outputs.has-content == 'true'
         uses: Sunnymoon724/kozae-forge/actions/publish-content@main

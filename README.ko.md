@@ -1,11 +1,21 @@
 # KoZae Forge
 
-공통으로 사용하는 GitHub Actions 모음입니다.
-
-## 🧭 목차
-
-- [✨ 제공 기능](#-제공-기능)
+KoZae 프로젝트에서 재사용할 수 있는 GitHub Actions와 Workflow 모음입니다.
 
 ## ✨ 제공 기능
 
-- [저장소 미러링](Documents/MirrorPublic/mirror-repository.ko.md)
+- Workflow
+  - [저장소 미러링](Documents/Workflows/MirrorRepository/mirror-repository.ko.md)
+  - [일일 개발일지](Documents/Workflows/DailyDevelopmentLog/daily-development-log.ko.md)
+
+- Action
+  - [커밋 수집](Documents/Actions/CollectCommits/collect-commits.ko.md)
+  - [콘텐츠 생성](Documents/Actions/GenerateContent/generate-content.ko.md)
+  - [콘텐츠 저장](Documents/Actions/WriteContent/write-content.ko.md)
+  - [파일 복사](Documents/Actions/CopyFile/copy-file.ko.md)
+  - [콘텐츠 게시](Documents/Actions/PublishContent/publish-content.ko.md)
+  - [변경사항 커밋](Documents/Actions/CommitChanges/commit-changes.ko.md)
+  - [변경사항 push](Documents/Actions/PushChanges/push-changes.ko.md)
+  - [파일 동기화](Documents/Actions/SyncFiles/sync-files.ko.md)
+  - [Git LFS 업로드](Documents/Actions/UploadLfs/upload-lfs.ko.md)
+  - [저장소 권한 확인](Documents/Actions/VerifyRepository/verify-repository.ko.md)

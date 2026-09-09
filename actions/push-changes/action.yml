@@ -1,0 +1,18 @@
+name: Push changes
+description: Push committed changes to a remote branch
+inputs:
+  destination-directory:
+    description: Directory of the Git repository
+    required: false
+    default: public-repo
+  branch:
+    description: Branch to push
+    required: false
+    default: main
+runs:
+  using: composite
+  steps:
+    - name: Push changes
+      shell: bash
+      working-directory: ${{ inputs.destination-directory }}
+      run: git push origin "HEAD:${{ inputs.branch }}"

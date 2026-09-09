@@ -1,0 +1,21 @@
+name: Copy file
+description: Copy an existing file to a target path
+inputs:
+  source-file:
+    description: Existing file to copy
+    required: true
+  file-path:
+    description: Target file path relative to the workspace
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Copy file
+      shell: bash
+      env:
+        SOURCE_FILE: ${{ inputs.source-file }}
+        FILE_PATH: ${{ inputs.file-path }}
+      run: |
+        set -euo pipefail
+        mkdir -p "$(dirname "$FILE_PATH")"
+        cp "$SOURCE_FILE" "$FILE_PATH"
