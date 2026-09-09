@@ -43,16 +43,6 @@ runs:
           echo "group-property and group-value are required" >&2
           exit 1
         fi
-        if [ -n "$GROUP_PROPERTY" ]; then
-          schema="$(curl --fail-with-body --silent --show-error -X GET "https://api.notion.com/v1/data_sources/$DATA_SOURCE_ID" "${headers[@]}" || true)"
-          if [ -z "$schema" ] || ! jq -e --arg property "$GROUP_PROPERTY" '.properties[$property]' >/dev/null <<< "$schema"; then
-            schema="$(curl --fail-with-body --silent --show-error -X GET "https://api.notion.com/v1/databases/$DATA_SOURCE_ID" "${headers[@]}" || true)"
-          fi
-          if ! jq -e --arg property "$GROUP_PROPERTY" '.properties[$property]' >/dev/null <<< "$schema"; then
-            echo "Notion database property '$GROUP_PROPERTY' does not exist" >&2
-            exit 1
-          fi
-        fi
         search_payload="$(jq -n --arg query "$TITLE" '{query: $query, page_size: 100}')"
         existing_id="$(curl --fail-with-body --silent --show-error -X POST 'https://api.notion.com/v1/search' "${headers[@]}" --data "$search_payload" | \
           jq -r --arg source "$DATA_SOURCE_ID" --arg property "$TITLE_PROPERTY" --arg title "$TITLE" '.results[] | select(.object == "page" and (((.parent.data_source_id // "") == $source) or ((.parent.database_id // "") == $source)) and (.properties[$property].title[0].plain_text // "") == $title) | .id' | head -n 1)"
