@@ -6,7 +6,7 @@ KoZae 프로젝트에서 재사용할 수 있는 GitHub Actions와 Workflow 모�
 
 - Workflow
   - [저장소 미러링](Documents/Workflows/MirrorRepository/mirror-repository.ko.md)
-  - [일일 개발일지](Documents/Workflows/DailyDevelopmentLog/daily-development-log.ko.md)
+  - [커밋 로그 생성](Documents/Workflows/GenerateCommitLog/generate-commit-log.ko.md)
 
 - Action
   - [커밋 수집](Documents/Actions/CollectCommits/collect-commits.ko.md)

@@ -1,4 +1,4 @@
-# Daily development log
+# Generate commit log
 
 A reusable workflow that creates the previous day's development log from commit history.
 
@@ -11,7 +11,7 @@ The workflow calculates the time range, collects commits, generates content with
 Add the following job to the source repository workflow.
 
 ```yaml
-name: Daily development log
+name: Generate commit log
 
 on:
   schedule:
@@ -20,7 +20,7 @@ on:
 
 jobs:
   daily-log:
-    uses: Sunnymoon724/kozae-forge/.github/workflows/daily-development-log.yml@main
+    uses: Sunnymoon724/kozae-forge/.github/workflows/generate-commit-log.yml@main
     with:
       file-directory: Documents/Blog
       api-url: https://api.openai.com/v1/chat/completions

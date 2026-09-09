@@ -1,4 +1,4 @@
-name: Daily development log
+name: Generate commit log
 
 on:
   workflow_call:
@@ -49,7 +49,7 @@ permissions:
   contents: write
 
 jobs:
-  daily-development-log:
+  generate-commit-log:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

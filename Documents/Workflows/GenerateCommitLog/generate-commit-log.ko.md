@@ -1,4 +1,4 @@
-# 일일 개발일지
+# 커밋 로그 생성
 
 전날의 커밋을 수집하고, 글을 생성한 뒤 선택적으로 파일 저장 또는 외부 게시를 수행하는 재사용 Workflow입니다.
 
@@ -22,7 +22,7 @@ generate-content
 원본 저장소의 Workflow에 다음 작업을 추가합니다.
 
 ```yaml
-name: Daily development log
+name: Generate commit log
 
 on:
   schedule:
@@ -31,7 +31,7 @@ on:
 
 jobs:
   daily-log:
-    uses: Sunnymoon724/kozae-forge/.github/workflows/daily-development-log.yml@main
+    uses: Sunnymoon724/kozae-forge/.github/workflows/generate-commit-log.yml@main
     with:
       file-directory: Documents/Blog
       api-url: https://api.openai.com/v1/chat/completions

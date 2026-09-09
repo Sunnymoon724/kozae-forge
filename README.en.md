@@ -6,7 +6,7 @@ Reusable GitHub Actions and Workflows for KoZae projects.
 
 - Workflow
   - [Repository mirroring](Documents/Workflows/MirrorRepository/mirror-repository.en.md)
-  - [Daily development log](Documents/Workflows/DailyDevelopmentLog/daily-development-log.en.md)
+  - [Generate commit log](Documents/Workflows/GenerateCommitLog/generate-commit-log.en.md)
 
 - Action
   - [Collect commits](Documents/Actions/CollectCommits/collect-commits.en.md)
