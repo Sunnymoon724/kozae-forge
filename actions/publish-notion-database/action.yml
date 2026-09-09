@@ -52,7 +52,7 @@ runs:
           echo "$query_body" >&2
           exit 1
         fi
-        existing_id="$(jq -r --arg property "$TITLE_PROPERTY" --arg title "$TITLE" '.results[] | select((.in_trash != true) and (.archived != true) and ((.properties[$property].title[0].plain_text // "") == $title)) | .id' <<< "$query_body" | head -n 1)"
+        existing_id="$(jq -r --arg property "$TITLE_PROPERTY" --arg title "$TITLE" '.results[] | select((.in_trash == false) and ((.archived == false) or (.archived == null)) and ((.properties[$property].title[0].plain_text // "") == $title)) | .id' <<< "$query_body" | head -n 1)"
         if [ -n "$existing_id" ]; then
           echo "Existing Notion page found: $existing_id"
           blocks_response="$(curl --silent --show-error -X GET "https://api.notion.com/v1/blocks/$existing_id/children?page_size=100" "${headers[@]}" -w $'\nHTTP_STATUS:%{http_code}')"
