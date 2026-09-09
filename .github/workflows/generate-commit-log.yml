@@ -11,6 +11,11 @@ on:
         required: false
         default: Asia/Seoul
         type: string
+      target-date:
+        description: Date to generate the commit log for in YYYY-MM-DD format; defaults to yesterday
+        required: false
+        default: ''
+        type: string
       author:
         description: Optional commit author name or email filter
         required: false
@@ -61,11 +66,18 @@ jobs:
         shell: bash
         env:
           TIMEZONE: ${{ inputs.timezone }}
+          TARGET_DATE: ${{ inputs.target-date }}
         run: |
           export TZ="$TIMEZONE"
-          START_TIME="$(date -d 'yesterday 00:00' '+%F %H:%M')"
-          END_TIME="$(date -d 'today 00:00' '+%F %H:%M')"
-          DATE="$(date -d 'yesterday' +%F)"
+          if [ -n "$TARGET_DATE" ]; then
+            DATE="$(date -d "$TARGET_DATE" +%F)"
+            START_TIME="$(date -d "$DATE 00:00" '+%F %H:%M')"
+            END_TIME="$(date -d "$DATE + 1 day 00:00" '+%F %H:%M')"
+          else
+            START_TIME="$(date -d 'yesterday 00:00' '+%F %H:%M')"
+            END_TIME="$(date -d 'today 00:00' '+%F %H:%M')"
+            DATE="$(date -d 'yesterday' +%F)"
+          fi
           echo "start-time=$START_TIME" >> "$GITHUB_OUTPUT"
           echo "end-time=$END_TIME" >> "$GITHUB_OUTPUT"
           echo "date=$DATE" >> "$GITHUB_OUTPUT"
