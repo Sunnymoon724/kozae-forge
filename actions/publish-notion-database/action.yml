@@ -66,7 +66,7 @@ runs:
           blocks="$(jq -r '.results[].id' <<< "$blocks_body")"
           while IFS= read -r block_id; do
             [ -z "$block_id" ] && continue
-            curl --fail-with-body --silent --show-error -X PATCH "https://api.notion.com/v1/blocks/$block_id" "${headers[@]}" --data '{"archived":true}' >/dev/null
+            curl --fail-with-body --silent --show-error -X PATCH "https://api.notion.com/v1/blocks/$block_id" "${headers[@]}" --data '{"in_trash":true}' >/dev/null
           done <<< "$blocks"
           property_payload="$(jq -n --arg property "$GROUP_PROPERTY" --arg value "$GROUP_VALUE" '{properties: {($property): {select: {name: $value}}}}')"
           curl --fail-with-body --silent --show-error -X PATCH "https://api.notion.com/v1/pages/$existing_id" "${headers[@]}" --data "$property_payload" >/dev/null
