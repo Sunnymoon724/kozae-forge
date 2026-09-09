@@ -54,7 +54,23 @@ runs:
         fi
         existing_id="$(jq -r --arg property "$TITLE_PROPERTY" --arg title "$TITLE" '.results[] | select((.in_trash == false) and ((.archived == false) or (.archived == null)) and ((.properties[$property].title[0].plain_text // "") == $title)) | .id' <<< "$query_body" | head -n 1)"
         if [ -n "$existing_id" ]; then
-          echo "Existing Notion page found: $existing_id"
+          page_response="$(curl --silent --show-error -X GET "https://api.notion.com/v1/pages/$existing_id" "${headers[@]}" -w $'\nHTTP_STATUS:%{http_code}')"
+          page_status="${page_response##*$'\n'HTTP_STATUS:}"
+          page_body="${page_response%$'\n'HTTP_STATUS:*}"
+          if [ "$page_status" -lt 200 ] || [ "$page_status" -ge 300 ]; then
+            echo "Notion page lookup failed (HTTP $page_status):" >&2
+            echo "$page_body" >&2
+            exit 1
+          fi
+          if [ "$(jq -r '.in_trash // true' <<< "$page_body")" != "false" ]; then
+            echo "Matching page is in trash; creating a new page"
+            existing_id=""
+          else
+            echo "Existing Notion page found: $existing_id"
+            echo "Notion page URL: $(jq -r '.url // empty' <<< "$page_body")"
+          fi
+        fi
+        if [ -n "$existing_id" ]; then
           blocks_response="$(curl --silent --show-error -X GET "https://api.notion.com/v1/blocks/$existing_id/children?page_size=100" "${headers[@]}" -w $'\nHTTP_STATUS:%{http_code}')"
           blocks_status="${blocks_response##*$'\n'HTTP_STATUS:}"
           blocks_body="${blocks_response%$'\n'HTTP_STATUS:*}"
