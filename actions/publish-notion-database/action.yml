@@ -1,4 +1,4 @@
-name: Publish Notion Database
+name: Publish notion database
 description: Create or update a Notion database entry from a content file
 inputs:
   content-file:

@@ -44,7 +44,7 @@ jobs:
           git clone "https://x-access-token:${TOKEN}@github.com/${DESTINATION}.git" destination-repo
           git -C destination-repo lfs install
 
-      - name: Upload LFS objects
+      - name: Upload lfs objects
         uses: Sunnymoon724/kozae-forge/actions/upload-lfs@main
         with:
           token: ${{ secrets.PUBLIC_REPO_TOKEN }}

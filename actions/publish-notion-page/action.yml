@@ -1,4 +1,4 @@
-name: Publish Notion Page
+name: Publish notion page
 description: Create or update a Notion page from a content file
 inputs:
   content-file:

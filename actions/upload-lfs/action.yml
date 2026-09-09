@@ -1,4 +1,4 @@
-name: Upload Git LFS objects
+name: Upload lfs
 description: Upload Git LFS objects to a destination repository
 inputs:
   token:
@@ -10,7 +10,7 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Upload LFS objects
+    - name: Upload lfs
       shell: bash
       env:
         TOKEN: ${{ inputs.token }}
