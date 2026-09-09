@@ -52,7 +52,7 @@ runs:
           echo "$query_body" >&2
           exit 1
         fi
-        existing_id="$(jq -r --arg property "$TITLE_PROPERTY" --arg title "$TITLE" '.results[] | select((.properties[$property].title[0].plain_text // "") == $title) | .id' <<< "$query_body" | head -n 1)"
+        existing_id="$(jq -r --arg property "$TITLE_PROPERTY" --arg title "$TITLE" '.results[] | select((.in_trash != true) and (.archived != true) and ((.properties[$property].title[0].plain_text // "") == $title)) | .id' <<< "$query_body" | head -n 1)"
         if [ -n "$existing_id" ]; then
           echo "Existing Notion page found: $existing_id"
           blocks_response="$(curl --silent --show-error -X GET "https://api.notion.com/v1/blocks/$existing_id/children?page_size=100" "${headers[@]}" -w $'\nHTTP_STATUS:%{http_code}')"
@@ -68,11 +68,13 @@ runs:
             [ -z "$block_id" ] && continue
             curl --fail-with-body --silent --show-error -X PATCH "https://api.notion.com/v1/blocks/$block_id" "${headers[@]}" --data '{"archived":true}' >/dev/null
           done <<< "$blocks"
-          payload="$(jq -n --arg content "$content" --arg property "$GROUP_PROPERTY" --arg value "$GROUP_VALUE" --arg enabled "$GROUP_PROPERTY" '{properties: (if $enabled == "" then {} else {($property): {select: {name: $value}}} end), children: [{object: "block", type: "paragraph", paragraph: {rich_text: [{type: "text", text: {content: $content}}]}}]}')"
-          curl --fail-with-body --silent --show-error -X PATCH "https://api.notion.com/v1/blocks/$existing_id/children" "${headers[@]}" --data "$payload"
+          property_payload="$(jq -n --arg property "$GROUP_PROPERTY" --arg value "$GROUP_VALUE" '{properties: {($property): {select: {name: $value}}}}')"
+          curl --fail-with-body --silent --show-error -X PATCH "https://api.notion.com/v1/pages/$existing_id" "${headers[@]}" --data "$property_payload" >/dev/null
+          content_payload="$(jq -n --arg content "$content" '{children: [{object: "block", type: "paragraph", paragraph: {rich_text: [{type: "text", text: {content: $content}}]}}]}')"
+          curl --fail-with-body --silent --show-error -X PATCH "https://api.notion.com/v1/blocks/$existing_id/children" "${headers[@]}" --data "$content_payload"
         else
           payload="$(jq -n --arg source "$DATA_SOURCE_ID" --arg property "$TITLE_PROPERTY" --arg title "$TITLE" --arg group "$GROUP_PROPERTY" --arg value "$GROUP_VALUE" --arg content "$content" \
-            '{parent: {data_source_id: $source}, properties: ({($property): {title: [{type: "text", text: {content: $title}}]} } + (if $group == "" then {} else {($group): {select: {name: $value}}} end)), children: [{object: "block", type: "paragraph", paragraph: {rich_text: [{type: "text", text: {content: $content}}]}}]}')"
+            '{parent: {data_source_id: $source}, properties: {($property): {title: [{type: "text", text: {content: $title}}]}, ($group): {select: {name: $value}}}, children: [{object: "block", type: "paragraph", paragraph: {rich_text: [{type: "text", text: {content: $content}}]}}]}')"
           create_response="$(curl --silent --show-error -X POST 'https://api.notion.com/v1/pages' "${headers[@]}" --data "$payload" -w $'\nHTTP_STATUS:%{http_code}')"
           create_status="${create_response##*$'\n'HTTP_STATUS:}"
           create_body="${create_response%$'\n'HTTP_STATUS:*}"

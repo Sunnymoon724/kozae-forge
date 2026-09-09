@@ -10,7 +10,7 @@ A GitHub Action that updates a matching database entry or creates one when it do
 | `data-source-id` | Yes | - | Notion database ID or Data Source ID |
 | `title-property` | Yes | - | Database title property name |
 | `title` | Yes | - | Entry title to find or create |
-| `group-property` | Yes | - | Property used for grouping and validated against the database |
+| `group-property` | Yes | - | Database property used for grouping |
 | `group-value` | Yes | - | Group value assigned to that property |
 | `notion-token` | Yes | - | Notion Integration Token |
 
@@ -23,5 +23,7 @@ A GitHub Action that updates a matching database entry or creates one when it do
     data-source-id: ${{ secrets.NOTION_DATA_SOURCE_ID }}
     title-property: Name
     title: 2026-09-09
+    group-property: Status
+    group-value: Daily report
     notion-token: ${{ secrets.NOTION_TOKEN }}
 ```

@@ -10,7 +10,7 @@
 | `data-source-id` | 예 | - | Notion 데이터베이스 ID 또는 Data Source ID |
 | `title-property` | 예 | - | 데이터베이스 제목 속성 이름 |
 | `title` | 예 | - | 찾거나 생성할 항목 제목 |
-| `group-property` | 예 | - | 그룹 분류에 사용할 속성. 데이터베이스에 존재하는지 검증 |
+| `group-property` | 예 | - | 그룹 분류에 사용할 데이터베이스 속성 |
 | `group-value` | 예 | - | 해당 속성에 설정할 그룹 값 |
 | `notion-token` | 예 | - | Notion Integration Token |
 
@@ -23,5 +23,7 @@
     data-source-id: ${{ secrets.NOTION_DATA_SOURCE_ID }}
     title-property: 할 일
     title: 2026-09-09
+    group-property: 우선순위
+    group-value: 일일보고
     notion-token: ${{ secrets.NOTION_TOKEN }}
 ```
