@@ -7,9 +7,11 @@ A GitHub Action that updates a matching database entry or creates one when it do
 | Input | Required | Default | Description |
 |---|---|---|---|
 | `content-file` | Yes | - | Content file to upload |
-| `data-source-id` | Yes | - | Notion database Data Source ID |
+| `data-source-id` | Yes | - | Notion database ID or Data Source ID |
 | `title-property` | Yes | - | Database title property name |
 | `title` | Yes | - | Entry title to find or create |
+| `group-property` | Yes | - | Property used for grouping and validated against the database |
+| `group-value` | Yes | - | Group value assigned to that property |
 | `notion-token` | Yes | - | Notion Integration Token |
 
 ## Input example

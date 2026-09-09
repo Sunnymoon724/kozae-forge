@@ -6,6 +6,7 @@ A GitHub Action that collects Git commits in a specified time range and timezone
 
 | Name | Required | Default | Description |
 |---|---:|---|---|
+| `author` | No | Empty | Author name or email filter; empty collects commits from all authors |
 | `start-time` | Yes | - | Start time in `YYYY-MM-DD HH:mm` format |
 | `end-time` | Yes | - | End time in `YYYY-MM-DD HH:mm` format |
 | `timezone` | Yes | - | IANA timezone used to interpret the time range |
@@ -26,6 +27,7 @@ A GitHub Action that collects Git commits in a specified time range and timezone
     start-time: '2026-09-01 00:00'
     end-time: '2026-09-08 00:00'
     timezone: Asia/Seoul
+    author: Jane Doe
 ```
 
 Collected commits are passed to the next step as text through the `commits` output.

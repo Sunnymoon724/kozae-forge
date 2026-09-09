@@ -2,6 +2,8 @@
 
 A GitHub Action that commits changes in a specified directory.
 
+The commit author name is shown as `forge-bot`; authentication and the profile image still use the default GitHub Actions account.
+
 ## Inputs
 
 | Input | Required | Default | Description |

@@ -13,6 +13,12 @@ inputs:
   title:
     description: Entry title used to find, create, or update the entry
     required: true
+  group-property:
+    description: Select property used for grouping database entries
+    required: true
+  group-value:
+    description: Select value used for grouping database entries
+    required: true
   notion-token:
     description: Notion integration token
     required: true
@@ -26,24 +32,40 @@ runs:
         DATA_SOURCE_ID: ${{ inputs.data-source-id }}
         TITLE_PROPERTY: ${{ inputs.title-property }}
         TITLE: ${{ inputs.title }}
+        GROUP_PROPERTY: ${{ inputs.group-property }}
+        GROUP_VALUE: ${{ inputs.group-value }}
         NOTION_TOKEN: ${{ inputs.notion-token }}
       run: |
         set -euo pipefail
         content="$(cat "$CONTENT_FILE")"
         headers=(-H "Authorization: Bearer $NOTION_TOKEN" -H 'Content-Type: application/json' -H 'Notion-Version: 2022-06-28')
+        if [ -z "$GROUP_PROPERTY" ] || [ -z "$GROUP_VALUE" ]; then
+          echo "group-property and group-value are required" >&2
+          exit 1
+        fi
+        if [ -n "$GROUP_PROPERTY" ]; then
+          schema="$(curl --fail-with-body --silent --show-error -X GET "https://api.notion.com/v1/data_sources/$DATA_SOURCE_ID" "${headers[@]}" || true)"
+          if [ -z "$schema" ] || ! jq -e --arg property "$GROUP_PROPERTY" '.properties[$property]' >/dev/null <<< "$schema"; then
+            schema="$(curl --fail-with-body --silent --show-error -X GET "https://api.notion.com/v1/databases/$DATA_SOURCE_ID" "${headers[@]}" || true)"
+          fi
+          if ! jq -e --arg property "$GROUP_PROPERTY" '.properties[$property]' >/dev/null <<< "$schema"; then
+            echo "Notion database property '$GROUP_PROPERTY' does not exist" >&2
+            exit 1
+          fi
+        fi
         search_payload="$(jq -n --arg query "$TITLE" '{query: $query, page_size: 100}')"
         existing_id="$(curl --fail-with-body --silent --show-error -X POST 'https://api.notion.com/v1/search' "${headers[@]}" --data "$search_payload" | \
-          jq -r --arg source "$DATA_SOURCE_ID" --arg property "$TITLE_PROPERTY" --arg title "$TITLE" '.results[] | select(.object == "page" and .parent.data_source_id == $source and (.properties[$property].title[0].plain_text // "") == $title) | .id' | head -n 1)"
+          jq -r --arg source "$DATA_SOURCE_ID" --arg property "$TITLE_PROPERTY" --arg title "$TITLE" '.results[] | select(.object == "page" and (((.parent.data_source_id // "") == $source) or ((.parent.database_id // "") == $source)) and (.properties[$property].title[0].plain_text // "") == $title) | .id' | head -n 1)"
         if [ -n "$existing_id" ]; then
           blocks="$(curl --fail-with-body --silent --show-error -X GET "https://api.notion.com/v1/blocks/$existing_id/children?page_size=100" "${headers[@]}" | jq -r '.results[].id')"
           while IFS= read -r block_id; do
             [ -z "$block_id" ] && continue
             curl --fail-with-body --silent --show-error -X PATCH "https://api.notion.com/v1/blocks/$block_id" "${headers[@]}" --data '{"archived":true}' >/dev/null
           done <<< "$blocks"
-          payload="$(jq -n --arg content "$content" '{children: [{object: "block", type: "paragraph", paragraph: {rich_text: [{type: "text", text: {content: $content}}]}}]}')"
+          payload="$(jq -n --arg content "$content" --arg property "$GROUP_PROPERTY" --arg value "$GROUP_VALUE" --arg enabled "$GROUP_PROPERTY" '{properties: (if $enabled == "" then {} else {($property): {select: {name: $value}}} end), children: [{object: "block", type: "paragraph", paragraph: {rich_text: [{type: "text", text: {content: $content}}]}}]}')"
           curl --fail-with-body --silent --show-error -X PATCH "https://api.notion.com/v1/blocks/$existing_id/children" "${headers[@]}" --data "$payload"
         else
-          payload="$(jq -n --arg source "$DATA_SOURCE_ID" --arg property "$TITLE_PROPERTY" --arg title "$TITLE" --arg content "$content" \
-            '{parent: {data_source_id: $source}, properties: {($property): {title: [{type: "text", text: {content: $title}}]}}, children: [{object: "block", type: "paragraph", paragraph: {rich_text: [{type: "text", text: {content: $content}}]}}]}')"
+          payload="$(jq -n --arg source "$DATA_SOURCE_ID" --arg property "$TITLE_PROPERTY" --arg title "$TITLE" --arg group "$GROUP_PROPERTY" --arg value "$GROUP_VALUE" --arg content "$content" \
+            '{parent: {data_source_id: $source}, properties: ({($property): {title: [{type: "text", text: {content: $title}}]} } + (if $group == "" then {} else {($group): {select: {name: $value}}} end)), children: [{object: "block", type: "paragraph", paragraph: {rich_text: [{type: "text", text: {content: $content}}]}}]}')"
           curl --fail-with-body --silent --show-error -X POST 'https://api.notion.com/v1/pages' "${headers[@]}" --data "$payload"
         fi

@@ -7,9 +7,11 @@
 | 입력값 | 필수 여부 | 기본값 | 설명 |
 |---|---|---|---|
 | `content-file` | 예 | - | 업로드할 콘텐츠 파일 |
-| `data-source-id` | 예 | - | Notion 데이터베이스의 Data Source ID |
+| `data-source-id` | 예 | - | Notion 데이터베이스 ID 또는 Data Source ID |
 | `title-property` | 예 | - | 데이터베이스 제목 속성 이름 |
 | `title` | 예 | - | 찾거나 생성할 항목 제목 |
+| `group-property` | 예 | - | 그룹 분류에 사용할 속성. 데이터베이스에 존재하는지 검증 |
+| `group-value` | 예 | - | 해당 속성에 설정할 그룹 값 |
 | `notion-token` | 예 | - | Notion Integration Token |
 
 ## 입력 예시
