@@ -37,12 +37,11 @@ jobs:
           repository: ${{ inputs.destination-repository }}
 
       - name: Clone destination repository
-        env:
-          TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
-          DESTINATION: ${{ inputs.destination-repository }}
-        run: |
-          git clone "https://x-access-token:${TOKEN}@github.com/${DESTINATION}.git" destination-repo
-          git -C destination-repo lfs install
+        uses: Sunnymoon724/kozae-forge/actions/clone-destination-repository@main
+        with:
+          token: ${{ secrets.PUBLIC_REPO_TOKEN }}
+          repository: ${{ inputs.destination-repository }}
+          destination-directory: destination-repo
 
       - name: Upload lfs objects
         uses: Sunnymoon724/kozae-forge/actions/upload-lfs@main

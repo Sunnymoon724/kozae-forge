@@ -3,8 +3,7 @@ description: Commit staged changes in a directory
 inputs:
   destination-directory:
     description: Directory containing the changes
-    required: false
-    default: public-repo
+    required: true
   message:
     description: Commit message
     required: false

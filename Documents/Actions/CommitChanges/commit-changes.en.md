@@ -8,7 +8,7 @@ The commit author name is shown as `forge-bot`; authentication and the profile i
 
 | Input | Required | Default | Description |
 |---|---|---|---|
-| `destination-directory` | No | `public-repo` | Repository directory containing the changes |
+| `destination-directory` | Yes | - | Repository directory containing the changes |
 | `message` | No | `Update files` | Commit message |
 
 ## Input example

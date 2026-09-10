@@ -8,13 +8,11 @@ on:
         default: main
         type: string
       timezone:
-        required: false
-        default: Asia/Seoul
+        required: true
         type: string
       target-date:
-        description: Date to generate the commit log for in YYYY-MM-DD format; defaults to yesterday
-        required: false
-        default: ''
+        description: Date to generate the commit log for in YYYY-MM-DD format
+        required: true
         type: string
       author:
         description: Optional commit author name or email filter
@@ -30,6 +28,10 @@ on:
       model:
         required: true
         type: string
+      max-content-bytes:
+        description: Maximum input content size in bytes
+        required: true
+        type: number
       prompt:
         required: true
         type: string
@@ -63,24 +65,10 @@ jobs:
           ref: ${{ inputs.branch }}
 
       - id: time-range
-        shell: bash
-        env:
-          TIMEZONE: ${{ inputs.timezone }}
-          TARGET_DATE: ${{ inputs.target-date }}
-        run: |
-          export TZ="$TIMEZONE"
-          if [ -n "$TARGET_DATE" ]; then
-            DATE="$(date -d "$TARGET_DATE" +%F)"
-            START_TIME="$(date -d "$DATE 00:00" '+%F %H:%M')"
-            END_TIME="$(date -d "$DATE + 1 day 00:00" '+%F %H:%M')"
-          else
-            START_TIME="$(date -d 'yesterday 00:00' '+%F %H:%M')"
-            END_TIME="$(date -d 'today 00:00' '+%F %H:%M')"
-            DATE="$(date -d 'yesterday' +%F)"
-          fi
-          echo "start-time=$START_TIME" >> "$GITHUB_OUTPUT"
-          echo "end-time=$END_TIME" >> "$GITHUB_OUTPUT"
-          echo "date=$DATE" >> "$GITHUB_OUTPUT"
+        uses: Sunnymoon724/kozae-forge/actions/calculate-date-range@main
+        with:
+          timezone: ${{ inputs.timezone }}
+          target-date: ${{ inputs.target-date }}
 
       - id: collect
         uses: Sunnymoon724/kozae-forge/actions/collect-commits@main
@@ -97,6 +85,7 @@ jobs:
           provider: ${{ inputs.provider }}
           api-base: ${{ inputs.api-base }}
           model: ${{ inputs.model }}
+          max-content-bytes: ${{ inputs.max-content-bytes }}
           date: ${{ steps.time-range.outputs.date }}
           content: ${{ steps.collect.outputs.commits }}
           prompt: ${{ inputs.prompt }}

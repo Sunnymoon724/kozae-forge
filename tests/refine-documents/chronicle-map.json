@@ -1,0 +1,9 @@
+{
+  "mappings": [
+    {
+      "source": "tests/chronicle/sources/architecture",
+      "destination": "tests/chronicle/output/architecture",
+      "template": "tests/chronicle/templates/architecture.md"
+    }
+  ]
+}

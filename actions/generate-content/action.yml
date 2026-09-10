@@ -21,6 +21,10 @@ inputs:
     description: File containing input content
     required: false
     default: ''
+  template-file:
+    description: Optional template file appended to the input content
+    required: false
+    default: ''
   prompt:
     description: Instructions for generating the output
     required: true
@@ -28,6 +32,9 @@ inputs:
     description: File where the generated content will be written
     required: false
     default: ''
+  max-content-bytes:
+    description: Maximum input content size in bytes
+    required: true
   api-key:
     description: API key for the AI provider
     required: true
@@ -47,8 +54,10 @@ runs:
         MODEL: ${{ inputs.model }}
         CONTENT: ${{ inputs.content }}
         SOURCE_FILE: ${{ inputs.source-file }}
+        TEMPLATE_FILE: ${{ inputs.template-file }}
         PROMPT: ${{ inputs.prompt }}
         OUTPUT_FILE: ${{ inputs.output-file }}
+        MAX_CONTENT_BYTES: ${{ inputs.max-content-bytes }}
         API_KEY: ${{ inputs.api-key }}
       run: |
         set -euo pipefail
@@ -57,6 +66,31 @@ runs:
         fi
         if [ -n "$SOURCE_FILE" ]; then
           CONTENT="$(cat "$SOURCE_FILE")"
+        fi
+        if [ -n "$TEMPLATE_FILE" ]; then
+          test -f "$TEMPLATE_FILE"
+          CONTENT="${CONTENT}
+
+## Template
+
+$(cat "$TEMPLATE_FILE")"
+        fi
+        if [ -n "$MAX_CONTENT_BYTES" ]; then
+          case "$MAX_CONTENT_BYTES" in
+            ''|*[!0-9]*)
+              echo "::error::max-content-bytes must be a positive integer."
+              exit 1
+              ;;
+          esac
+          if [ "$MAX_CONTENT_BYTES" -le 0 ]; then
+            echo "::error::max-content-bytes must be greater than zero."
+            exit 1
+          fi
+          CONTENT_BYTES="$(printf '%s' "$CONTENT" | wc -c | tr -d '[:space:]')"
+          if [ "$CONTENT_BYTES" -gt "$MAX_CONTENT_BYTES" ]; then
+            echo "::error::Input content is too large ($CONTENT_BYTES bytes; limit: $MAX_CONTENT_BYTES bytes)."
+            exit 1
+          fi
         fi
         case "$PROVIDER" in
           openai|openai-compatible) API_URL="${API_BASE%/}/chat/completions" ;;

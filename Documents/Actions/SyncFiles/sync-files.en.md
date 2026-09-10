@@ -7,7 +7,7 @@ A GitHub Action that synchronizes files with `rsync` while applying an exclusion
 | Input | Required | Default | Description |
 |---|---|---|---|
 | `exclude-file` | Yes | - | Exclusion list path |
-| `destination-directory` | No | `destination-repo` | Directory receiving synchronized files |
+| `destination-directory` | Yes | - | Directory receiving synchronized files |
 
 `.git`, `destination-repo`, and the mirror workflow are excluded by default. Because the action uses `rsync --delete`, files that exist only in the destination may be deleted.
 

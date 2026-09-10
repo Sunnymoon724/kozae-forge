@@ -8,7 +8,7 @@
 
 | 입력값 | 필수 여부 | 기본값 | 설명 |
 |---|---|---|---|
-| `destination-directory` | 아니오 | `public-repo` | 변경사항이 있는 저장소 디렉토리 |
+| `destination-directory` | 예 | - | 변경사항이 있는 저장소 디렉토리 |
 | `message` | 아니오 | `Update files` | commit 메시지 |
 
 ## 입력 예시

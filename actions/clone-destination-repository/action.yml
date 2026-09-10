@@ -1,0 +1,25 @@
+name: Clone destination repository
+description: GitHub 토큰을 사용해 대상 저장소를 Clone하고 Git LFS를 초기화하는 GitHub Action입니다.
+inputs:
+  token:
+    description: GitHub token for the destination repository
+    required: true
+  repository:
+    description: Destination repository in owner/name format
+    required: true
+  destination-directory:
+    description: Directory where the repository is cloned
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Clone destination repository
+      shell: bash
+      env:
+        TOKEN: ${{ inputs.token }}
+        REPOSITORY: ${{ inputs.repository }}
+        DESTINATION_DIRECTORY: ${{ inputs.destination-directory }}
+      run: |
+        set -euo pipefail
+        git clone "https://x-access-token:${TOKEN}@github.com/${REPOSITORY}.git" "$DESTINATION_DIRECTORY"
+        git -C "$DESTINATION_DIRECTORY" lfs install

@@ -1,0 +1,138 @@
+name: Map document sources
+description: Find source Markdown files and map them to destination documents from a mapping file
+inputs:
+  mapping-file:
+    description: Path to a JSON file containing Chronicle source mappings
+    required: true
+  sync-mode:
+    description: Synchronization mode (`changed` or `full`)
+    required: true
+  changed-files:
+    description: Optional newline-delimited changed-file list supplied by the caller
+    required: false
+    default: ''
+  base-ref:
+    description: Git commit or ref used as the change comparison base when changed-files is empty
+    required: false
+    default: ''
+  head-ref:
+    description: Git commit or ref used as the change comparison head
+    required: false
+    default: HEAD
+outputs:
+  matrix:
+    description: JSON matrix with source, target, and template entries
+    value: ${{ steps.find.outputs.matrix }}
+  has-sources:
+    description: Whether at least one source file was found
+    value: ${{ steps.find.outputs.has-sources }}
+runs:
+  using: composite
+  steps:
+    - id: find
+      shell: bash
+      env:
+        MAPPING_FILE: ${{ inputs.mapping-file }}
+        SYNC_MODE: ${{ inputs.sync-mode }}
+        CHANGED_FILES: ${{ inputs.changed-files }}
+        BASE_REF: ${{ inputs.base-ref }}
+        HEAD_REF: ${{ inputs.head-ref }}
+      run: |
+        set -euo pipefail
+        node <<'NODE' >> "$GITHUB_OUTPUT"
+        const fs = require('node:fs');
+        const path = require('node:path');
+        const {execFileSync} = require('node:child_process');
+
+        const mappingFile = process.env.MAPPING_FILE;
+        const syncMode = process.env.SYNC_MODE;
+        let changedFiles = process.env.CHANGED_FILES.split(/\r?\n/).filter(Boolean);
+
+        if (!['changed', 'full'].includes(syncMode)) {
+          throw new Error('sync-mode must be `changed` or `full`.');
+        }
+        if (!fs.existsSync(mappingFile)) {
+          throw new Error(`Mapping file not found: ${mappingFile}`);
+        }
+
+        const config = JSON.parse(fs.readFileSync(mappingFile, 'utf8'));
+        if (!Array.isArray(config.mappings) || config.mappings.length === 0) {
+          throw new Error('The mapping file must contain a non-empty `mappings` array.');
+        }
+
+        function normalize(value, field, index) {
+          if (typeof value !== 'string' || value.trim() === '') {
+            throw new Error(`Mapping ${index + 1} requires a non-empty \`${field}\` value.`);
+          }
+          return value.replace(/\\/g, '/').replace(/^\.\//, '').replace(/\/+$/, '');
+        }
+
+        const mappings = config.mappings.map((mapping, index) => {
+          const source = normalize(mapping.source, 'source', index);
+          const destination = normalize(mapping.destination, 'destination', index);
+          const template = normalize(mapping.template, 'template', index);
+          if (!fs.existsSync(source) || !fs.statSync(source).isDirectory()) {
+            throw new Error(`Source directory not found: ${source}`);
+          }
+          if (!fs.existsSync(template) || !fs.statSync(template).isFile()) {
+            throw new Error(`Template file not found: ${template}`);
+          }
+          return {source, destination, template};
+        });
+
+        if (syncMode === 'changed' && changedFiles.length === 0) {
+          const baseRef = process.env.BASE_REF;
+          const headRef = process.env.HEAD_REF || 'HEAD';
+          if (!baseRef) {
+            throw new Error('`base-ref` is required in changed mode when `changed-files` is empty.');
+          }
+          try {
+            execFileSync('git', ['cat-file', '-e', `${baseRef}^{commit}`], {stdio: 'ignore'});
+            execFileSync('git', ['cat-file', '-e', `${headRef}^{commit}`], {stdio: 'ignore'});
+          } catch {
+            throw new Error(`Cannot resolve the requested Git comparison: ${baseRef}..${headRef}`);
+          }
+          changedFiles = execFileSync(
+            'git',
+            ['diff', '--name-only', '--diff-filter=AM', baseRef, headRef, '--'],
+            {encoding: 'utf8'},
+          ).split(/\r?\n/).filter(Boolean);
+        }
+
+        function markdownFiles(directory) {
+          return fs.readdirSync(directory, {withFileTypes: true}).flatMap((entry) => {
+            const file = path.posix.join(directory, entry.name);
+            if (entry.isDirectory()) return markdownFiles(file);
+            return entry.isFile() && /\.md$/i.test(entry.name) ? [file] : [];
+          });
+        }
+
+        const candidates = syncMode === 'full'
+          ? mappings.flatMap((mapping) => markdownFiles(mapping.source))
+          : changedFiles.filter((file) => /\.md$/i.test(file.replace(/\\/g, '/')));
+
+        const include = [];
+        const seenSources = new Set();
+        for (const rawSource of candidates) {
+          const source = rawSource.replace(/\\/g, '/').replace(/^\.\//, '');
+          if (!fs.existsSync(source) || !fs.statSync(source).isFile() || seenSources.has(source)) continue;
+
+          const matches = mappings.filter((mapping) => source === mapping.source || source.startsWith(`${mapping.source}/`));
+          if (matches.length > 1) {
+            throw new Error(`Source file matches multiple mappings: ${source}`);
+          }
+          if (matches.length === 0) continue;
+
+          const mapping = matches[0];
+          const relative = path.posix.relative(mapping.source, source);
+          include.push({
+            source,
+            target: path.posix.join(mapping.destination, relative),
+            template: mapping.template,
+          });
+          seenSources.add(source);
+        }
+
+        console.log(`matrix=${JSON.stringify({include})}`);
+        console.log(`has-sources=${include.length > 0}`);
+        NODE

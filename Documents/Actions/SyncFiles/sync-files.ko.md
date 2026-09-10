@@ -7,7 +7,7 @@
 | 이름 | 필수 | 기본값 | 설명 |
 |---|---:|---|---|
 | `exclude-file` | 예 | - | 제외 목록 파일 경로 |
-| `destination-directory` | 아니오 | `destination-repo` | 파일을 동기화할 디렉토리 |
+| `destination-directory` | 예 | - | 파일을 동기화할 디렉토리 |
 
 `.git`, `destination-repo`, 미러링 Workflow는 기본적으로 제외됩니다. `rsync --delete`를 사용하므로 대상에만 있는 파일은 삭제될 수 있습니다.
 

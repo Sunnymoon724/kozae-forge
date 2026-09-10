@@ -12,11 +12,15 @@ A GitHub Action that sends input text to an OpenAI-compatible Chat Completions A
 | `model` | Yes | - | Model name |
 | `content` | Conditional | Empty | Input text passed directly |
 | `source-file` | Conditional | Empty | File containing the input text |
+| `template-file` | No | Empty | Markdown template file appended to the input |
 | `prompt` | Yes | - | Generation instructions |
 | `output-file` | No | `{date}-development-log.md` | Output path or filename |
+| `max-content-bytes` | Yes | - | Maximum input content size in bytes |
 | `api-key` | Yes | - | AI API key |
 
 Use either `content` or `source-file`. When both are provided, `source-file` takes precedence.
+
+Inputs over `max-content-bytes` fail before the AI provider is called.
 
 ## Input example
 
@@ -31,6 +35,7 @@ Use either `content` or `source-file`. When both are provided, `source-file` tak
     content: ${{ steps.collect.outputs.commits }}
     prompt: Write a Markdown development log from the commit history.
     output-file: 2026-09-08-development-log.md
+    max-content-bytes: 100000
     api-key: ${{ secrets.API_KEY }}
 ```
 

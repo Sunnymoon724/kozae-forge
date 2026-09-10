@@ -6,8 +6,7 @@ inputs:
     required: true
   content:
     description: Text to write to the target file
-    required: false
-    default: ''
+    required: true
 runs:
   using: composite
   steps:
@@ -18,5 +17,9 @@ runs:
         CONTENT: ${{ inputs.content }}
       run: |
         set -euo pipefail
+        if [ -z "$CONTENT" ]; then
+          echo "Content must not be empty" >&2
+          exit 1
+        fi
         mkdir -p "$(dirname "$FILE_PATH")"
         printf '%s\n' "$CONTENT" > "$FILE_PATH"

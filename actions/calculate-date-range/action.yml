@@ -1,0 +1,36 @@
+name: Calculate date range
+description: 지정한 날짜와 시간대를 기준으로 처리할 시간 범위를 계산하는 GitHub Action입니다.
+inputs:
+  target-date:
+    description: Date to calculate in YYYY-MM-DD format
+    required: true
+  timezone:
+    description: IANA timezone used to calculate the time range
+    required: true
+outputs:
+  start-time:
+    description: Start time in YYYY-MM-DD HH:mm format
+    value: ${{ steps.calculate.outputs.start-time }}
+  end-time:
+    description: End time in YYYY-MM-DD HH:mm format
+    value: ${{ steps.calculate.outputs.end-time }}
+  date:
+    description: Date represented by the calculated range in YYYY-MM-DD format
+    value: ${{ steps.calculate.outputs.date }}
+runs:
+  using: composite
+  steps:
+    - id: calculate
+      shell: bash
+      env:
+        TIMEZONE: ${{ inputs.timezone }}
+        TARGET_DATE: ${{ inputs.target-date }}
+      run: |
+        set -euo pipefail
+        export TZ="$TIMEZONE"
+        DATE="$(date -d "$TARGET_DATE" +%F)"
+        START_TIME="$(date -d "$DATE 00:00" '+%F %H:%M')"
+        END_TIME="$(date -d "$DATE + 1 day 00:00" '+%F %H:%M')"
+        echo "start-time=$START_TIME" >> "$GITHUB_OUTPUT"
+        echo "end-time=$END_TIME" >> "$GITHUB_OUTPUT"
+        echo "date=$DATE" >> "$GITHUB_OUTPUT"

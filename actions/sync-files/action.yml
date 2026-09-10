@@ -6,8 +6,7 @@ inputs:
     required: true
   destination-directory:
     description: Destination directory
-    required: false
-    default: destination-repo
+    required: true
 runs:
   using: composite
   steps:

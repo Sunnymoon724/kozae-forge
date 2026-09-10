@@ -1,0 +1,69 @@
+name: Test document refinement actions
+
+on:
+  pull_request:
+    paths:
+      - 'actions/map-document-sources/**'
+      - 'actions/generate-content/**'
+      - 'tests/chronicle/**'
+      - '.github/workflows/test-chronicle-actions.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: sources
+        uses: ./actions/map-document-sources
+        with:
+          mapping-file: tests/chronicle/chronicle-map.json
+          sync-mode: full
+
+      - name: Verify source mapping
+        env:
+          MATRIX: ${{ steps.sources.outputs.matrix }}
+          HAS_SOURCES: ${{ steps.sources.outputs.has-sources }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const assert = require('node:assert/strict');
+
+          assert.equal(process.env.HAS_SOURCES, 'true');
+          assert.deepEqual(JSON.parse(process.env.MATRIX), {
+            include: [{
+              source: 'tests/chronicle/sources/architecture/network/cache.md',
+              target: 'tests/chronicle/output/architecture/network/cache.md',
+              template: 'tests/chronicle/templates/architecture.md',
+            }],
+          });
+          NODE
+
+      - id: oversized
+        continue-on-error: true
+        uses: ./actions/generate-content
+        with:
+          date: 2026-09-10
+          source-file: tests/chronicle/sources/architecture/network/cache.md
+          max-content-bytes: 1
+          provider: openai
+          api-base: https://example.invalid/v1
+          model: test-model
+          api-key: not-used
+
+      - name: Verify oversized source failure
+        if: always()
+        env:
+          OVERSIZED_OUTCOME: ${{ steps.oversized.outcome }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$OVERSIZED_OUTCOME" != "failure" ]; then
+            echo "Expected the oversized source check to fail, got: $OVERSIZED_OUTCOME"
+            exit 1
+          fi

@@ -9,7 +9,7 @@
 
 This workflow does not save files to the repository or publish externally.
 
-When `target-date` is provided, the workflow processes that date from 00:00 through the following day's 00:00 instead of using the previous day.
+The workflow processes `target-date` from 00:00 through the following day's 00:00.
 
 ## 2. Usage
 
@@ -21,6 +21,7 @@ jobs:
       provider: openai
       api-base: https://api.openai.com/v1
       model: gpt-4o-mini
+      max-content-bytes: 100000
       target-date: 2026-09-08
       author: Jane Doe
       prompt: Write a Markdown development log from the commit history.

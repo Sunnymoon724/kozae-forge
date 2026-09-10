@@ -1,0 +1,129 @@
+name: Refine documents
+
+on:
+  workflow_call:
+    inputs:
+      mapping-file:
+        description: Path to the Chronicle JSON mapping file
+        required: true
+        type: string
+      sync-mode:
+        description: Synchronization mode (`changed` or `full`)
+        required: true
+        type: string
+      base-ref:
+        description: Git commit or ref used as the change comparison base
+        required: false
+        default: ''
+        type: string
+      head-ref:
+        description: Git commit or ref used as the change comparison head
+        required: false
+        default: HEAD
+        type: string
+      max-content-bytes:
+        description: Maximum allowed size of one source Markdown file
+        required: true
+        type: number
+      provider:
+        description: AI provider name
+        required: true
+        type: string
+      api-base:
+        description: OpenAI-compatible AI API base URL
+        required: true
+        type: string
+      model:
+        description: AI model name
+        required: true
+        type: string
+      prompt:
+        description: Additional project-specific generation instructions
+        required: false
+        default: ''
+        type: string
+      artifact-name:
+        description: Name of the artifact containing synchronized Chronicle pages
+        required: false
+        default: refined-documents
+        type: string
+    secrets:
+      api-key:
+        description: API key for the AI provider
+        required: true
+
+jobs:
+  find-sources:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.sources.outputs.matrix }}
+      has-sources: ${{ steps.sources.outputs.has-sources }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - id: sources
+        uses: Sunnymoon724/kozae-forge/actions/map-document-sources@main
+        with:
+          mapping-file: ${{ inputs.mapping-file }}
+          sync-mode: ${{ inputs.sync-mode }}
+          base-ref: ${{ inputs.base-ref }}
+          head-ref: ${{ inputs.head-ref }}
+
+  sync-pages:
+    needs: find-sources
+    if: needs.find-sources.outputs.has-sources == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix: ${{ fromJSON(needs.find-sources.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: Sunnymoon724/kozae-forge/actions/generate-content@main
+        with:
+          date: ${{ github.run_id }}
+          source-file: ${{ matrix.source }}
+          target-file: ${{ matrix.target }}
+          template-file: ${{ matrix.template }}
+          output-file: ${{ matrix.target }}
+          max-content-bytes: ${{ inputs.max-content-bytes }}
+          provider: ${{ inputs.provider }}
+          api-base: ${{ inputs.api-base }}
+          model: ${{ inputs.model }}
+          api-key: ${{ secrets.api-key }}
+          prompt: ${{ inputs.prompt }}
+
+      - name: Stage synchronized page
+        env:
+          TARGET_FILE: ${{ matrix.target }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p ".chronicle-artifact/$(dirname "$TARGET_FILE")"
+          cp "$TARGET_FILE" ".chronicle-artifact/$TARGET_FILE"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: refined-document-${{ strategy.job-index }}
+          path: .chronicle-artifact
+          if-no-files-found: error
+
+  collect-pages:
+    needs: [find-sources, sync-pages]
+    if: needs.sync-pages.result == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: refined-document-*
+          path: .chronicle-artifact
+          merge-multiple: true
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.artifact-name }}
+          path: .chronicle-artifact
+          if-no-files-found: error

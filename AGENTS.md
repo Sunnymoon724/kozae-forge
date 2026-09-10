@@ -8,6 +8,7 @@ KoZae Forge is a collection of reusable GitHub Actions for KoZae projects.
 
 - `actions/`: Reusable GitHub Actions
 - `Documents/`: Action documentation
+- `Documents/Templates/`: English templates for Action and Workflow documentation
 - `.github/workflows/`: Repository workflows
 - `README.md`: Project overview
 - `README.en.md`: English documentation
@@ -18,10 +19,9 @@ KoZae Forge is a collection of reusable GitHub Actions for KoZae projects.
 ## Change guidelines
 
 - Keep reusable actions self-contained under `actions/`.
-- Automatically update the related documentation whenever a Workflow or Action is added, removed, or changed.
-- Create the corresponding documentation file when a new Workflow or Action is added.
-- When a `.ko.md` document is added or modified, add or modify its matching `.en.md` document as well.
-- Keep Korean and English documentation structurally consistent.
-- Update README links when Workflows, Actions, or their documentation are added, removed, renamed, or moved.
+- Use the corresponding file in `Documents/Templates/` as the structure for new Action and Workflow documentation.
+- Write the English documentation first using the applicable template, then create the matching Korean documentation with the same structure when documentation is required.
+- When an Action or Workflow is added, removed, renamed, or changed, update its related documentation and the appropriate README entries in the same change.
+- After adding or modifying documentation, update the related Workflow or README when the documented usage, links, or feature list is affected.
 - Keep `VERSION` and the latest `CHANGEDLOG.md` entry in sync for releases.
 - Preserve both English and Korean README files when updating project-level documentation.

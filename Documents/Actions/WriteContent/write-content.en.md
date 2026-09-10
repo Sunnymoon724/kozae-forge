@@ -7,7 +7,7 @@ A GitHub Action that writes the input `content` to a file at the specified path.
 | Input | Required | Default | Description |
 |---|---|---|---|
 | `file-path` | Yes | - | Target file path |
-| `content` | No | Empty | Text to write directly |
+| `content` | Yes | - | Text to write directly; the Action fails when empty |
 
 ## Input example
 

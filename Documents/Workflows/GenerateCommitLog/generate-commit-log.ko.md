@@ -9,7 +9,7 @@
 
 이 Workflow는 파일 저장이나 외부 게시를 직접 수행하지 않습니다.
 
-`target-date`를 입력하면 전날 대신 지정한 날짜의 00:00부터 다음 날 00:00까지 처리합니다.
+`target-date`에 지정한 날짜의 00:00부터 다음 날 00:00까지 처리합니다.
 
 ## 2. 사용 방법
 
@@ -21,6 +21,7 @@ jobs:
       provider: openai
       api-base: https://api.openai.com/v1
       model: gpt-4o-mini
+      max-content-bytes: 100000
       target-date: 2026-09-08
       author: 홍길동
       prompt: 커밋 기록을 바탕으로 한국어 개발일지를 Markdown으로 작성해줘.
