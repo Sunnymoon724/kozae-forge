@@ -16,7 +16,7 @@ Set `sync-mode` to `changed` (changed documents) or `full` (all documents).
 
 ### Prepare the mapping file
 
-Add a JSON mapping file to the calling repository that connects source directories, destination directories, and templates.
+Add a JSON mapping file to the calling repository that connects source and destination directories. Set `defaultTemplate` for one template, or add `templateRules` for path-specific templates.
 
 ```json
 {

@@ -67,10 +67,26 @@ runs:
           return value.replace(/\\/g, '/').replace(/^\.\//, '').replace(/\/+$/, '');
         }
 
+        const defaultTemplate = config.defaultTemplate
+          ? normalize(config.defaultTemplate, 'defaultTemplate', 0)
+          : '';
+        const templateRules = Array.isArray(config.templateRules) ? config.templateRules.map((rule, index) => ({
+          path: normalize(rule.path, 'templateRules.path', index),
+          template: normalize(rule.template, 'templateRules.template', index),
+        })) : [];
+        for (const rule of templateRules) {
+          if (!fs.existsSync(rule.template) || !fs.statSync(rule.template).isFile()) {
+            throw new Error(`Template file not found: ${rule.template}`);
+          }
+        }
+
         const mappings = config.mappings.map((mapping, index) => {
           const source = normalize(mapping.source, 'source', index);
           const destination = normalize(mapping.destination, 'destination', index);
-          const template = normalize(mapping.template, 'template', index);
+          const template = mapping.template ? normalize(mapping.template, 'template', index) : defaultTemplate;
+          if (!template) {
+            throw new Error(`Mapping ${index + 1} requires a template or a top-level defaultTemplate.`);
+          }
           if (!fs.existsSync(source) || !fs.statSync(source).isDirectory()) {
             throw new Error(`Source directory not found: ${source}`);
           }
@@ -79,6 +95,17 @@ runs:
           }
           return {source, destination, template};
         });
+
+        function matchesGlob(file, pattern) {
+          const marker = pattern.replace(/\*\*/g, '\u0000').replace(/\*/g, '\u0001');
+          const escaped = marker.replace(/[.+?^${}()|[\]\\]/g, '\\$&');
+          return new RegExp(`^${escaped.replace(/\u0000/g, '.*').replace(/\u0001/g, '[^/]*')}$`).test(file);
+        }
+
+        function templateFor(source, mapping) {
+          const rule = templateRules.find((candidate) => matchesGlob(source, candidate.path));
+          return rule ? rule.template : mapping.template;
+        }
 
         if (syncMode === 'changed' && changedFiles.length === 0) {
           const baseRef = process.env.BASE_REF;
@@ -128,7 +155,7 @@ runs:
           include.push({
             source,
             target: path.posix.join(mapping.destination, relative),
-            template: mapping.template,
+            template: templateFor(source, mapping),
           });
           seenSources.add(source);
         }

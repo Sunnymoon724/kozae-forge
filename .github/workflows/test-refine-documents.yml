@@ -5,7 +5,7 @@ on:
     paths:
       - 'actions/map-document-sources/**'
       - 'actions/generate-content/**'
-      - 'tests/chronicle/**'
+      - 'tests/refine-documents/**'
       - '.github/workflows/test-chronicle-actions.yml'
   workflow_dispatch:
 
@@ -21,7 +21,7 @@ jobs:
       - id: sources
         uses: ./actions/map-document-sources
         with:
-          mapping-file: tests/chronicle/chronicle-map.json
+          mapping-file: tests/refine-documents/chronicle-map.json
           sync-mode: full
 
       - name: Verify source mapping
@@ -37,9 +37,9 @@ jobs:
           assert.equal(process.env.HAS_SOURCES, 'true');
           assert.deepEqual(JSON.parse(process.env.MATRIX), {
             include: [{
-              source: 'tests/chronicle/sources/architecture/network/cache.md',
-              target: 'tests/chronicle/output/architecture/network/cache.md',
-              template: 'tests/chronicle/templates/architecture.md',
+              source: 'tests/refine-documents/sources/architecture/network/cache.md',
+              target: 'tests/refine-documents/output/architecture/network/cache.md',
+              template: 'tests/refine-documents/templates/architecture.md',
             }],
           });
           NODE
@@ -49,7 +49,7 @@ jobs:
         uses: ./actions/generate-content
         with:
           date: 2026-09-10
-          source-file: tests/chronicle/sources/architecture/network/cache.md
+          source-file: tests/refine-documents/sources/architecture/network/cache.md
           max-content-bytes: 1
           provider: openai
           api-base: https://example.invalid/v1

@@ -22,7 +22,7 @@ on:
         default: HEAD
         type: string
       max-content-bytes:
-        description: Maximum allowed size of one source Markdown file
+        description: Maximum allowed size of the input sent to the AI provider
         required: true
         type: number
       provider:

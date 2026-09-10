@@ -8,6 +8,8 @@ A GitHub Action that maps source documents to their destination paths and templa
 
 The directory structure and file names under `source` are preserved under `destination`.
 
+Use `mappings` to define source and destination directories. Set `defaultTemplate` when all documents share one template, and add `templateRules` for path-specific templates. A matching rule takes precedence for that document.
+
 ## Inputs
 
 | Name | Required | Default | Description |
