@@ -1,0 +1,48 @@
+name: Create pull request
+description: Download generated content and create a pull request with the changes.
+inputs:
+  token:
+    description: GitHub token used to create the pull request
+    required: true
+  artifact-name:
+    description: Name of the artifact containing the generated files
+    required: true
+  branch:
+    description: Branch used for the pull request
+    required: false
+    default: automation/update-content
+  commit-message:
+    description: Commit message for the changes
+    required: false
+    default: 'docs: update generated content'
+  title:
+    description: Pull request title
+    required: false
+    default: 'docs: update generated content'
+  body:
+    description: Pull request body
+    required: false
+    default: 'This pull request contains generated content. Please review the changes before merging.'
+  labels:
+    description: Comma-separated labels for the pull request
+    required: false
+    default: ''
+runs:
+  using: composite
+  steps:
+    - name: Download generated content
+      uses: actions/download-artifact@v4
+      with:
+        name: ${{ inputs.artifact-name }}
+        path: .
+
+    - name: Create pull request
+      uses: peter-evans/create-pull-request@v7
+      with:
+        token: ${{ inputs.token }}
+        branch: ${{ inputs.branch }}
+        delete-branch: true
+        commit-message: ${{ inputs.commit-message }}
+        title: ${{ inputs.title }}
+        body: ${{ inputs.body }}
+        labels: ${{ inputs.labels }}

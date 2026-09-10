@@ -13,6 +13,7 @@ KoZae 프로젝트에서 재사용할 수 있는 GitHub Actions와 Workflow 모�
 - Action
   - [날짜 범위 계산](Documents/Actions/CalculateDateRange/calculate-date-range.ko.md)
   - [대상 저장소 Clone](Documents/Actions/CloneDestinationRepository/clone-destination-repository.ko.md)
+  - [Pull Request 생성](Documents/Actions/CreatePullRequest/create-pull-request.ko.md)
   - [커밋 수집](Documents/Actions/CollectCommits/collect-commits.ko.md)
   - [콘텐츠 생성](Documents/Actions/GenerateContent/generate-content.ko.md)
   - [문서 매핑](Documents/Actions/MapDocumentSources/map-document-sources.ko.md)

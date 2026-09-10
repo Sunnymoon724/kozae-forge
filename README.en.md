@@ -13,6 +13,7 @@ Reusable GitHub Actions and Workflows for KoZae projects.
 - Action
   - [Calculate date range](Documents/Actions/CalculateDateRange/calculate-date-range.en.md)
   - [Clone destination repository](Documents/Actions/CloneDestinationRepository/clone-destination-repository.en.md)
+  - [Create pull request](Documents/Actions/CreatePullRequest/create-pull-request.en.md)
   - [Collect commits](Documents/Actions/CollectCommits/collect-commits.en.md)
   - [Generate content](Documents/Actions/GenerateContent/generate-content.en.md)
   - [Map document sources](Documents/Actions/MapDocumentSources/map-document-sources.en.md)

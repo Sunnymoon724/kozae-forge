@@ -1,0 +1,21 @@
+name: Verb object
+description: A GitHub Action that [describe the action].
+
+inputs:
+  input-name:
+    description: Description of the input
+    required: true
+
+outputs:
+  output-name:
+    description: Description of the output
+    value: ${{ steps.step-id.outputs.output-name }}
+
+runs:
+  using: composite
+  steps:
+    - id: step-id
+      shell: bash
+      run: |
+        set -euo pipefail
+        # Action implementation
