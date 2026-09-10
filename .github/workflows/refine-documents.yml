@@ -51,6 +51,13 @@ on:
       api-key:
         description: API key for the AI provider
         required: true
+    outputs:
+      has-sources:
+        description: Whether at least one source document was processed
+        value: ${{ jobs.find-sources.outputs.has-sources }}
+      artifact-name:
+        description: Name of the generated document artifact
+        value: ${{ inputs.artifact-name }}
 
 jobs:
   find-sources:

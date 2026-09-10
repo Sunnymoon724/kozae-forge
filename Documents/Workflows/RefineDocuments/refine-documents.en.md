@@ -50,7 +50,18 @@ jobs:
       api-key: ${{ secrets.AI_API_KEY }}
 ```
 
-When run with `full`, all documents are processed. The result files are available as `refined-documents`.
+When run with `full`, all documents are processed. The result files are available as `refined-documents`. When no documents are selected, no artifact is created, so downstream jobs must run only when `needs.sync.outputs.has-sources == 'true'`.
+
+```yaml
+  download:
+    needs: sync
+    if: needs.sync.outputs.has-sources == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.sync.outputs.artifact-name }}
+```
 
 ## 3. Actions used
 

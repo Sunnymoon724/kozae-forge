@@ -50,7 +50,18 @@ jobs:
       api-key: ${{ secrets.AI_API_KEY }}
 ```
 
-`full`로 실행하면 모든 문서를 처리합니다. 결과 파일은 `refined-documents`로 받을 수 있습니다.
+`full`로 실행하면 모든 문서를 처리합니다. 결과 파일은 `refined-documents`로 받을 수 있습니다. 처리할 문서가 없으면 Artifact가 생성되지 않으므로, 후속 Job은 `needs.sync.outputs.has-sources == 'true'`일 때만 실행해야 합니다.
+
+```yaml
+  download:
+    needs: sync
+    if: needs.sync.outputs.has-sources == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.sync.outputs.artifact-name }}
+```
 
 ## 3. 사용 Action
 
