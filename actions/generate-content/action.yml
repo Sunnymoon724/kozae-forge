@@ -69,11 +69,7 @@ runs:
         fi
         if [ -n "$TEMPLATE_FILE" ]; then
           test -f "$TEMPLATE_FILE"
-          CONTENT="${CONTENT}
-
-## Template
-
-$(cat "$TEMPLATE_FILE")"
+          CONTENT="${CONTENT}"$'\n\n## Template\n\n'"$(cat "$TEMPLATE_FILE")"
         fi
         if [ -n "$MAX_CONTENT_BYTES" ]; then
           case "$MAX_CONTENT_BYTES" in
