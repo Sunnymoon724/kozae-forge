@@ -1,6 +1,6 @@
 # collect-commits
 
-A GitHub Action that collects the actual Git diff from commits in a specified time range and timezone.
+A GitHub Action that collects Git commits in a specified time range and timezone.
 
 ## Inputs
 
@@ -16,7 +16,7 @@ A GitHub Action that collects the actual Git diff from commits in a specified ti
 | Output | Default | Description |
 |---|---|---|
 | `has-content` | `false` | `true` when commits were found |
-| `changes-file` | - | Path to the collected Git diff file |
+| `commits` | - | Collected commit message text |
 
 ## Input example
 
@@ -30,11 +30,13 @@ A GitHub Action that collects the actual Git diff from commits in a specified ti
     author: Jane Doe
 ```
 
-Collected changes are written to a temporary patch file. Use the `changes-file` output as the `source-file` input of the next step. This avoids GitHub Actions output-size limits for large diffs.
+Collected commits are passed to the next step as text through the `commits` output.
 
 ## Output example
 
 ```yaml
 has-content: true
-changes-file: /tmp/kozae-forge-git-diff.patch
+commits: |
+  - Fix login error (a1b2c3d)
+  - Update documentation (e4f5g6h)
 ```

@@ -15,12 +15,12 @@ A GitHub Action that sends input text to an OpenAI-compatible Chat Completions A
 | `template-file` | No | Empty | Markdown template file appended to the input |
 | `prompt` | Yes | - | Generation instructions |
 | `output-file` | No | `{date}-development-log.md` | Output path or filename |
-| `max-content-bytes` | Yes | - | Maximum input chunk size in bytes |
+| `max-content-bytes` | Yes | - | Maximum input content size in bytes |
 | `api-key` | Yes | - | AI API key |
 
 Use either `content` or `source-file`. When both are provided, `source-file` takes precedence.
 
-Inputs over `max-content-bytes` are split into chunks and sent separately; the generated results are combined in the output file.
+Inputs over `max-content-bytes` fail before the AI provider is called.
 
 ## Input example
 
@@ -32,8 +32,8 @@ Inputs over `max-content-bytes` are split into chunks and sent separately; the g
     provider: openai
     api-base: https://api.openai.com/v1
     model: gpt-4o-mini
-    source-file: ${{ steps.collect.outputs.changes-file }}
-    prompt: Write a Markdown development log from the Git diff below. Focus on the actual changes, not commit messages.
+    content: ${{ steps.collect.outputs.commits }}
+    prompt: Write a Markdown development log from the commit history.
     output-file: 2026-09-08-development-log.md
     max-content-bytes: 100000
     api-key: ${{ secrets.API_KEY }}

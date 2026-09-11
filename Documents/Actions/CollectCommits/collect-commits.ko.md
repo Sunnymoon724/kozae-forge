@@ -1,6 +1,6 @@
 # collect-commits
 
-지정한 시간대의 커밋에서 실제 파일 변경(diff)을 수집하는 GitHub Action입니다.
+지정한 시간대를 기준으로 시작 시간부터 종료 시간까지의 Git 커밋을 수집하는 GitHub Action입니다.
 
 ## 입력값
 
@@ -16,7 +16,7 @@
 | 출력값 | 기본값 | 설명 |
 |---|---|---|
 | `has-content` | `false` | 커밋이 있으면 `true` |
-| `changes-file` | - | 수집된 Git diff 파일 경로 |
+| `commits` | - | 수집된 커밋 메시지 텍스트 |
 
 ## 입력 예시
 
@@ -30,11 +30,13 @@
     author: 홍길동
 ```
 
-수집된 변경 내용은 임시 patch 파일에 저장됩니다. 다음 단계의 `source-file` 입력에 `changes-file` 출력값을 전달합니다. 이렇게 하면 큰 diff로 인한 GitHub Actions 출력 크기 제한을 피할 수 있습니다.
+수집된 커밋은 `commits` 출력값으로 다음 단계에 텍스트 형태로 전달됩니다.
 
 ## 출력 예시
 
 ```yaml
 has-content: true
-changes-file: /tmp/kozae-forge-git-diff.patch
+commits: |
+  - 로그인 오류 수정 (a1b2c3d)
+  - 문서 업데이트 (e4f5g6h)
 ```

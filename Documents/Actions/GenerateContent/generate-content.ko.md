@@ -15,12 +15,12 @@
 | `template-file` | 아니오 | 빈 값 | 입력에 추가할 Markdown 양식 파일 |
 | `prompt` | 예 | - | 생성 지침 |
 | `output-file` | 아니오 | `{date}-development-log.md` | 결과 파일 경로 또는 파일명 |
-| `max-content-bytes` | 예 | - | 한 번에 AI에 전달할 입력 청크의 최대 바이트 수 |
+| `max-content-bytes` | 예 | - | AI에 전달할 입력 콘텐츠의 최대 바이트 수 |
 | `api-key` | 예 | - | AI API 키 |
 
 `content`와 `source-file` 중 하나를 사용합니다. `source-file`이 지정되면 해당 파일을 우선 사용합니다.
 
-입력이 `max-content-bytes`를 초과하면 청크로 나누어 각각 AI에 전달하고, 생성 결과를 출력 파일 하나로 합칩니다.
+`max-content-bytes`를 기준으로 입력 크기를 확인하며, 제한을 초과하면 AI 호출 전에 실패합니다.
 
 ## 출력값
 
@@ -38,8 +38,8 @@
     provider: openai
     api-base: https://api.openai.com/v1
     model: gpt-4o-mini
-    source-file: ${{ steps.collect.outputs.changes-file }}
-    prompt: Git diff를 바탕으로 한국어 개발일지를 Markdown으로 작성해줘. 커밋 메시지는 사용하지 말고 실제 변경 내용을 중심으로 작성해줘.
+    content: ${{ steps.collect.outputs.commits }}
+    prompt: 커밋 기록을 바탕으로 한국어 개발일지를 Markdown으로 작성해줘.
     output-file: 2026-09-08-development-log.md
     max-content-bytes: 100000
     api-key: ${{ secrets.API_KEY }}

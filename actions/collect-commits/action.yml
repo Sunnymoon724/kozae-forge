@@ -1,5 +1,5 @@
-name: Collect changes
-description: 지정한 시간대의 커밋에서 실제 파일 변경 내용을 수집하는 GitHub Action입니다.
+name: Collect commits
+description: 지정한 시간대를 기준으로 시작 시간부터 종료 시간까지의 Git 커밋을 수집하는 GitHub Action입니다.
 inputs:
   author:
     description: Optional author name or email filter
@@ -18,9 +18,9 @@ outputs:
   has-content:
     description: Whether commits were found
     value: ${{ steps.collect.outputs.has-content }}
-  changes-file:
-    description: Path to the collected Git diff file
-    value: ${{ steps.collect.outputs.changes-file }}
+  commits:
+    description: Collected commit messages
+    value: ${{ steps.collect.outputs.commits }}
 runs:
   using: composite
   steps:
@@ -40,21 +40,13 @@ runs:
         END_ISO="$(date -d "$END_TIME" '+%Y-%m-%dT%H:%M:%S%z')"
         AUTHOR_ARGS=()
         if [ -n "$AUTHOR" ]; then AUTHOR_ARGS+=("--author=$AUTHOR"); fi
-        COMMITS="$(git log --since="$START_ISO" --until="$END_ISO" "${AUTHOR_ARGS[@]}" --format='%H' "$GITHUB_SHA")"
-        DIFF=""
-        while IFS= read -r COMMIT; do
-          [ -z "$COMMIT" ] && continue
-          COMMIT_DIFF="$(git diff-tree --root --patch --no-commit-id --pretty=format:'' "$COMMIT")"
-          if [ -n "$COMMIT_DIFF" ]; then
-            if [ -n "$DIFF" ]; then DIFF+=$'\n\n'
-            fi
-            DIFF+="$COMMIT_DIFF"
-          fi
-        done <<< "$COMMITS"
-        DIFF_FILE="${RUNNER_TEMP}/kozae-forge-git-diff.patch"
-        printf '%s\n' "$DIFF" > "$DIFF_FILE"
-        echo "changes-file=$DIFF_FILE" >> "$GITHUB_OUTPUT"
-        if [ -z "$DIFF" ]; then
+        COMMITS="$(git log --since="$START_ISO" --until="$END_ISO" "${AUTHOR_ARGS[@]}" --format='- %s (%h) [author: %an]' "$GITHUB_SHA")"
+        {
+          echo 'commits<<COMMIT_CONTENT'
+          echo "$COMMITS"
+          echo 'COMMIT_CONTENT'
+        } >> "$GITHUB_OUTPUT"
+        if [ -z "$COMMITS" ]; then
           echo "has-content=false" >> "$GITHUB_OUTPUT"
         else
           echo "has-content=true" >> "$GITHUB_OUTPUT"

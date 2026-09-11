@@ -3,7 +3,7 @@
 ## 1. Process
 
 1. Calculate the previous day's time range using the selected timezone.
-2. `collect-commits` collects the actual file changes (Git diff) from those commits.
+2. `collect-commits` collects commits as text.
 3. `generate-content` uses AI to write content in the requested format.
 4. The generated file is uploaded as the `generated-content` artifact.
 
@@ -24,7 +24,7 @@ jobs:
       max-content-bytes: 100000
       target-date: 2026-09-08
       author: Jane Doe
-      prompt: Write a Markdown development log from the Git diff below. Focus on the actual changes, not commit messages.
+      prompt: Write a Markdown development log from the commit history.
     secrets:
       API_KEY: ${{ secrets.API_KEY }}
 ```
