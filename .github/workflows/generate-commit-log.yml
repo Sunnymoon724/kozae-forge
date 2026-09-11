@@ -87,7 +87,7 @@ jobs:
           model: ${{ inputs.model }}
           max-content-bytes: ${{ inputs.max-content-bytes }}
           date: ${{ steps.time-range.outputs.date }}
-          content: ${{ steps.collect.outputs.changes }}
+          source-file: ${{ steps.collect.outputs.changes-file }}
           prompt: ${{ inputs.prompt }}
           output-file: ${{ inputs.output-file }}
           api-key: ${{ secrets.API_KEY }}

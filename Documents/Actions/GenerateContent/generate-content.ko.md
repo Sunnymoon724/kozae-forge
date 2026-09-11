@@ -38,7 +38,7 @@
     provider: openai
     api-base: https://api.openai.com/v1
     model: gpt-4o-mini
-    content: ${{ steps.collect.outputs.changes }}
+    source-file: ${{ steps.collect.outputs.changes-file }}
     prompt: Git diff를 바탕으로 한국어 개발일지를 Markdown으로 작성해줘. 커밋 메시지는 사용하지 말고 실제 변경 내용을 중심으로 작성해줘.
     output-file: 2026-09-08-development-log.md
     max-content-bytes: 100000

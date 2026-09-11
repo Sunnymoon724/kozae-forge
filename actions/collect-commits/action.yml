@@ -18,9 +18,9 @@ outputs:
   has-content:
     description: Whether commits were found
     value: ${{ steps.collect.outputs.has-content }}
-  changes:
-    description: Collected Git diff
-    value: ${{ steps.collect.outputs.changes }}
+  changes-file:
+    description: Path to the collected Git diff file
+    value: ${{ steps.collect.outputs.changes-file }}
 runs:
   using: composite
   steps:
@@ -51,11 +51,9 @@ runs:
             DIFF+="$COMMIT_DIFF"
           fi
         done <<< "$COMMITS"
-        {
-          echo 'changes<<DIFF_CONTENT'
-          echo "$DIFF"
-          echo 'DIFF_CONTENT'
-        } >> "$GITHUB_OUTPUT"
+        DIFF_FILE="${RUNNER_TEMP}/kozae-forge-git-diff.patch"
+        printf '%s\n' "$DIFF" > "$DIFF_FILE"
+        echo "changes-file=$DIFF_FILE" >> "$GITHUB_OUTPUT"
         if [ -z "$DIFF" ]; then
           echo "has-content=false" >> "$GITHUB_OUTPUT"
         else

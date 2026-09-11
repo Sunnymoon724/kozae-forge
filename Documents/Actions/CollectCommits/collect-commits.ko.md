@@ -16,7 +16,7 @@
 | 출력값 | 기본값 | 설명 |
 |---|---|---|
 | `has-content` | `false` | 커밋이 있으면 `true` |
-| `changes` | - | 수집된 Git diff 텍스트 |
+| `changes-file` | - | 수집된 Git diff 파일 경로 |
 
 ## 입력 예시
 
@@ -30,13 +30,11 @@
     author: 홍길동
 ```
 
-수집된 변경 내용은 `changes` 출력값으로 다음 단계에 patch 텍스트 형태로 전달됩니다.
+수집된 변경 내용은 임시 patch 파일에 저장됩니다. 다음 단계의 `source-file` 입력에 `changes-file` 출력값을 전달합니다. 이렇게 하면 큰 diff로 인한 GitHub Actions 출력 크기 제한을 피할 수 있습니다.
 
 ## 출력 예시
 
 ```yaml
 has-content: true
-changes: |
-  diff --git a/src/login.js b/src/login.js
-  ...
+changes-file: /tmp/kozae-forge-git-diff.patch
 ```

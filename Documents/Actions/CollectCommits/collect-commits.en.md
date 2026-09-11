@@ -16,7 +16,7 @@ A GitHub Action that collects the actual Git diff from commits in a specified ti
 | Output | Default | Description |
 |---|---|---|
 | `has-content` | `false` | `true` when commits were found |
-| `changes` | - | Collected Git diff text |
+| `changes-file` | - | Path to the collected Git diff file |
 
 ## Input example
 
@@ -30,13 +30,11 @@ A GitHub Action that collects the actual Git diff from commits in a specified ti
     author: Jane Doe
 ```
 
-Collected changes are passed to the next step as patch text through the `changes` output.
+Collected changes are written to a temporary patch file. Use the `changes-file` output as the `source-file` input of the next step. This avoids GitHub Actions output-size limits for large diffs.
 
 ## Output example
 
 ```yaml
 has-content: true
-changes: |
-  diff --git a/src/login.js b/src/login.js
-  ...
+changes-file: /tmp/kozae-forge-git-diff.patch
 ```
