@@ -15,12 +15,12 @@ A GitHub Action that sends input text to an OpenAI-compatible Chat Completions A
 | `template-file` | No | Empty | Markdown template file appended to the input |
 | `prompt` | Yes | - | Generation instructions |
 | `output-file` | No | `{date}-development-log.md` | Output path or filename |
-| `max-content-bytes` | Yes | - | Maximum input content size in bytes |
+| `max-content-bytes` | Yes | - | Maximum input chunk size in bytes |
 | `api-key` | Yes | - | AI API key |
 
 Use either `content` or `source-file`. When both are provided, `source-file` takes precedence.
 
-Inputs over `max-content-bytes` fail before the AI provider is called.
+Inputs over `max-content-bytes` are split into chunks and sent separately; the generated results are combined in the output file.
 
 ## Input example
 

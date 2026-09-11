@@ -89,26 +89,35 @@ runs:
             echo "::error::max-content-bytes must be greater than zero."
             exit 1
           fi
-          CONTENT_BYTES="$(wc -c < "$INPUT_FILE" | tr -d '[:space:]')"
-          if [ "$CONTENT_BYTES" -gt "$MAX_CONTENT_BYTES" ]; then
-            echo "::error::Input content is too large ($CONTENT_BYTES bytes; limit: $MAX_CONTENT_BYTES bytes)."
-            exit 1
-          fi
         fi
         case "$PROVIDER" in
           openai|openai-compatible) API_URL="${API_BASE%/}/chat/completions" ;;
           *) echo "Unsupported provider: $PROVIDER"; exit 1 ;;
         esac
-        REQUEST="$(jq -n \
-          --arg model "$MODEL" \
-          --arg system "$PROMPT" \
-          --rawfile content "$INPUT_FILE" \
-          '{model: $model, messages: [{role: "system", content: $system}, {role: "user", content: $content}]}' \
-        )"
-        RESPONSE="$(curl --fail-with-body --silent --show-error \
-          -X POST "$API_URL" \
-          -H "Authorization: Bearer $API_KEY" \
-          -H 'Content-Type: application/json' \
-          --data "$REQUEST")"
-        echo "$RESPONSE" | jq -e -r '.choices[0].message.content' > "$OUTPUT_FILE"
+        CHUNK_DIR="${RUNNER_TEMP}/kozae-forge-content-chunks"
+        rm -rf "$CHUNK_DIR"
+        mkdir -p "$CHUNK_DIR"
+        split -b "$MAX_CONTENT_BYTES" -d -a 4 "$INPUT_FILE" "$CHUNK_DIR/chunk-"
+        : > "$OUTPUT_FILE"
+        CHUNK_COUNT="$(find "$CHUNK_DIR" -type f -name 'chunk-*' | wc -l | tr -d '[:space:]')"
+        CHUNK_NUMBER=0
+        for CHUNK_FILE in "$CHUNK_DIR"/chunk-*; do
+          CHUNK_NUMBER=$((CHUNK_NUMBER + 1))
+          CHUNK_PROMPT="$PROMPT
+
+This is part $CHUNK_NUMBER of $CHUNK_COUNT of a large input. Summarize only the actual changes in this part. Do not invent context or repeat a title intended for the whole document."
+          REQUEST="$(jq -n \
+            --arg model "$MODEL" \
+            --arg system "$CHUNK_PROMPT" \
+            --rawfile content "$CHUNK_FILE" \
+            '{model: $model, messages: [{role: "system", content: $system}, {role: "user", content: $content}]}' \
+          )"
+          RESPONSE="$(curl --fail-with-body --silent --show-error \
+            -X POST "$API_URL" \
+            -H "Authorization: Bearer $API_KEY" \
+            -H 'Content-Type: application/json' \
+            --data "$REQUEST")"
+          if [ "$CHUNK_NUMBER" -gt 1 ]; then printf '\n\n' >> "$OUTPUT_FILE"; fi
+          echo "$RESPONSE" | jq -e -r '.choices[0].message.content' >> "$OUTPUT_FILE"
+        done
         echo "file-name=$OUTPUT_FILE" >> "$GITHUB_OUTPUT"
