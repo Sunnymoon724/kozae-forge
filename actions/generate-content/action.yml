@@ -103,9 +103,7 @@ runs:
         CHUNK_NUMBER=0
         for CHUNK_FILE in "$CHUNK_DIR"/chunk-*; do
           CHUNK_NUMBER=$((CHUNK_NUMBER + 1))
-          CHUNK_PROMPT="$PROMPT
-
-This is part $CHUNK_NUMBER of $CHUNK_COUNT of a large input. Summarize only the actual changes in this part. Do not invent context or repeat a title intended for the whole document."
+          CHUNK_PROMPT="${PROMPT} This is part ${CHUNK_NUMBER} of ${CHUNK_COUNT} of a large input. Summarize only the actual changes in this part. Do not invent context or repeat a title intended for the whole document."
           REQUEST="$(jq -n \
             --arg model "$MODEL" \
             --arg system "$CHUNK_PROMPT" \
