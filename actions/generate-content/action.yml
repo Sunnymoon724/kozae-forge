@@ -64,12 +64,19 @@ runs:
         if [ -z "$OUTPUT_FILE" ]; then
           OUTPUT_FILE="${DATE}-development-log.md"
         fi
+        INPUT_FILE="${RUNNER_TEMP}/kozae-forge-generate-content-input"
         if [ -n "$SOURCE_FILE" ]; then
-          CONTENT="$(cat "$SOURCE_FILE")"
+          test -f "$SOURCE_FILE"
+          cp "$SOURCE_FILE" "$INPUT_FILE"
+        else
+          printf '%s' "$CONTENT" > "$INPUT_FILE"
         fi
         if [ -n "$TEMPLATE_FILE" ]; then
           test -f "$TEMPLATE_FILE"
-          CONTENT="${CONTENT}"$'\n\n## Template\n\n'"$(cat "$TEMPLATE_FILE")"
+          {
+            printf '\n\n## Template\n\n'
+            cat "$TEMPLATE_FILE"
+          } >> "$INPUT_FILE"
         fi
         if [ -n "$MAX_CONTENT_BYTES" ]; then
           case "$MAX_CONTENT_BYTES" in
@@ -82,7 +89,7 @@ runs:
             echo "::error::max-content-bytes must be greater than zero."
             exit 1
           fi
-          CONTENT_BYTES="$(printf '%s' "$CONTENT" | wc -c | tr -d '[:space:]')"
+          CONTENT_BYTES="$(wc -c < "$INPUT_FILE" | tr -d '[:space:]')"
           if [ "$CONTENT_BYTES" -gt "$MAX_CONTENT_BYTES" ]; then
             echo "::error::Input content is too large ($CONTENT_BYTES bytes; limit: $MAX_CONTENT_BYTES bytes)."
             exit 1
@@ -95,7 +102,7 @@ runs:
         REQUEST="$(jq -n \
           --arg model "$MODEL" \
           --arg system "$PROMPT" \
-          --arg content "$CONTENT" \
+          --rawfile content "$INPUT_FILE" \
           '{model: $model, messages: [{role: "system", content: $system}, {role: "user", content: $content}]}' \
         )"
         RESPONSE="$(curl --fail-with-body --silent --show-error \
