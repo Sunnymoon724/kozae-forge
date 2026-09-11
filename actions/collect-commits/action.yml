@@ -5,6 +5,10 @@ inputs:
     description: Optional author name or email filter
     required: false
     default: ''
+  authors:
+    description: Optional comma-separated author names or email filters
+    required: false
+    default: ''
   start-time:
     description: Start time in YYYY-MM-DD HH:mm format
     required: true
@@ -31,6 +35,7 @@ runs:
         END_TIME: ${{ inputs.end-time }}
         TIMEZONE: ${{ inputs.timezone }}
         AUTHOR: ${{ inputs.author }}
+        AUTHORS: ${{ inputs.authors }}
       run: |
         set -euo pipefail
         export TZ="$TIMEZONE"
@@ -38,8 +43,13 @@ runs:
         END_DATE="$(date -d "$END_TIME" +%F)"
         START_ISO="$(date -d "$START_TIME" '+%Y-%m-%dT%H:%M:%S%z')"
         END_ISO="$(date -d "$END_TIME" '+%Y-%m-%dT%H:%M:%S%z')"
+        AUTHOR_FILTER="$AUTHORS"
+        if [ -z "$AUTHOR_FILTER" ]; then AUTHOR_FILTER="$AUTHOR"; fi
         AUTHOR_ARGS=()
-        if [ -n "$AUTHOR" ]; then AUTHOR_ARGS+=("--author=$AUTHOR"); fi
+        if [ -n "$AUTHOR_FILTER" ]; then
+          AUTHOR_FILTER="${AUTHOR_FILTER//,/\\|}"
+          AUTHOR_ARGS+=("--author=$AUTHOR_FILTER")
+        fi
         COMMITS="$(git log --since="$START_ISO" --until="$END_ISO" "${AUTHOR_ARGS[@]}" --format='- %s (%h) [author: %an]' "$GITHUB_SHA")"
         {
           echo 'commits<<COMMIT_CONTENT'
