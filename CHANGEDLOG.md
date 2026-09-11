@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.0
+
+- Updated repository Workflows and Actions.
+
 ## 0.1.2
 
 - Improved `publish-notion-database` to create or update entries by title.

@@ -1,9 +1,0 @@
-{
-  "mappings": [
-    {
-      "source": "tests/refine-documents/sources/architecture",
-      "destination": "tests/refine-documents/output/architecture"
-    }
-  ],
-  "defaultTemplate": "tests/refine-documents/templates/architecture.md"
-}

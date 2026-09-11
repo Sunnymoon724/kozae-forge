@@ -5,9 +5,9 @@
 1. Calculate the previous day's time range using the selected timezone.
 2. `collect-commits` collects commits as text.
 3. `generate-content` uses AI to write content in the requested format.
-4. The generated file is uploaded as the `generated-content` artifact.
+4. If `output-file` is set, the generated file is saved at that path. Otherwise, it is uploaded as the `generated-content` artifact.
 
-This workflow does not save files to the repository or publish externally.
+This workflow does not commit files to the repository or publish externally.
 
 The workflow processes `target-date` from 00:00 through the following day's 00:00.
 
@@ -25,11 +25,12 @@ jobs:
       target-date: 2026-09-08
       author: Jane Doe
       prompt: Write a Markdown development log from the commit history.
+      output-file: docs/development-log.md
     secrets:
       API_KEY: ${{ secrets.API_KEY }}
 ```
 
-Download the artifact in a later job:
+If `output-file` is omitted, download the artifact in a later job:
 
 ```yaml
 - uses: actions/download-artifact@v4

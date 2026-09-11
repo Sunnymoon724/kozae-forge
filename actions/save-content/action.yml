@@ -1,0 +1,28 @@
+name: Save content
+description: Download an artifact and save its Markdown content to a directory.
+
+inputs:
+  artifact-name:
+    description: Name of the artifact containing the content to save
+    required: false
+    default: generated-content
+  file-directory:
+    description: Directory where the content file will be saved
+    required: false
+    default: Documents/Blog
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/download-artifact@v4
+      with:
+        name: ${{ inputs.artifact-name }}
+        path: .generated-content
+    - name: Save content
+      shell: bash
+      env:
+        FILE_DIRECTORY: ${{ inputs.file-directory }}
+      run: |
+        set -euo pipefail
+        mkdir -p "$FILE_DIRECTORY"
+        cp .generated-content/*.md "$FILE_DIRECTORY/"

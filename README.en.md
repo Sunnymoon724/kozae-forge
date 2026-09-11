@@ -7,7 +7,6 @@ Reusable GitHub Actions and Workflows for KoZae projects.
 - Workflow
   - [Repository mirroring](Documents/Workflows/MirrorRepository/mirror-repository.en.md)
   - [Generate commit log](Documents/Workflows/GenerateCommitLog/generate-commit-log.en.md)
-  - [Save content](Documents/Workflows/SaveContent/save-content.en.md)
   - [Refine documents](Documents/Workflows/RefineDocuments/refine-documents.en.md)
 
 - Action
@@ -18,6 +17,7 @@ Reusable GitHub Actions and Workflows for KoZae projects.
   - [Generate content](Documents/Actions/GenerateContent/generate-content.en.md)
   - [Map document sources](Documents/Actions/MapDocumentSources/map-document-sources.en.md)
   - [Write content](Documents/Actions/WriteContent/write-content.en.md)
+  - [Save content](Documents/Actions/SaveContent/save-content.en.md)
   - [Copy file](Documents/Actions/CopyFile/copy-file.en.md)
   - [Publish content](Documents/Actions/PublishContent/publish-content.en.md)
   - [Publish Notion page](Documents/Actions/PublishNotionPage/publish-notion-page.en.md)

@@ -41,7 +41,7 @@ on:
         required: true
         type: string
       output-file:
-        description: Output file name; defaults to YYYY-MM-DD-development-log.md
+        description: Output file path; when set, save the generated file without uploading an artifact
         required: false
         default: ''
         type: string
@@ -99,7 +99,7 @@ jobs:
           api-key: ${{ secrets.API_KEY }}
 
       - name: Upload generated content
-        if: steps.collect.outputs.has-content == 'true'
+        if: steps.collect.outputs.has-content == 'true' && inputs.output-file == ''
         uses: actions/upload-artifact@v4
         with:
           name: generated-content

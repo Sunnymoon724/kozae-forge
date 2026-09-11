@@ -7,7 +7,6 @@ KoZae 프로젝트에서 재사용할 수 있는 GitHub Actions와 Workflow 모�
 - Workflow
   - [저장소 미러링](Documents/Workflows/MirrorRepository/mirror-repository.ko.md)
   - [커밋 로그 생성](Documents/Workflows/GenerateCommitLog/generate-commit-log.ko.md)
-  - [콘텐츠 저장](Documents/Workflows/SaveContent/save-content.ko.md)
   - [문서 정제](Documents/Workflows/RefineDocuments/refine-documents.ko.md)
 
 - Action
@@ -18,6 +17,7 @@ KoZae 프로젝트에서 재사용할 수 있는 GitHub Actions와 Workflow 모�
   - [콘텐츠 생성](Documents/Actions/GenerateContent/generate-content.ko.md)
   - [문서 매핑](Documents/Actions/MapDocumentSources/map-document-sources.ko.md)
   - [콘텐츠 저장](Documents/Actions/WriteContent/write-content.ko.md)
+  - [콘텐츠 저장](Documents/Actions/SaveContent/save-content.ko.md)
   - [파일 복사](Documents/Actions/CopyFile/copy-file.ko.md)
   - [콘텐츠 게시](Documents/Actions/PublishContent/publish-content.ko.md)
   - [Notion 페이지 게시](Documents/Actions/PublishNotionPage/publish-notion-page.ko.md)
