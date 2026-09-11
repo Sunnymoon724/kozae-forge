@@ -1,6 +1,6 @@
 # collect-commits
 
-A GitHub Action that collects Git commits in a specified time range and timezone.
+A GitHub Action that collects the actual Git diff from commits in a specified time range and timezone.
 
 ## Inputs
 
@@ -16,7 +16,7 @@ A GitHub Action that collects Git commits in a specified time range and timezone
 | Output | Default | Description |
 |---|---|---|
 | `has-content` | `false` | `true` when commits were found |
-| `commits` | - | Collected commit message text |
+| `changes` | - | Collected Git diff text |
 
 ## Input example
 
@@ -30,13 +30,13 @@ A GitHub Action that collects Git commits in a specified time range and timezone
     author: Jane Doe
 ```
 
-Collected commits are passed to the next step as text through the `commits` output.
+Collected changes are passed to the next step as patch text through the `changes` output.
 
 ## Output example
 
 ```yaml
 has-content: true
-commits: |
-  - Fix login error (a1b2c3d)
-  - Update documentation (e4f5g6h)
+changes: |
+  diff --git a/src/login.js b/src/login.js
+  ...
 ```

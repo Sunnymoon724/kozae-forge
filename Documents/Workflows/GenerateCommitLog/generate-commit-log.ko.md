@@ -3,7 +3,7 @@
 ## 1. 처리 방법
 
 1. 시간대 기준으로 전날의 시간 범위를 계산합니다.
-2. `collect-commits`가 커밋을 텍스트로 수집합니다.
+2. `collect-commits`가 해당 범위의 실제 파일 변경(diff)을 수집합니다.
 3. `generate-content`가 AI로 원하는 형식의 글을 작성합니다.
 4. 생성된 글을 `generated-content` Artifact로 업로드합니다.
 
@@ -24,7 +24,7 @@ jobs:
       max-content-bytes: 100000
       target-date: 2026-09-08
       author: 홍길동
-      prompt: 커밋 기록을 바탕으로 한국어 개발일지를 Markdown으로 작성해줘.
+      prompt: 아래 Git diff를 바탕으로 한국어 개발일지를 Markdown으로 작성해줘. 커밋 메시지는 사용하지 말고 실제 변경 내용을 중심으로 작성해줘.
     secrets:
       API_KEY: ${{ secrets.API_KEY }}
 ```

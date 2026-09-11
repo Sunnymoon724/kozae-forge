@@ -32,8 +32,8 @@ Inputs over `max-content-bytes` fail before the AI provider is called.
     provider: openai
     api-base: https://api.openai.com/v1
     model: gpt-4o-mini
-    content: ${{ steps.collect.outputs.commits }}
-    prompt: Write a Markdown development log from the commit history.
+    content: ${{ steps.collect.outputs.changes }}
+    prompt: Write a Markdown development log from the Git diff below. Focus on the actual changes, not commit messages.
     output-file: 2026-09-08-development-log.md
     max-content-bytes: 100000
     api-key: ${{ secrets.API_KEY }}
