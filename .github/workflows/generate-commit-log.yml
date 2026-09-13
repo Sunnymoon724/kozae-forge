@@ -41,7 +41,7 @@ on:
         required: true
         type: string
       output-file:
-        description: Output file path; when set, save the generated file without uploading an artifact
+        description: Optional path for the generated file in the temporary job workspace; the file is always uploaded as an artifact
         required: false
         default: ''
         type: string
@@ -99,7 +99,7 @@ jobs:
           api-key: ${{ secrets.API_KEY }}
 
       - name: Upload generated content
-        if: steps.collect.outputs.has-content == 'true' && inputs.output-file == ''
+        if: steps.collect.outputs.has-content == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: generated-content

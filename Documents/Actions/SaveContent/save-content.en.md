@@ -1,19 +1,19 @@
 # save-content
 
-Downloads an artifact and saves its Markdown content to the specified directory. This Action does not commit or push changes.
+Saves a provided Markdown content file to a specified path. This Action does not download artifacts, commit, or push changes.
 
 ## Inputs
 
 | Input | Required | Default | Description |
 |---|---|---|---|
-| `artifact-name` | No | `generated-content` | Artifact containing the content to save |
-| `file-directory` | No | `Documents/Blog` | Directory where the content file will be saved |
+| `source-file` | Yes | - | Path to the source Markdown file |
+| `output-file` | Yes | - | Destination path for the content file |
 
 ## Input example
 
 ```yaml
 - uses: Sunnymoon724/kozae-forge/actions/save-content@main
   with:
-    artifact-name: generated-content
-    file-directory: Documents/Blog
+    source-file: generated-content/2026-09-08-development-log.md
+    output-file: Documents/Blog/2026-09-08-development-log.md
 ```

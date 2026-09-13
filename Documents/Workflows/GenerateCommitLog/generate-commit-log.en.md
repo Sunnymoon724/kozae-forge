@@ -5,9 +5,10 @@
 1. Calculate the previous day's time range using the selected timezone.
 2. `collect-commits` collects commits as text.
 3. `generate-content` uses AI to write content in the requested format.
-4. If `output-file` is set, the generated file is saved at that path. Otherwise, it is uploaded as the `generated-content` artifact.
+4. The generated content is created in the job's temporary workspace. If `output-file` is set, that path is used; otherwise, the default file name is used.
+5. The generated file is always uploaded as the `generated-content` artifact.
 
-This workflow does not commit files to the repository or publish externally.
+This workflow does not persist or commit files to the repository. Use the `save-content` Action in a later job to restore the artifact to its workspace, then commit and push it separately if needed.
 
 The workflow processes `target-date` from 00:00 through the following day's 00:00.
 
@@ -30,7 +31,7 @@ jobs:
       API_KEY: ${{ secrets.API_KEY }}
 ```
 
-If `output-file` is omitted, download the artifact in a later job:
+The generated result is always available as the `generated-content` artifact. Download it in a later job:
 
 ```yaml
 - uses: actions/download-artifact@v4

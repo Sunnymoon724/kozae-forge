@@ -5,9 +5,10 @@
 1. 시간대 기준으로 전날의 시간 범위를 계산합니다.
 2. `collect-commits`가 커밋을 텍스트로 수집합니다.
 3. `generate-content`가 AI로 원하는 형식의 글을 작성합니다.
-4. `output-file`이 있으면 해당 경로에 생성된 글을 저장하고, 없으면 `generated-content` Artifact로 업로드합니다.
+4. 생성된 글을 Job의 임시 작업 공간에 생성합니다. `output-file`이 있으면 해당 경로를 사용하고, 없으면 기본 파일명을 사용합니다.
+5. 생성된 파일을 항상 `generated-content` Artifact로 업로드합니다.
 
-이 Workflow는 저장소에 커밋하거나 외부에 게시하지 않습니다.
+이 Workflow는 저장소에 파일을 영구 저장하거나 커밋하지 않습니다. 후속 Job에서 작업 공간에 파일을 복원하려면 `save-content` Action을 사용하고, 저장소에 반영하려면 별도로 commit과 push를 수행해야 합니다.
 
 `target-date`에 지정한 날짜의 00:00부터 다음 날 00:00까지 처리합니다.
 
@@ -30,7 +31,7 @@ jobs:
       API_KEY: ${{ secrets.API_KEY }}
 ```
 
-`output-file`을 생략한 경우 생성 결과를 후속 Job에서 사용하려면 Artifact를 다운로드합니다.
+생성 결과는 항상 `generated-content` Artifact로 제공됩니다. 후속 Job에서 사용하려면 Artifact를 다운로드합니다.
 
 ```yaml
 - uses: actions/download-artifact@v4

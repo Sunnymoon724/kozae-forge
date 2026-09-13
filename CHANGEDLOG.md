@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.2
+
+- Updated `save-content` to save a provided source file without downloading artifacts.
+
+## 0.2.1
+
+- Always upload generated commit logs as the `generated-content` artifact, including when `output-file` is set.
+
 ## 0.2.0
 
 - Updated repository Workflows and Actions.
