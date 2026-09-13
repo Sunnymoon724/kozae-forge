@@ -7,7 +7,7 @@ A GitHub Action that updates a matching database entry or creates one when it do
 | Input | Required | Default | Description |
 |---|---|---|---|
 | `content-file` | Yes | - | Content file to upload |
-| `database-url` | Yes | - | Notion database URL |
+| `source-url` | Yes | - | Notion database URL |
 | `title-property` | Yes | - | Database title property name |
 | `title` | Yes | - | Entry title to find or create |
 | `group-property` | Yes | - | Database property used for grouping |
@@ -22,7 +22,7 @@ A GitHub Action that updates a matching database entry or creates one when it do
 - uses: Sunnymoon724/kozae-forge/actions/publish-notion-database@main
   with:
     content-file: generated.md
-    database-url: https://www.notion.so/your-workspace/your-database-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    source-url: https://www.notion.so/your-workspace/your-database-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     title-property: Name
     title: 2026-09-09
     group-property: Status

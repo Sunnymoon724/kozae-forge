@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.6
+
+- Renamed the Notion URL input to `source-url`.
+
+## 0.2.5
+
+- Renamed the Notion URL input to `data-source-url` to match the public Action interface.
+
 ## 0.2.4
 
 - Replaced `publish-notion-database`'s `data-source-id` input with a Notion `database-url` input.

@@ -4,7 +4,7 @@ inputs:
   content-file:
     description: File containing the content to publish
     required: true
-  database-url:
+  source-url:
     description: Notion database URL
     required: true
   title-property:
@@ -37,7 +37,7 @@ runs:
       shell: bash
       env:
         CONTENT_FILE: ${{ inputs.content-file }}
-        DATABASE_URL: ${{ inputs.database-url }}
+        DATABASE_URL: ${{ inputs.source-url }}
         TITLE_PROPERTY: ${{ inputs.title-property }}
         TITLE: ${{ inputs.title }}
         GROUP_PROPERTY: ${{ inputs.group-property }}
@@ -55,7 +55,7 @@ runs:
         fi
         database_id="$(sed -E 's/[?#].*$//' <<< "$DATABASE_URL" | sed -E 's#.*/##' | sed -E 's/[^0-9A-Fa-f-].*$//' | tr -d '-')"
         if [[ ! "$database_id" =~ ^[0-9a-fA-F]{32}$ ]]; then
-          echo "database-url must contain a valid Notion database ID" >&2
+          echo "source-url must contain a valid Notion database URL" >&2
           exit 1
         fi
         database_response="$(curl --silent --show-error -X GET "https://api.notion.com/v1/databases/$database_id" "${headers[@]}" -w $'\nHTTP_STATUS:%{http_code}')"
