@@ -5,7 +5,7 @@
 1. Calculate the previous day's time range using the selected timezone.
 2. `collect-commits` collects commits as text.
 3. `generate-content` uses AI to write content in the requested format.
-4. The generated content is created in the job's temporary workspace. If `output-file` is set, that path is used; otherwise, the default file name is used.
+4. The generated content is created in the job's temporary workspace as `${date}-${tag}.md`.
 5. The generated file is always uploaded as the `generated-content` artifact.
 
 This workflow does not persist or commit files to the repository. Use the `save-content` Action in a later job to restore the artifact to its workspace, then commit and push it separately if needed.
@@ -26,12 +26,13 @@ jobs:
       target-date: 2026-09-08
       author: Jane Doe
       prompt: Write a Markdown development log from the commit history.
-      output-file: docs/development-log.md
+      output-directory: Chronicle/blog
+      tag: development-log
     secrets:
       API_KEY: ${{ secrets.API_KEY }}
 ```
 
-The generated result is always available as the `generated-content` artifact. Download it in a later job:
+With `output-directory: Chronicle/blog` and `tag: development-log`, the generated file is `${target-date}-development-log.md`. The result is always available as the `generated-content` artifact:
 
 ```yaml
 - uses: actions/download-artifact@v4

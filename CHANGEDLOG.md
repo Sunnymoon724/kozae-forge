@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.3
+
+- Replaced `generate-commit-log`'s `output-file` input with `output-directory` and `tag` inputs.
+
 ## 0.2.2
 
 - Updated `save-content` to save a provided source file without downloading artifacts.
