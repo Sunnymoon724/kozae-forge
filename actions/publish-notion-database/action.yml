@@ -4,8 +4,8 @@ inputs:
   content-file:
     description: File containing the content to publish
     required: true
-  data-source-id:
-    description: Notion database data source ID
+  database-url:
+    description: Notion database URL
     required: true
   title-property:
     description: Database title property name
@@ -37,7 +37,7 @@ runs:
       shell: bash
       env:
         CONTENT_FILE: ${{ inputs.content-file }}
-        DATA_SOURCE_ID: ${{ inputs.data-source-id }}
+        DATABASE_URL: ${{ inputs.database-url }}
         TITLE_PROPERTY: ${{ inputs.title-property }}
         TITLE: ${{ inputs.title }}
         GROUP_PROPERTY: ${{ inputs.group-property }}
@@ -51,6 +51,24 @@ runs:
         headers=(-H "Authorization: Bearer $NOTION_TOKEN" -H 'Content-Type: application/json' -H 'Notion-Version: 2026-03-11')
         if [ -z "$GROUP_PROPERTY" ] || [ -z "$GROUP_VALUE" ]; then
           echo "group-property and group-value are required" >&2
+          exit 1
+        fi
+        database_id="$(sed -E 's/[?#].*$//' <<< "$DATABASE_URL" | sed -E 's#.*/##' | sed -E 's/[^0-9A-Fa-f-].*$//' | tr -d '-')"
+        if [[ ! "$database_id" =~ ^[0-9a-fA-F]{32}$ ]]; then
+          echo "database-url must contain a valid Notion database ID" >&2
+          exit 1
+        fi
+        database_response="$(curl --silent --show-error -X GET "https://api.notion.com/v1/databases/$database_id" "${headers[@]}" -w $'\nHTTP_STATUS:%{http_code}')"
+        database_status="${database_response##*$'\n'HTTP_STATUS:}"
+        database_body="${database_response%$'\n'HTTP_STATUS:*}"
+        if [ "$database_status" -lt 200 ] || [ "$database_status" -ge 300 ]; then
+          echo "Notion database lookup failed (HTTP $database_status):" >&2
+          echo "$database_body" >&2
+          exit 1
+        fi
+        DATA_SOURCE_ID="$(jq -r '.data_sources[0].id // empty' <<< "$database_body" | tr -d '-')"
+        if [[ ! "$DATA_SOURCE_ID" =~ ^[0-9a-fA-F]{32}$ ]]; then
+          echo "No data source found for the Notion database" >&2
           exit 1
         fi
         if { [ -n "$DATE_PROPERTY" ] && [ -z "$DATE" ]; } || { [ -z "$DATE_PROPERTY" ] && [ -n "$DATE" ]; }; then

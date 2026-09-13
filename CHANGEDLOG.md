@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.4
+
+- Replaced `publish-notion-database`'s `data-source-id` input with a Notion `database-url` input.
+
 ## 0.2.3
 
 - Replaced `generate-commit-log`'s `output-file` input with `output-directory` and `tag` inputs.
