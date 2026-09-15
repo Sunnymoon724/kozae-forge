@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.12
+
+- Fixed YAML input metadata for the Git commit collection Action.
+
 ## 0.3.11
 
 - Removed the redundant content artifact download Action.

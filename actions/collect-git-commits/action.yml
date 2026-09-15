@@ -1,11 +1,23 @@
 name: Collect Git commits
 description: Collect Git commits in a time range
 inputs:
-  start-time: { required: true, description: Start time in YYYY-MM-DD HH:mm format }
-  end-time: { required: true, description: End time in YYYY-MM-DD HH:mm format }
-  timezone: { required: true, description: IANA timezone used to interpret the time range }
-  author: { required: false, default: '', description: Optional author name or email filter }
-  authors: { required: false, default: '', description: Optional comma-separated author name or email filters }
+  start-time:
+    description: Start time in YYYY-MM-DD HH:mm format
+    required: true
+  end-time:
+    description: End time in YYYY-MM-DD HH:mm format
+    required: true
+  timezone:
+    description: IANA timezone used to interpret the time range
+    required: true
+  author:
+    description: Optional author name or email filter
+    required: false
+    default: ''
+  authors:
+    description: Optional comma-separated author name or email filters
+    required: false
+    default: ''
 outputs:
   has-content:
     description: Whether commits were found
