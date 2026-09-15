@@ -38,7 +38,7 @@ jobs:
       - id: collect
         uses: Sunnymoon724/kozae-forge/actions/collect-issues@main
         with:
-          token: ${{ secrets.PUBLIC_REPO_TOKEN }}
+          token: ${{ github.token }}
           source-repository: ${{ github.repository }}
           visibility-label: ${{ inputs.visibility-label }}
 

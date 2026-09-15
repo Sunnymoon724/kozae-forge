@@ -10,7 +10,7 @@ Private 원본 저장소에서 `mirror:public` 라벨이 붙은 이슈를 Public
 
 ### Token 등록
 
-원본 저장소에 `PUBLIC_REPO_TOKEN` Actions Secret을 등록합니다. Token은 원본 이슈 조회와 대상 이슈 쓰기 권한이 필요합니다.
+원본 저장소에 `PUBLIC_REPO_TOKEN` Actions Secret을 등록합니다. 이 Token은 대상 이슈 쓰기 권한이 필요하며, 원본 이슈는 호출 저장소의 `GITHUB_TOKEN`으로 조회합니다.
 
 ```text
 Settings → Secrets and variables → Actions

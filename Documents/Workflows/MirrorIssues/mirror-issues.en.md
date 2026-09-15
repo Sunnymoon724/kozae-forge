@@ -10,7 +10,7 @@ The source issues are read, and only issues with the configured visibility label
 
 ### Token registration
 
-Register the `PUBLIC_REPO_TOKEN` Actions secret in the source repository. The token must read source issues and write destination issues.
+Register the `PUBLIC_REPO_TOKEN` Actions secret in the source repository. The token must write destination issues. The calling repository's `GITHUB_TOKEN` reads source issues.
 
 ```text
 Settings → Secrets and variables → Actions

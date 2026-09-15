@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.14
+
+- Used a non-hidden directory for refined document artifacts.
+
+## 0.3.13
+
+- Used the calling repository token when collecting source issues for issue mirroring.
+
 ## 0.3.12
 
 - Fixed YAML input metadata for the Git commit collection Action.
