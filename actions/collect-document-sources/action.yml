@@ -1,0 +1,68 @@
+name: Collect document sources
+description: Collect Markdown source files from mapped directories or a Git change range
+inputs:
+  mapping-file:
+    description: Path to a JSON file containing document source mappings
+    required: true
+  sync-mode:
+    description: Synchronization mode (`changed` or `full`)
+    required: true
+  changed-files:
+    description: Optional newline-delimited changed-file list supplied by the caller
+    required: false
+    default: ''
+  base-ref:
+    description: Git commit or ref used as the change comparison base when changed-files is empty
+    required: false
+    default: ''
+  head-ref:
+    description: Git commit or ref used as the change comparison head
+    required: false
+    default: HEAD
+outputs:
+  source-files:
+    description: Newline-delimited Markdown source files
+    value: ${{ steps.collect.outputs.source-files }}
+runs:
+  using: composite
+  steps:
+    - id: collect
+      shell: bash
+      env:
+        MAPPING_FILE: ${{ inputs.mapping-file }}
+        SYNC_MODE: ${{ inputs.sync-mode }}
+        CHANGED_FILES: ${{ inputs.changed-files }}
+        BASE_REF: ${{ inputs.base-ref }}
+        HEAD_REF: ${{ inputs.head-ref }}
+      run: |
+        set -euo pipefail
+        node <<'NODE' >> "$GITHUB_OUTPUT"
+        const fs = require('node:fs');
+        const path = require('node:path');
+        const {execFileSync} = require('node:child_process');
+        const mode = process.env.SYNC_MODE;
+        if (!['changed', 'full'].includes(mode)) throw new Error('sync-mode must be `changed` or `full`.');
+        let files = process.env.CHANGED_FILES.split(/\r?\n/).filter(Boolean);
+        if (mode === 'full') {
+          const config = JSON.parse(fs.readFileSync(process.env.MAPPING_FILE, 'utf8'));
+          if (!Array.isArray(config.mappings) || config.mappings.length === 0) throw new Error('The mapping file must contain a non-empty `mappings` array.');
+          const walk = (directory) => fs.readdirSync(directory, {withFileTypes: true}).flatMap((entry) => {
+            const item = path.posix.join(directory, entry.name);
+            return entry.isDirectory() ? walk(item) : entry.isFile() && /\.md$/i.test(entry.name) ? [item] : [];
+          });
+          files = config.mappings.flatMap(({source}, index) => {
+            if (typeof source !== 'string' || source.trim() === '') throw new Error(`Mapping ${index + 1} requires a non-empty \`source\` value.`);
+            const directory = source.replace(/\\/g, '/').replace(/^\.\//, '').replace(/\/+$/, '');
+            if (!fs.existsSync(directory) || !fs.statSync(directory).isDirectory()) throw new Error(`Source directory not found: ${directory}`);
+            return walk(directory);
+          });
+        } else if (files.length === 0) {
+          const base = process.env.BASE_REF;
+          const head = process.env.HEAD_REF || 'HEAD';
+          if (!base) throw new Error('base-ref is required in changed mode when changed-files is empty.');
+          files = execFileSync('git', ['diff', '--name-only', '--diff-filter=AM', base, head, '--'], {encoding: 'utf8'}).split(/\r?\n/).filter(Boolean);
+        }
+        console.log('source-files<<EOF');
+        console.log([...new Set(files.map((file) => file.replace(/\\/g, '/')).filter((file) => /\.md$/i.test(file)))].join('\n'));
+        console.log('EOF');
+        NODE

@@ -1,0 +1,90 @@
+name: Mirror issues
+
+on:
+  workflow_call:
+    inputs:
+      destination-repository:
+        required: true
+        type: string
+      visibility-label:
+        required: false
+        default: mirror:public
+        type: string
+      sync-comments:
+        required: false
+        default: false
+        type: boolean
+      sync-milestones:
+        required: false
+        default: false
+        type: boolean
+      sync-assignees:
+        required: false
+        default: false
+        type: boolean
+    secrets:
+      PUBLIC_REPO_TOKEN:
+        required: true
+
+permissions:
+  issues: read
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    outputs:
+      issues: ${{ steps.collect.outputs.issues }}
+    steps:
+      - id: collect
+        uses: Sunnymoon724/kozae-forge/actions/collect-issues@main
+        with:
+          token: ${{ secrets.PUBLIC_REPO_TOKEN }}
+          source-repository: ${{ github.repository }}
+          visibility-label: ${{ inputs.visibility-label }}
+
+  mirror:
+    needs: collect
+    if: ${{ needs.collect.outputs.issues != '[]' }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        issue: ${{ fromJSON(needs.collect.outputs.issues) }}
+    steps:
+      - id: find
+        uses: Sunnymoon724/kozae-forge/actions/find-mirrored-issue@main
+        with:
+          token: ${{ secrets.PUBLIC_REPO_TOKEN }}
+          destination-repository: ${{ inputs.destination-repository }}
+          source-issue-number: ${{ matrix.issue.number }}
+
+      - id: create
+        if: steps.find.outputs.issue-number == ''
+        uses: Sunnymoon724/kozae-forge/actions/create-issue@main
+        with:
+          token: ${{ secrets.PUBLIC_REPO_TOKEN }}
+          destination-repository: ${{ inputs.destination-repository }}
+          issue: ${{ toJSON(matrix.issue) }}
+
+      - if: steps.find.outputs.issue-number != ''
+        uses: Sunnymoon724/kozae-forge/actions/update-issue@main
+        with:
+          token: ${{ secrets.PUBLIC_REPO_TOKEN }}
+          destination-repository: ${{ inputs.destination-repository }}
+          issue-number: ${{ steps.find.outputs.issue-number }}
+          issue: ${{ toJSON(matrix.issue) }}
+
+      - uses: Sunnymoon724/kozae-forge/actions/sync-issue-labels@main
+        with:
+          token: ${{ secrets.PUBLIC_REPO_TOKEN }}
+          destination-repository: ${{ inputs.destination-repository }}
+          issue-number: ${{ steps.find.outputs.issue-number || steps.create.outputs.issue-number }}
+          issue: ${{ toJSON(matrix.issue) }}
+          excluded-label: ${{ inputs.visibility-label }}
+
+      - uses: Sunnymoon724/kozae-forge/actions/sync-issue-state@main
+        with:
+          token: ${{ secrets.PUBLIC_REPO_TOKEN }}
+          destination-repository: ${{ inputs.destination-repository }}
+          issue-number: ${{ steps.find.outputs.issue-number || steps.create.outputs.issue-number }}
+          issue: ${{ toJSON(matrix.issue) }}

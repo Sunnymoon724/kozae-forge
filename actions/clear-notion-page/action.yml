@@ -1,0 +1,23 @@
+name: Clear Notion page
+description: Archive all child blocks of a Notion page
+inputs:
+  page-id:
+    description: Notion page ID
+    required: true
+  notion-token:
+    description: Notion integration token
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Clear Notion page
+      shell: bash
+      env:
+        PAGE_ID: ${{ inputs.page-id }}
+        NOTION_TOKEN: ${{ inputs.notion-token }}
+      run: |
+        set -euo pipefail
+        headers=(-H "Authorization: Bearer $NOTION_TOKEN" -H 'Content-Type: application/json' -H 'Notion-Version: 2022-06-28')
+        curl --fail-with-body --silent --show-error "https://api.notion.com/v1/blocks/$PAGE_ID/children?page_size=100" "${headers[@]}" | jq -r '.results[].id' | while IFS= read -r block_id; do
+          [ -z "$block_id" ] || curl --fail-with-body --silent --show-error -X PATCH "https://api.notion.com/v1/blocks/$block_id" "${headers[@]}" --data '{"archived":true}' >/dev/null
+        done

@@ -1,0 +1,34 @@
+name: Collect Git commits
+description: Collect Git commits in a time range
+inputs:
+  start-time: { required: true, description: Start time in YYYY-MM-DD HH:mm format }
+  end-time: { required: true, description: End time in YYYY-MM-DD HH:mm format }
+  timezone: { required: true, description: IANA timezone used to interpret the time range }
+  author: { required: false, default: '', description: Optional author name or email filter }
+  authors: { required: false, default: '', description: Optional comma-separated author name or email filters }
+outputs:
+  has-content:
+    description: Whether commits were found
+    value: ${{ steps.collect.outputs.has-content }}
+  commits:
+    description: Collected commit messages
+    value: ${{ steps.collect.outputs.commits }}
+runs:
+  using: composite
+  steps:
+    - id: collect
+      shell: bash
+      env:
+        START_TIME: ${{ inputs.start-time }}
+        END_TIME: ${{ inputs.end-time }}
+        TIMEZONE: ${{ inputs.timezone }}
+        AUTHOR: ${{ inputs.author }}
+        AUTHORS: ${{ inputs.authors }}
+      run: |
+        set -euo pipefail
+        export TZ="$TIMEZONE"
+        filter="${AUTHORS:-$AUTHOR}"
+        args=()
+        if [ -n "$filter" ]; then args+=("--author=${filter//,/\\|}"); fi
+        commits="$(git log --since="$(date -d "$START_TIME" '+%Y-%m-%dT%H:%M:%S%z')" --until="$(date -d "$END_TIME" '+%Y-%m-%dT%H:%M:%S%z')" "${args[@]}" --format='- %s (%h) [author: %an]' "$GITHUB_SHA")"
+        { echo 'commits<<EOF'; echo "$commits"; echo EOF; echo "has-content=$([ -n "$commits" ] && echo true || echo false)"; } >> "$GITHUB_OUTPUT"

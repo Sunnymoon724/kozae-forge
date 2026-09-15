@@ -1,5 +1,74 @@
 # Changelog
 
+## 0.3.11
+
+- Removed the redundant content artifact download Action.
+
+## 0.3.10
+
+- Consolidated Git LFS initialization into remote configuration.
+
+## 0.3.9
+
+- Consolidated file reading into content preparation and file writing or copying into content saving.
+
+## 0.3.8
+
+- Removed duplicate commit collection and content file copy Actions.
+
+## 0.3.7
+
+- Fixed YAML output metadata for the Git commit collection Action.
+
+## 0.3.6
+
+- Added metadata descriptions for the Git commit collection Action inputs and outputs.
+
+## 0.3.5
+
+- Added metadata descriptions for content request, content preparation, and Notion page lookup Actions.
+
+## 0.3.4
+
+- Added descriptions for content-size validation Action inputs.
+
+## 0.3.3
+
+- Standardized Action metadata descriptions in English.
+
+## 0.3.2
+
+- Renamed `upload-lfs` to `upload-git-lfs-objects`.
+
+## 0.3.1
+
+- Renamed focused Actions to match their responsibilities and removed the duplicate `generate-content` Action.
+
+## 0.3.0
+
+- Added reusable Notion page and database entry publishing Workflows.
+
+## 0.2.11
+
+- Separated document source collection from document target mapping.
+
+## 0.2.10
+
+- Separated content generation, Notion publishing, and Git LFS remote configuration responsibilities.
+
+## 0.2.9
+
+- Separated Git commit collection from date-range calculation.
+
+## 0.2.8
+
+- Separated destination repository cloning from Git LFS initialization.
+- Added focused content preparation, content-size validation, and AI request Actions.
+
+## 0.2.7
+
+- Added reusable issue mirroring Workflow and Action.
+
 ## 0.2.6
 
 - Renamed the Notion URL input to `source-url`.

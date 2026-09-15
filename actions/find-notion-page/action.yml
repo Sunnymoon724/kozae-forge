@@ -1,0 +1,31 @@
+name: Find Notion page
+description: Find a Notion page by title and parent page
+inputs:
+  title:
+    description: Title of the Notion page to find
+    required: true
+  parent-page-id:
+    description: Parent Notion page ID
+    required: true
+  notion-token:
+    description: Notion integration token
+    required: true
+outputs:
+  page-id:
+    description: Matching Notion page ID, if found
+    value: ${{ steps.find.outputs.page-id }}
+runs:
+  using: composite
+  steps:
+    - id: find
+      shell: bash
+      env:
+        TITLE: ${{ inputs.title }}
+        PARENT_PAGE_ID: ${{ inputs.parent-page-id }}
+        NOTION_TOKEN: ${{ inputs.notion-token }}
+      run: |
+        set -euo pipefail
+        headers=(-H "Authorization: Bearer $NOTION_TOKEN" -H 'Content-Type: application/json' -H 'Notion-Version: 2022-06-28')
+        payload=$(jq -n --arg query "$TITLE" '{query:$query,page_size:100}')
+        id=$(curl --fail-with-body --silent --show-error -X POST 'https://api.notion.com/v1/search' "${headers[@]}" --data "$payload" | jq -r --arg parent "$PARENT_PAGE_ID" --arg title "$TITLE" '.results[] | select(.object=="page" and .parent.page_id==$parent and (.properties.title.title[0].plain_text // "")==$title) | .id' | head -n 1)
+        echo "page-id=$id" >> "$GITHUB_OUTPUT"

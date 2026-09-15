@@ -1,0 +1,32 @@
+name: Find mirrored issue
+description: Find a destination issue by its source issue marker
+inputs:
+  token:
+    description: GitHub token with destination repository issue read access
+    required: true
+  destination-repository:
+    description: Destination repository in owner/name format
+    required: true
+  source-issue-number:
+    description: Source issue number
+    required: true
+outputs:
+  issue-number:
+    description: Matching destination issue number, if found
+    value: ${{ steps.find.outputs.issue-number }}
+runs:
+  using: composite
+  steps:
+    - id: find
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.token }}
+        DESTINATION_REPOSITORY: ${{ inputs.destination-repository }}
+        SOURCE_ISSUE_NUMBER: ${{ inputs.source-issue-number }}
+      run: |
+        set -euo pipefail
+        marker="<!-- kozae-forge-mirror:source-issue=${SOURCE_ISSUE_NUMBER} -->"
+        issue_number=$(gh api --paginate "repos/${DESTINATION_REPOSITORY}/issues?state=all&per_page=100" \
+          | jq -r --arg marker "${marker}" '.[] | select(.pull_request == null and (.body // "" | contains($marker))) | .number' \
+          | head -n 1)
+        echo "issue-number=${issue_number}" >> "$GITHUB_OUTPUT"

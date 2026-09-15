@@ -1,0 +1,32 @@
+name: Synchronize issue labels
+description: Synchronize source issue labels to a destination issue
+inputs:
+  token:
+    description: GitHub token with destination repository issue write access
+    required: true
+  destination-repository:
+    description: Destination repository in owner/name format
+    required: true
+  issue-number:
+    description: Destination issue number
+    required: true
+  issue:
+    description: Source issue JSON object
+    required: true
+  excluded-label:
+    description: Source label excluded from destination labels
+    required: true
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.token }}
+        DESTINATION_REPOSITORY: ${{ inputs.destination-repository }}
+        ISSUE_NUMBER: ${{ inputs.issue-number }}
+        ISSUE: ${{ inputs.issue }}
+        EXCLUDED_LABEL: ${{ inputs.excluded-label }}
+      run: |
+        set -euo pipefail
+        labels=$(jq -c --arg label "${EXCLUDED_LABEL}" '[.labels[].name] | map(select(. != $label))' <<<"${ISSUE}")
+        gh api "repos/${DESTINATION_REPOSITORY}/issues/${ISSUE_NUMBER}/labels" --method PUT --input <(jq -n --argjson labels "${labels}" '{labels:$labels}') >/dev/null

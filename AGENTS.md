@@ -19,6 +19,7 @@ KoZae Forge is a collection of reusable GitHub Actions for KoZae projects.
 ## Change guidelines
 
 - Keep reusable actions self-contained under `actions/`.
+- Design reusable Actions with a single responsibility: one Action must perform one focused function. Compose multiple Actions in a Workflow instead of combining unrelated operations in one Action.
 - Start each Action `name` with a verb and capitalize only its first word (for example, `Generate content`).
 - Use the corresponding file in `Documents/Templates/` as the structure for new Action and Workflow documentation.
 - Use `Documents/Templates/action.yml` as the structure for new composite Action definitions.

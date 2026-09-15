@@ -70,13 +70,19 @@ jobs:
         with:
           fetch-depth: 0
 
-      - id: sources
-        uses: Sunnymoon724/kozae-forge/actions/map-document-sources@main
+      - id: collected
+        uses: Sunnymoon724/kozae-forge/actions/collect-document-sources@main
         with:
           mapping-file: ${{ inputs.mapping-file }}
           sync-mode: ${{ inputs.sync-mode }}
           base-ref: ${{ inputs.base-ref }}
           head-ref: ${{ inputs.head-ref }}
+
+      - id: sources
+        uses: Sunnymoon724/kozae-forge/actions/map-document-targets@main
+        with:
+          mapping-file: ${{ inputs.mapping-file }}
+          source-files: ${{ steps.collected.outputs.source-files }}
 
   sync-pages:
     needs: find-sources
@@ -89,19 +95,31 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: Sunnymoon724/kozae-forge/actions/generate-content@main
+      - id: prepared
+        uses: Sunnymoon724/kozae-forge/actions/prepare-content@main
         with:
-          date: ${{ github.run_id }}
           source-file: ${{ matrix.source }}
-          target-file: ${{ matrix.target }}
           template-file: ${{ matrix.template }}
-          output-file: ${{ matrix.target }}
+
+      - uses: Sunnymoon724/kozae-forge/actions/validate-content-size@main
+        with:
+          content: ${{ steps.prepared.outputs.content }}
           max-content-bytes: ${{ inputs.max-content-bytes }}
+
+      - id: generated
+        uses: Sunnymoon724/kozae-forge/actions/request-content@main
+        with:
           provider: ${{ inputs.provider }}
           api-base: ${{ inputs.api-base }}
           model: ${{ inputs.model }}
           api-key: ${{ secrets.api-key }}
           prompt: ${{ inputs.prompt }}
+          content: ${{ steps.prepared.outputs.content }}
+
+      - uses: Sunnymoon724/kozae-forge/actions/save-content@main
+        with:
+          file-path: ${{ matrix.target }}
+          content: ${{ steps.generated.outputs.content }}
 
       - name: Stage synchronized page
         env:
