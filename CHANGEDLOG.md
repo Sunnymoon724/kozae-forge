@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.15
+
+- Removed the single-author input from Git commit collection and commit log generation.
+
 ## 0.3.14
 
 - Used a non-hidden directory for refined document artifacts.

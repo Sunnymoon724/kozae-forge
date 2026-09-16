@@ -14,11 +14,6 @@ on:
         description: Date to generate the commit log for in YYYY-MM-DD format
         required: true
         type: string
-      author:
-        description: Optional commit author name or email filter
-        required: false
-        default: ''
-        type: string
       authors:
         description: Optional comma-separated commit author names or email filters
         required: false
@@ -84,7 +79,6 @@ jobs:
           start-time: ${{ steps.time-range.outputs.start-time }}
           end-time: ${{ steps.time-range.outputs.end-time }}
           timezone: ${{ inputs.timezone }}
-          author: ${{ inputs.author }}
           authors: ${{ inputs.authors }}
 
       - name: Prepare output directory

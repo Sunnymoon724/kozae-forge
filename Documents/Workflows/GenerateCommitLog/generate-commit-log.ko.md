@@ -34,7 +34,7 @@ jobs:
       model: gpt-4o-mini
       max-content-bytes: 100000
       target-date: 2026-09-08
-      author: 홍길동
+      authors: 홍길동
       prompt: 커밋 기록을 바탕으로 한국어 개발일지를 Markdown으로 작성해줘.
       output-directory: Chronicle/blog
       tag: development-log

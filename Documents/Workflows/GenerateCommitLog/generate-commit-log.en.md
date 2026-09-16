@@ -34,7 +34,7 @@ jobs:
       model: gpt-4o-mini
       max-content-bytes: 100000
       target-date: 2026-09-08
-      author: Jane Doe
+      authors: Jane Doe
       prompt: Write a Markdown development log from the commit history.
       output-directory: Chronicle/blog
       tag: development-log

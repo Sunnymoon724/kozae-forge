@@ -9,7 +9,6 @@
 | `start-time` | 예 | - | `YYYY-MM-DD HH:mm` 형식 시작 시간 |
 | `end-time` | 예 | - | `YYYY-MM-DD HH:mm` 형식 종료 시간 |
 | `timezone` | 예 | - | IANA 시간대 |
-| `author` | 아니오 | 빈 값 | 작성자 이름 또는 이메일 필터 |
 | `authors` | 아니오 | 빈 값 | 쉼표로 구분한 작성자 필터 |
 
 ## 출력값

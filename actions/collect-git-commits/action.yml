@@ -10,10 +10,6 @@ inputs:
   timezone:
     description: IANA timezone used to interpret the time range
     required: true
-  author:
-    description: Optional author name or email filter
-    required: false
-    default: ''
   authors:
     description: Optional comma-separated author name or email filters
     required: false
@@ -34,12 +30,11 @@ runs:
         START_TIME: ${{ inputs.start-time }}
         END_TIME: ${{ inputs.end-time }}
         TIMEZONE: ${{ inputs.timezone }}
-        AUTHOR: ${{ inputs.author }}
         AUTHORS: ${{ inputs.authors }}
       run: |
         set -euo pipefail
         export TZ="$TIMEZONE"
-        filter="${AUTHORS:-$AUTHOR}"
+        filter="$AUTHORS"
         args=()
         if [ -n "$filter" ]; then args+=("--author=${filter//,/\\|}"); fi
         commits="$(git log --since="$(date -d "$START_TIME" '+%Y-%m-%dT%H:%M:%S%z')" --until="$(date -d "$END_TIME" '+%Y-%m-%dT%H:%M:%S%z')" "${args[@]}" --format='- %s (%h) [author: %an]' "$GITHUB_SHA")"
