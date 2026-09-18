@@ -56,7 +56,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       has-content: ${{ steps.collect.outputs.has-content }}
-      file-name: ${{ inputs.output-directory }}/${{ steps.time-range.outputs.date }}-${{ inputs.tag }}.md
+      file-name: ./${{ steps.time-range.outputs.date }}-${{ inputs.tag }}.md
     steps:
       - uses: actions/checkout@v4
         with:
@@ -77,16 +77,7 @@ jobs:
           timezone: ${{ inputs.timezone }}
           authors: ${{ inputs.authors }}
 
-<<<<<<< HEAD
-      - id: generate
-=======
-      - name: Prepare output directory
-        if: steps.collect.outputs.has-content == 'true'
-        shell: bash
-        run: mkdir -p "${{ inputs.output-directory }}"
-
       - id: request
->>>>>>> de25ec34ac4186d9d783685bc7b53af9cc48d184
         if: steps.collect.outputs.has-content == 'true'
         uses: Sunnymoon724/kozae-forge/actions/prepare-content@main
         with:
@@ -106,18 +97,14 @@ jobs:
           api-base: ${{ inputs.api-base }}
           model: ${{ inputs.model }}
           prompt: ${{ inputs.prompt }}
-<<<<<<< HEAD
-          output-file: ./${{ steps.time-range.outputs.date }}-${{ inputs.tag }}.md
-=======
           content: ${{ steps.request.outputs.content }}
->>>>>>> de25ec34ac4186d9d783685bc7b53af9cc48d184
           api-key: ${{ secrets.API_KEY }}
 
       - id: generate
         if: steps.collect.outputs.has-content == 'true'
         uses: Sunnymoon724/kozae-forge/actions/save-content@main
         with:
-          file-path: ${{ inputs.output-directory }}/${{ steps.time-range.outputs.date }}-${{ inputs.tag }}.md
+          file-path: ./${{ steps.time-range.outputs.date }}-${{ inputs.tag }}.md
           content: ${{ steps.generated.outputs.content }}
 
       - name: Upload generated content
@@ -125,4 +112,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: generated-content
-          path: ${{ inputs.output-directory }}/${{ steps.time-range.outputs.date }}-${{ inputs.tag }}.md
+          path: ./${{ steps.time-range.outputs.date }}-${{ inputs.tag }}.md
