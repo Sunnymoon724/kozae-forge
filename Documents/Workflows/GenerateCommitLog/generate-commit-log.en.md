@@ -26,13 +26,12 @@ jobs:
       target-date: 2026-09-08
       author: Jane Doe
       prompt: Write a Markdown development log from the commit history.
-      output-directory: Chronicle/blog
       tag: development-log
     secrets:
       API_KEY: ${{ secrets.API_KEY }}
 ```
 
-With `output-directory: Chronicle/blog` and `tag: development-log`, the generated file is `${target-date}-development-log.md`. The result is always available as the `generated-content` artifact:
+With `tag: development-log`, the generated file is created in the job workspace as `${target-date}-development-log.md`. The result is always available as the `generated-content` artifact. Download it to the destination directory required by the next job:
 
 ```yaml
 - uses: actions/download-artifact@v4

@@ -26,13 +26,12 @@ jobs:
       target-date: 2026-09-08
       author: 홍길동
       prompt: 커밋 기록을 바탕으로 한국어 개발일지를 Markdown으로 작성해줘.
-      output-directory: Chronicle/blog
       tag: development-log
     secrets:
       API_KEY: ${{ secrets.API_KEY }}
 ```
 
-`output-directory`가 `Chronicle/blog`이고 `tag`가 `development-log`이면 결과 파일은 `${target-date}-development-log.md`로 생성됩니다. 생성 결과는 항상 `generated-content` Artifact로 제공됩니다.
+`tag`가 `development-log`이면 Job 작업 공간의 루트에 `${target-date}-development-log.md` 파일이 생성됩니다. 생성 결과는 항상 `generated-content` Artifact로 제공되며, 다음 Job에서 필요한 대상 디렉터리로 다운로드해야 합니다.
 
 ```yaml
 - uses: actions/download-artifact@v4

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.7
+
+- Changed `generate-commit-log` to create generated files in the job workspace root and pass them through the `generated-content` artifact.
+
 ## 0.2.6
 
 - Renamed the Notion URL input to `source-url`.

@@ -40,10 +40,6 @@ on:
       prompt:
         required: true
         type: string
-      output-directory:
-        description: Directory where the generated file is created
-        required: true
-        type: string
       tag:
         description: Tag included in the generated file name
         required: true
@@ -87,11 +83,6 @@ jobs:
           author: ${{ inputs.author }}
           authors: ${{ inputs.authors }}
 
-      - name: Prepare output directory
-        if: steps.collect.outputs.has-content == 'true'
-        shell: bash
-        run: mkdir -p "${{ inputs.output-directory }}"
-
       - id: generate
         if: steps.collect.outputs.has-content == 'true'
         uses: Sunnymoon724/kozae-forge/actions/generate-content@main
@@ -103,7 +94,7 @@ jobs:
           date: ${{ steps.time-range.outputs.date }}
           content: ${{ steps.collect.outputs.commits }}
           prompt: ${{ inputs.prompt }}
-          output-file: ${{ inputs.output-directory }}/${{ steps.time-range.outputs.date }}-${{ inputs.tag }}.md
+          output-file: ./${{ steps.time-range.outputs.date }}-${{ inputs.tag }}.md
           api-key: ${{ secrets.API_KEY }}
 
       - name: Upload generated content

@@ -24,6 +24,7 @@ KoZae Forge is a collection of reusable GitHub Actions for KoZae projects.
 - Use `Documents/Templates/action.yml` as the structure for new composite Action definitions.
 - Write the English documentation first using the applicable template, then create the matching Korean documentation with the same structure when documentation is required.
 - When an Action or Workflow is added, removed, renamed, or changed, update its related documentation and the appropriate README entries in the same change.
+- Whenever a YAML workflow or Action file is modified, update its related English and Korean documentation in the same change.
 - After adding or modifying documentation, update the related Workflow or README when the documented usage, links, or feature list is affected.
 - When a Workflow is added or removed, increment the minor version in `VERSION` and reset the patch version to `0` (for example, `1.2.3` to `1.3.0`).
 - When a Workflow is modified, or an Action is added, removed, or modified, increment the patch version in `VERSION` (for example, `1.2.3` to `1.2.4`).
