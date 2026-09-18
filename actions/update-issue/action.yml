@@ -1,0 +1,29 @@
+name: Update issue
+description: Update a destination issue title and body from source issue data
+inputs:
+  token:
+    description: GitHub token with destination repository issue write access
+    required: true
+  destination-repository:
+    description: Destination repository in owner/name format
+    required: true
+  issue-number:
+    description: Destination issue number
+    required: true
+  issue:
+    description: Source issue JSON object
+    required: true
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.token }}
+        DESTINATION_REPOSITORY: ${{ inputs.destination-repository }}
+        ISSUE_NUMBER: ${{ inputs.issue-number }}
+        ISSUE: ${{ inputs.issue }}
+      run: |
+        set -euo pipefail
+        source_number=$(jq -r '.number' <<<"${ISSUE}")
+        payload=$(jq -n --arg title "$(jq -r '.title' <<<"${ISSUE}")" --arg body "$(jq -r '.body // ""' <<<"${ISSUE}")" --arg marker "<!-- kozae-forge-mirror:source-issue=${source_number} -->" '{title:$title,body:($body+"\n\n"+$marker)}')
+        gh api "repos/${DESTINATION_REPOSITORY}/issues/${ISSUE_NUMBER}" --method PATCH --input <(printf '%s' "${payload}") >/dev/null

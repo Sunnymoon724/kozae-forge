@@ -1,0 +1,23 @@
+name: Resolve Notion data source
+description: Resolve a Notion database URL to its data source ID
+inputs:
+  source-url: { required: true, description: Notion database URL }
+  notion-token: { required: true, description: Notion integration token }
+outputs:
+  data-source-id:
+    description: Resolved Notion data source ID
+    value: ${{ steps.resolve.outputs.data-source-id }}
+runs:
+  using: composite
+  steps:
+    - id: resolve
+      shell: bash
+      env:
+        SOURCE_URL: ${{ inputs.source-url }}
+        NOTION_TOKEN: ${{ inputs.notion-token }}
+      run: |
+        set -euo pipefail
+        database_id="$(sed -E 's/[?#].*$//' <<< "$SOURCE_URL" | sed -E 's#.*/##' | sed -E 's/[^0-9A-Fa-f-].*$//' | tr -d '-')"
+        [[ "$database_id" =~ ^[0-9a-fA-F]{32}$ ]]
+        response="$(curl --fail-with-body --silent --show-error "https://api.notion.com/v1/databases/$database_id" -H "Authorization: Bearer $NOTION_TOKEN" -H 'Notion-Version: 2026-03-11')"
+        echo "data-source-id=$(jq -er '.data_sources[0].id' <<< "$response" | tr -d '-')" >> "$GITHUB_OUTPUT"

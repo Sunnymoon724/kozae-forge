@@ -1,24 +1,39 @@
 name: Save content
-description: Save a Markdown content file to a specified path.
-
+description: Save inline content or an existing file to a target path
 inputs:
+  file-path:
+    description: Target file path relative to the workspace
+    required: true
+  content:
+    description: Optional inline content to save
+    required: false
+    default: ''
   source-file:
-    description: Source Markdown file to save
-    required: true
-  output-file:
-    description: Destination path for the Markdown file
-    required: true
-
+    description: Optional existing file to copy to the target path
+    required: false
+    default: ''
 runs:
   using: composite
   steps:
     - name: Save content
       shell: bash
       env:
+        FILE_PATH: ${{ inputs.file-path }}
+        CONTENT: ${{ inputs.content }}
         SOURCE_FILE: ${{ inputs.source-file }}
-        OUTPUT_FILE: ${{ inputs.output-file }}
       run: |
         set -euo pipefail
-        test -f "$SOURCE_FILE"
-        mkdir -p "$(dirname "$OUTPUT_FILE")"
-        cp "$SOURCE_FILE" "$OUTPUT_FILE"
+        if [ -n "$CONTENT" ] && [ -n "$SOURCE_FILE" ]; then
+          echo "Specify either content or source-file, not both." >&2
+          exit 1
+        fi
+        mkdir -p "$(dirname "$FILE_PATH")"
+        if [ -n "$SOURCE_FILE" ]; then
+          test -f "$SOURCE_FILE"
+          cp "$SOURCE_FILE" "$FILE_PATH"
+        elif [ -n "$CONTENT" ]; then
+          printf '%s\n' "$CONTENT" > "$FILE_PATH"
+        else
+          echo "Specify content or source-file." >&2
+          exit 1
+        fi

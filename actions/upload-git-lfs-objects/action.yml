@@ -1,0 +1,26 @@
+name: Upload Git LFS objects
+description: Upload Git LFS objects to a configured remote branch
+inputs:
+  repository-directory:
+    description: Directory of the Git repository
+    required: true
+  remote-name:
+    description: Name of the configured Git remote
+    required: false
+    default: public
+  branch:
+    description: Branch whose LFS objects are uploaded
+    required: false
+    default: main
+runs:
+  using: composite
+  steps:
+    - name: Upload Git LFS objects
+      shell: bash
+      working-directory: ${{ inputs.repository-directory }}
+      env:
+        REMOTE_NAME: ${{ inputs.remote-name }}
+        BRANCH: ${{ inputs.branch }}
+      run: |
+        set -euo pipefail
+        git lfs push --all "$REMOTE_NAME" "$BRANCH"

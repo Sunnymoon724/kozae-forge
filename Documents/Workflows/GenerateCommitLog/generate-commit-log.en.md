@@ -4,8 +4,8 @@
 
 1. Calculate the previous day's time range using the selected timezone.
 2. `collect-commits` collects commits as text.
-3. `generate-content` uses AI to write content in the requested format.
-4. The generated content is created in the job's temporary workspace as `${date}-${tag}.md`.
+3. `prepare-content`, `validate-content-size`, and `request-content` use AI to write content in the requested format.
+4. `write-content` saves the generated content in the job's temporary workspace as `${date}-${tag}.md`.
 5. The generated file is always uploaded as the `generated-content` artifact.
 
 This workflow does not persist or commit files to the repository. Use the `save-content` Action in a later job to restore the artifact to its workspace, then commit and push it separately if needed.
@@ -13,6 +13,16 @@ This workflow does not persist or commit files to the repository. Use the `save-
 The workflow processes `target-date` from 00:00 through the following day's 00:00.
 
 ## 2. Usage
+
+### Token registration
+
+Register the `API_KEY` Actions secret required by the AI provider.
+
+### Input configuration
+
+Configure the workflow inputs shown in the example below.
+
+### Workflow configuration
 
 ```yaml
 jobs:
@@ -24,7 +34,7 @@ jobs:
       model: gpt-4o-mini
       max-content-bytes: 100000
       target-date: 2026-09-08
-      author: Jane Doe
+      authors: Jane Doe
       prompt: Write a Markdown development log from the commit history.
       tag: development-log
     secrets:
@@ -42,5 +52,8 @@ With `tag: development-log`, the generated file is created in the job workspace 
 ## 3. Actions used
 
 - `collect-commits`
-- `generate-content`
+- `prepare-content`
+- `validate-content-size`
+- `request-content`
+- `save-content`
 - `actions/upload-artifact`

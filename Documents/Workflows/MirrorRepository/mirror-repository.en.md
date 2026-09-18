@@ -8,7 +8,7 @@ The workflow checks the destination repository, clones it, uploads Git LFS objec
 
 ## 2. Usage
 
-### Token setup
+### Token registration
 
 Add a `PUBLIC_REPO_TOKEN` Actions secret to the source repository.
 
@@ -52,7 +52,7 @@ Format:
 OWNER/DESTINATION-REPOSITORY
 ```
 
-### Add the workflow
+### Workflow configuration
 
 Create `.github/workflows/mirror-repository.yml` in the source repository:
 
@@ -77,7 +77,8 @@ jobs:
 ## 3. Actions used
 
 - `verify-repository`
-- `upload-lfs`
+- `configure-lfs-remote`
+- `upload-git-lfs-objects`
 - `sync-files`
 - `commit-changes`
 - `push-changes`

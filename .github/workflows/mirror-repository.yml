@@ -43,11 +43,17 @@ jobs:
           repository: ${{ inputs.destination-repository }}
           destination-directory: destination-repo
 
-      - name: Upload lfs objects
-        uses: Sunnymoon724/kozae-forge/actions/upload-lfs@main
+      - name: Configure Git LFS remote
+        uses: Sunnymoon724/kozae-forge/actions/configure-lfs-remote@main
         with:
+          repository-directory: .
           token: ${{ secrets.PUBLIC_REPO_TOKEN }}
           repository: ${{ inputs.destination-repository }}
+
+      - name: Upload lfs objects
+        uses: Sunnymoon724/kozae-forge/actions/upload-git-lfs-objects@main
+        with:
+          repository-directory: .
 
       - name: Synchronize allowed files
         uses: Sunnymoon724/kozae-forge/actions/sync-files@main

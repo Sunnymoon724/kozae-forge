@@ -1,0 +1,62 @@
+name: Publish Notion page
+
+on:
+  workflow_call:
+    inputs:
+      content-file:
+        description: Repository-relative path of the content file
+        required: true
+        type: string
+      parent-page-id:
+        description: Notion parent page ID for a new page
+        required: true
+        type: string
+      title:
+        description: Notion page title used to find or create the page
+        required: true
+        type: string
+    secrets:
+      notion-token:
+        description: Notion integration token
+        required: true
+    outputs:
+      page-id:
+        description: Created or updated Notion page ID
+        value: ${{ jobs.publish.outputs.page-id }}
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    outputs:
+      page-id: ${{ steps.find.outputs.page-id || steps.create.outputs.page-id }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: find
+        uses: Sunnymoon724/kozae-forge/actions/find-notion-page@main
+        with:
+          title: ${{ inputs.title }}
+          parent-page-id: ${{ inputs.parent-page-id }}
+          notion-token: ${{ secrets.notion-token }}
+
+      - id: create
+        if: steps.find.outputs.page-id == ''
+        uses: Sunnymoon724/kozae-forge/actions/create-notion-page@main
+        with:
+          content-file: ${{ inputs.content-file }}
+          parent-page-id: ${{ inputs.parent-page-id }}
+          title: ${{ inputs.title }}
+          notion-token: ${{ secrets.notion-token }}
+
+      - if: steps.find.outputs.page-id != ''
+        uses: Sunnymoon724/kozae-forge/actions/clear-notion-page@main
+        with:
+          page-id: ${{ steps.find.outputs.page-id }}
+          notion-token: ${{ secrets.notion-token }}
+
+      - if: steps.find.outputs.page-id != ''
+        uses: Sunnymoon724/kozae-forge/actions/append-notion-page-content@main
+        with:
+          content-file: ${{ inputs.content-file }}
+          page-id: ${{ steps.find.outputs.page-id }}
+          notion-token: ${{ secrets.notion-token }}

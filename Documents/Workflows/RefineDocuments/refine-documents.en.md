@@ -3,16 +3,25 @@
 ## 1. Process
 
 1. Check out the calling repository.
-2. `map-document-sources` connects source and destination documents according to the mapping file and synchronization mode.
-3. `generate-content` rewrites each document from the source and template.
-4. Upload generated Chronicle pages to per-document artifacts.
-5. Combine the uploaded pages into the `refined-documents` artifact.
+2. `collect-document-sources` collects source documents according to the mapping file and synchronization mode.
+3. `map-document-targets` connects the selected source and destination documents.
+4. `prepare-content`, `validate-content-size`, `request-content`, and `write-content` rewrite each document from the source and template.
+5. Upload generated Chronicle pages to per-document artifacts.
+6. Combine the uploaded pages into the `refined-documents` artifact.
 
 This workflow does not directly save files or publish them externally.
 
 Set `sync-mode` to `changed` (changed documents) or `full` (all documents).
 
 ## 2. Usage
+
+### Token registration
+
+Register the `api-key` secret required by the AI provider.
+
+### Input configuration
+
+Configure the workflow inputs shown in the example below.
 
 ### Prepare the mapping file
 
@@ -30,7 +39,7 @@ Add a JSON mapping file to the calling repository that connects source and desti
 }
 ```
 
-### Call the workflow
+### Workflow configuration
 
 Call the reusable workflow from an external workflow. `sync-mode` is required, and `base-ref` must also be provided when using `changed`.
 
@@ -66,7 +75,11 @@ When run with `full`, all documents are processed. The result files are availabl
 ## 3. Actions used
 
 - `actions/checkout`
-- `map-document-sources`
-- `generate-content`
+- `collect-document-sources`
+- `map-document-targets`
+- `prepare-content`
+- `validate-content-size`
+- `request-content`
+- `save-content`
 - `actions/upload-artifact`
 - `actions/download-artifact`

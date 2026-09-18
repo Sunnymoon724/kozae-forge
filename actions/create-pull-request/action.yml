@@ -1,11 +1,8 @@
 name: Create pull request
-description: Download generated content and create a pull request with the changes.
+description: Create a pull request with workspace changes
 inputs:
   token:
     description: GitHub token used to create the pull request
-    required: true
-  artifact-name:
-    description: Name of the artifact containing the generated files
     required: true
   branch:
     description: Branch used for the pull request
@@ -30,12 +27,6 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Download generated content
-      uses: actions/download-artifact@v4
-      with:
-        name: ${{ inputs.artifact-name }}
-        path: .
-
     - name: Create pull request
       uses: peter-evans/create-pull-request@v7
       with:

@@ -1,0 +1,36 @@
+name: Prepare content
+description: Read optional source and template files and expose the content
+inputs:
+  content:
+    description: Inline content used when no source file is provided
+    required: false
+    default: ''
+  source-file:
+    description: Optional file whose content replaces inline content
+    required: false
+    default: ''
+  template-file:
+    description: Optional template file appended to the content
+    required: false
+    default: ''
+outputs:
+  content:
+    description: Prepared content
+    value: ${{ steps.prepare.outputs.content }}
+runs:
+  using: composite
+  steps:
+    - id: prepare
+      shell: bash
+      env:
+        CONTENT: ${{ inputs.content }}
+        SOURCE_FILE: ${{ inputs.source-file }}
+        TEMPLATE_FILE: ${{ inputs.template-file }}
+      run: |
+        set -euo pipefail
+        if [ -n "$SOURCE_FILE" ]; then CONTENT="$(cat "$SOURCE_FILE")"; fi
+        if [ -n "$TEMPLATE_FILE" ]; then
+          test -f "$TEMPLATE_FILE"
+          CONTENT="${CONTENT}"$'\n\n## Template\n\n'"$(cat "$TEMPLATE_FILE")"
+        fi
+        { echo 'content<<EOF'; echo "$CONTENT"; echo EOF; } >> "$GITHUB_OUTPUT"

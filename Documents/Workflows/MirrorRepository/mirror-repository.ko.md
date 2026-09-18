@@ -8,7 +8,7 @@
 
 ## 2. 사용 방법
 
-### Token 등록
+### Token registration
 
 원본 저장소에 `PUBLIC_REPO_TOKEN` Actions Secret을 등록합니다.
 
@@ -52,7 +52,7 @@ path/to/private-file.ext
 OWNER/DESTINATION-REPOSITORY
 ```
 
-### Workflow 추가
+### Workflow configuration
 
 원본 저장소에 `.github/workflows/mirror-repository.yml`을 만들고 다음을 작성합니다.
 
@@ -77,7 +77,8 @@ jobs:
 ## 3. 사용 Action
 
 - `verify-repository`
-- `upload-lfs`
+- `configure-lfs-remote`
+- `upload-git-lfs-objects`
 - `sync-files`
 - `commit-changes`
 - `push-changes`

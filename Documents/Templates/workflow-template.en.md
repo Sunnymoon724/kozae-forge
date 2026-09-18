@@ -2,12 +2,34 @@
 
 A reusable GitHub Actions Workflow that [describe the workflow].
 
-## Process
+## 1. Process
 
 1. [Describe the first step.]
 2. [Describe the second step.]
 
-## Usage
+## 2. Usage
+
+### Token registration
+
+Register the required Actions secrets in the source repository.
+
+```text
+Settings → Secrets and variables → Actions
+```
+
+Secret name:
+
+```text
+SECRET_NAME
+```
+
+### Input configuration
+
+| Input | Required | Default | Description |
+|---|---:|---|---|
+| `input-name` | Yes | - | Description of the input |
+
+### Workflow configuration
 
 ```yaml
 name: Workflow name
@@ -26,6 +48,6 @@ jobs:
       SECRET_NAME: ${{ secrets.SECRET_NAME }}
 ```
 
-## Actions used
+## 3. Actions used
 
 - `action-name`

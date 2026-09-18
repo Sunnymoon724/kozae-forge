@@ -14,11 +14,6 @@ on:
         description: Date to generate the commit log for in YYYY-MM-DD format
         required: true
         type: string
-      author:
-        description: Optional commit author name or email filter
-        required: false
-        default: ''
-        type: string
       authors:
         description: Optional comma-separated commit author names or email filters
         required: false
@@ -61,7 +56,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       has-content: ${{ steps.collect.outputs.has-content }}
-      file-name: ${{ steps.generate.outputs.file-name }}
+      file-name: ${{ inputs.output-directory }}/${{ steps.time-range.outputs.date }}-${{ inputs.tag }}.md
     steps:
       - uses: actions/checkout@v4
         with:
@@ -75,31 +70,59 @@ jobs:
           target-date: ${{ inputs.target-date }}
 
       - id: collect
-        uses: Sunnymoon724/kozae-forge/actions/collect-commits@main
+        uses: Sunnymoon724/kozae-forge/actions/collect-git-commits@main
         with:
           start-time: ${{ steps.time-range.outputs.start-time }}
           end-time: ${{ steps.time-range.outputs.end-time }}
           timezone: ${{ inputs.timezone }}
-          author: ${{ inputs.author }}
           authors: ${{ inputs.authors }}
 
+<<<<<<< HEAD
       - id: generate
+=======
+      - name: Prepare output directory
         if: steps.collect.outputs.has-content == 'true'
-        uses: Sunnymoon724/kozae-forge/actions/generate-content@main
+        shell: bash
+        run: mkdir -p "${{ inputs.output-directory }}"
+
+      - id: request
+>>>>>>> de25ec34ac4186d9d783685bc7b53af9cc48d184
+        if: steps.collect.outputs.has-content == 'true'
+        uses: Sunnymoon724/kozae-forge/actions/prepare-content@main
+        with:
+          content: ${{ steps.collect.outputs.commits }}
+
+      - if: steps.collect.outputs.has-content == 'true'
+        uses: Sunnymoon724/kozae-forge/actions/validate-content-size@main
+        with:
+          content: ${{ steps.request.outputs.content }}
+          max-content-bytes: ${{ inputs.max-content-bytes }}
+
+      - id: generated
+        if: steps.collect.outputs.has-content == 'true'
+        uses: Sunnymoon724/kozae-forge/actions/request-content@main
         with:
           provider: ${{ inputs.provider }}
           api-base: ${{ inputs.api-base }}
           model: ${{ inputs.model }}
-          max-content-bytes: ${{ inputs.max-content-bytes }}
-          date: ${{ steps.time-range.outputs.date }}
-          content: ${{ steps.collect.outputs.commits }}
           prompt: ${{ inputs.prompt }}
+<<<<<<< HEAD
           output-file: ./${{ steps.time-range.outputs.date }}-${{ inputs.tag }}.md
+=======
+          content: ${{ steps.request.outputs.content }}
+>>>>>>> de25ec34ac4186d9d783685bc7b53af9cc48d184
           api-key: ${{ secrets.API_KEY }}
+
+      - id: generate
+        if: steps.collect.outputs.has-content == 'true'
+        uses: Sunnymoon724/kozae-forge/actions/save-content@main
+        with:
+          file-path: ${{ inputs.output-directory }}/${{ steps.time-range.outputs.date }}-${{ inputs.tag }}.md
+          content: ${{ steps.generated.outputs.content }}
 
       - name: Upload generated content
         if: steps.collect.outputs.has-content == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: generated-content
-          path: ${{ steps.generate.outputs.file-name }}
+          path: ${{ inputs.output-directory }}/${{ steps.time-range.outputs.date }}-${{ inputs.tag }}.md
