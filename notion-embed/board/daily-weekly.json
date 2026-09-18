@@ -1,0 +1,24 @@
+{
+  "columns": [
+    {
+      "label": "일일보고",
+      "badge": { "bg": "#e1f5ee", "text": "#04342c" },
+      "items": [
+        { "title": "📄 09/16", "sub": "September 16, 2026" },
+        { "title": "📄 09/15", "sub": "September 15, 2026" },
+        { "title": "📄 09/13", "sub": "September 13, 2026" },
+        { "title": "📄 09/12", "sub": "September 12, 2026" },
+        { "title": "📄 09/11", "sub": "September 11, 2026" },
+        { "title": "📄 09/10", "sub": "September 10, 2026" },
+        { "title": "📄 09/09", "sub": "September 9, 2026" }
+      ]
+    },
+    {
+      "label": "주간보고",
+      "badge": { "bg": "#faece7", "text": "#4a1b0c" },
+      "items": [
+        { "title": "📄 9월 7일~9월 13일 주간보고", "sub": "September 13, 2026" }
+      ]
+    }
+  ]
+}
