@@ -10,7 +10,7 @@ Private 원본 저장소에서 `mirror:public` 라벨이 붙은 이슈를 Public
 
 ### 토큰 등록
 
-원본 저장소에 `PUBLIC_REPO_TOKEN` Actions Secret을 등록합니다. 이 Token은 대상 이슈 쓰기 권한이 필요하며, 원본 이슈는 호출 저장소의 `GITHUB_TOKEN`으로 조회합니다.
+원본 저장소에 `DESTINATION_REPO_TOKEN` Actions Secret을 등록합니다. 이 Token은 대상 이슈 쓰기 권한이 필요하며, 원본 이슈는 호출 저장소의 `GITHUB_TOKEN`으로 조회합니다.
 
 ```text
 Settings → Secrets and variables → Actions
@@ -19,14 +19,14 @@ Settings → Secrets and variables → Actions
 Secret 이름:
 
 ```text
-PUBLIC_REPO_TOKEN
+DESTINATION_REPO_TOKEN
 ```
 
 호출하는 저장소의 Workflow에서 이 Secret을 재사용 Workflow에 전달합니다.
 
 ```yaml
 secrets:
-  PUBLIC_REPO_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
+  DESTINATION_REPO_TOKEN: ${{ secrets.DESTINATION_REPO_TOKEN }}
 ```
 
 ### 입력값 설정
@@ -63,7 +63,7 @@ jobs:
       sync-milestones: false
       sync-assignees: false
     secrets:
-      PUBLIC_REPO_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
+      DESTINATION_REPO_TOKEN: ${{ secrets.DESTINATION_REPO_TOKEN }}
 ```
 
 ## 3. 사용 Action

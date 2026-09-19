@@ -28,7 +28,7 @@ on:
         default: false
         type: boolean
     secrets:
-      PUBLIC_REPO_TOKEN:
+      DESTINATION_REPO_TOKEN:
         required: true
 
 permissions:
@@ -59,7 +59,7 @@ jobs:
       - id: find
         uses: Sunnymoon724/kozae-forge/actions/find-mirrored-issue@main
         with:
-          token: ${{ secrets.PUBLIC_REPO_TOKEN }}
+          token: ${{ secrets.DESTINATION_REPO_TOKEN }}
           destination-repository: ${{ inputs.destination-repository }}
           source-issue-number: ${{ matrix.issue.number }}
 

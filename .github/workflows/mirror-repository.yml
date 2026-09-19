@@ -17,7 +17,7 @@ on:
         required: true
         type: string
     secrets:
-      PUBLIC_REPO_TOKEN:
+      DESTINATION_REPO_TOKEN:
         required: true
 
 permissions:
@@ -57,7 +57,7 @@ jobs:
       - name: Upload lfs objects
         uses: Sunnymoon724/kozae-forge/actions/upload-git-lfs-objects@main
         with:
-          token: ${{ secrets.PUBLIC_REPO_TOKEN }}
+          token: ${{ secrets.DESTINATION_REPO_TOKEN }}
           repository-directory: .
 
       - name: Copy allowed files

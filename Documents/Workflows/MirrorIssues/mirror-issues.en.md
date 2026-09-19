@@ -10,7 +10,7 @@ The source issues are read, and only issues with the configured visibility label
 
 ### Token registration
 
-Register the `PUBLIC_REPO_TOKEN` Actions secret in the source repository. The token must write destination issues. The calling repository's `GITHUB_TOKEN` reads source issues.
+Register the `DESTINATION_REPO_TOKEN` Actions secret in the source repository. The token must write destination issues. The calling repository's `GITHUB_TOKEN` reads source issues.
 
 ```text
 Settings → Secrets and variables → Actions
@@ -19,14 +19,14 @@ Settings → Secrets and variables → Actions
 Secret name:
 
 ```text
-PUBLIC_REPO_TOKEN
+DESTINATION_REPO_TOKEN
 ```
 
 Pass this Secret to the reusable Workflow from the calling repository:
 
 ```yaml
 secrets:
-  PUBLIC_REPO_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
+  DESTINATION_REPO_TOKEN: ${{ secrets.DESTINATION_REPO_TOKEN }}
 ```
 
 ### Input configuration
@@ -63,7 +63,7 @@ jobs:
       sync-milestones: false
       sync-assignees: false
     secrets:
-      PUBLIC_REPO_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
+      DESTINATION_REPO_TOKEN: ${{ secrets.DESTINATION_REPO_TOKEN }}
 ```
 
 ## 3. Actions used
