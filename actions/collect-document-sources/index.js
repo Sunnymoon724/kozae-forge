@@ -28,3 +28,4 @@ if (mode === 'full') {
 
 const sourceFiles = [...new Set(files.map((file) => file.replace(/\\/g, '/')).filter((file) => /\.md$/i.test(file)))].join('\n');
 fs.appendFileSync(process.env.GITHUB_OUTPUT, `source-files<<EOF\n${sourceFiles}\nEOF\n`);
+for (const [name, value] of Object.entries(process.env)) if (name.startsWith('INPUT_')) process.env[name.replaceAll('-', '_')] = value;

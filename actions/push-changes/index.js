@@ -4,3 +4,4 @@ const result = spawnSync('git', ['push', 'origin', `HEAD:${process.env.INPUT_BRA
 if (result.error) throw result.error;
 if (result.signal) throw new Error(`git push timed out or was terminated: ${result.signal}`);
 if (result.status !== 0) process.exit(result.status || 1);
+for (const [name, value] of Object.entries(process.env)) if (name.startsWith('INPUT_')) process.env[name.replaceAll('-', '_')] = value;

@@ -1,5 +1,7 @@
 const {spawnSync} = require('node:child_process');
 
+for (const [name, value] of Object.entries(process.env)) if (name.startsWith('INPUT_')) process.env[name.replaceAll('-', '_')] = value;
+
 const command = process.platform === 'win32' ? 'npm.cmd' : 'npm';
 const options = {cwd: process.env.INPUT_WORKING_DIRECTORY, stdio: 'inherit', shell: process.platform === 'win32'};
 for (const args of [['ci'], ['run', 'build']]) {

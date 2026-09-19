@@ -47,3 +47,4 @@ for (const rawSource of sourceFiles) {
 }
 
 fs.appendFileSync(process.env.GITHUB_OUTPUT, `matrix=${JSON.stringify({include})}\nhas-sources=${include.length > 0}\n`);
+for (const [name, value] of Object.entries(process.env)) if (name.startsWith('INPUT_')) process.env[name.replaceAll('-', '_')] = value;

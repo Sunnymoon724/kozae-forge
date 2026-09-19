@@ -1,1 +1,2 @@
 async function main() { const r = await fetch(`https://api.github.com/repos/${process.env.INPUT_REPOSITORY}`, {headers: {Authorization: `Bearer ${process.env.INPUT_TOKEN}`, Accept: 'application/vnd.github+json'}}); if (!r.ok) throw new Error(await r.text()); if (!(await r.json()).permissions?.push) throw new Error('Token does not have push permission.'); } main().catch((e) => { console.error(e); process.exit(1); });
+for (const [name, value] of Object.entries(process.env)) if (name.startsWith('INPUT_')) process.env[name.replaceAll('-', '_')] = value;

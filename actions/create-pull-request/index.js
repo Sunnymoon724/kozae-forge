@@ -32,3 +32,4 @@ async function main() {
 }
 
 main().catch((error) => { console.error(error); process.exit(1); });
+for (const [name, value] of Object.entries(process.env)) if (name.startsWith('INPUT_')) process.env[name.replaceAll('-', '_')] = value;

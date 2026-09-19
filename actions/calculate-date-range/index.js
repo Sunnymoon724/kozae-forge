@@ -1,5 +1,7 @@
 const {appendFileSync} = require('node:fs');
 
+for (const [name, value] of Object.entries(process.env)) if (name.startsWith('INPUT_')) process.env[name.replaceAll('-', '_')] = value;
+
 process.env.TZ = process.env.INPUT_TIMEZONE;
 const targetDate = process.env.INPUT_TARGET_DATE;
 const date = new Date(`${targetDate}T00:00:00`);
@@ -11,3 +13,4 @@ const format = (value) => {
   return `${value.getFullYear()}-${pad(value.getMonth() + 1)}-${pad(value.getDate())} ${pad(value.getHours())}:${pad(value.getMinutes())}`;
 };
 appendFileSync(process.env.GITHUB_OUTPUT, `start-time=${format(date)}\nend-time=${format(next)}\ndate=${targetDate}\n`);
+for (const [name, value] of Object.entries(process.env)) if (name.startsWith('INPUT_')) process.env[name.replaceAll('-', '_')] = value;
