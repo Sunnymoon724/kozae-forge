@@ -71,11 +71,11 @@ jobs:
       - name: Commit changes
         uses: Sunnymoon724/kozae-forge/actions/commit-changes@main
         with:
-          token: ${{ secrets.PUBLIC_REPO_TOKEN }}
           destination-directory: destination-repo
 
       - name: Push changes
         uses: Sunnymoon724/kozae-forge/actions/push-changes@main
         with:
+          token: ${{ secrets.PUBLIC_REPO_TOKEN }}
           destination-directory: destination-repo
           branch: main
