@@ -1,6 +1,9 @@
 name: Push changes
 description: Push committed changes to a remote branch
 inputs:
+  token:
+    description: GitHub token with destination repository write access
+    required: true
   destination-directory: {description: Directory of the Git repository, required: false, default: public-repo}
   branch: {description: Branch to push, required: false, default: main}
 runs: {using: node24, main: index.js}

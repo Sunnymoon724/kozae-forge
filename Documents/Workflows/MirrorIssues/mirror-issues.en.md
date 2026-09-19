@@ -22,6 +22,13 @@ Secret name:
 PUBLIC_REPO_TOKEN
 ```
 
+Pass this Secret to the reusable Workflow from the calling repository:
+
+```yaml
+secrets:
+  PUBLIC_REPO_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
+```
+
 ### Input configuration
 
 | Input | Required | Default | Description |

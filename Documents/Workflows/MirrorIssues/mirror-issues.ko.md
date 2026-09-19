@@ -22,6 +22,13 @@ Secret 이름:
 PUBLIC_REPO_TOKEN
 ```
 
+호출하는 저장소의 Workflow에서 이 Secret을 재사용 Workflow에 전달합니다.
+
+```yaml
+secrets:
+  PUBLIC_REPO_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
+```
+
 ### 입력값 설정
 
 | 인자 | 필수 | 기본값 | 설명 |

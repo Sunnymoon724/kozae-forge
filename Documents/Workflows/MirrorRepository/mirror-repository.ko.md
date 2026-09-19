@@ -24,6 +24,13 @@ Secret 이름:
 PUBLIC_REPO_TOKEN
 ```
 
+호출하는 저장소의 Workflow에서 이 Secret을 재사용 Workflow에 전달합니다.
+
+```yaml
+secrets:
+  PUBLIC_REPO_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
+```
+
 ### 제외 목록 작성
 
 원본 저장소 안에 제외 목록 파일을 만듭니다.
@@ -81,6 +88,21 @@ jobs:
       exclude-file: Sources/mirror-exclude.list
     secrets:
       PUBLIC_REPO_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
+```
+
+Workflow는 대상 저장소에 접근하는 Action에 `PUBLIC_REPO_TOKEN`을 전달합니다. `configure-lfs-remote`는 원격 URL만 구성하며, `upload-git-lfs-objects`와 `push-changes`가 `token` 입력값으로 Token을 받습니다.
+
+```yaml
+- uses: Sunnymoon724/kozae-forge/actions/configure-lfs-remote@main
+  with:
+    repository-directory: .
+    repository: OWNER/REPOSITORY
+
+- uses: Sunnymoon724/kozae-forge/actions/push-changes@main
+  with:
+    token: ${{ secrets.PUBLIC_REPO_TOKEN }}
+    destination-directory: destination-repo
+    branch: main
 ```
 
 ## 3. 사용 Action

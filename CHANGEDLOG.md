@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.4.1
+
+- Fixed GitHub Token input forwarding and replaced token-bearing Git URLs with authorization headers for clone, LFS upload, and push operations.
+- Updated related English and Korean documentation.
+
 ## 0.4.0
 
 - Replaced the `sync-files` Action with `copy-folder` and added exclusion-list support.
@@ -7,6 +12,7 @@
 - Added an optional `runner` input to every reusable Workflow, defaulting to `ubuntu-latest`.
 - Replaced the remaining Bash file staging step in `refine-documents` with the cross-platform `copy-file` Action.
 - Fixed hyphenated input handling across all Node.js Actions and added a non-interactive push timeout.
+- Replaced token-bearing Git URLs with HTTP authorization headers for clone, LFS upload, and push operations.
 - Updated related workflows, English and Korean documentation, and README entries.
 
 ## 0.3.16

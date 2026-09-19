@@ -24,6 +24,13 @@ Secret name:
 PUBLIC_REPO_TOKEN
 ```
 
+Pass this Secret to the reusable Workflow from the calling repository:
+
+```yaml
+secrets:
+  PUBLIC_REPO_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
+```
+
 ### Exclusion list
 
 Create an exclusion list file in the source repository.
@@ -81,6 +88,21 @@ jobs:
       exclude-file: Sources/mirror-exclude.list
     secrets:
       PUBLIC_REPO_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
+```
+
+The Workflow passes `PUBLIC_REPO_TOKEN` to the Actions that access the destination repository. `configure-lfs-remote` only configures the remote URL; `upload-git-lfs-objects` and `push-changes` receive the token through their `token` input.
+
+```yaml
+- uses: Sunnymoon724/kozae-forge/actions/configure-lfs-remote@main
+  with:
+    repository-directory: .
+    repository: OWNER/REPOSITORY
+
+- uses: Sunnymoon724/kozae-forge/actions/push-changes@main
+  with:
+    token: ${{ secrets.PUBLIC_REPO_TOKEN }}
+    destination-directory: destination-repo
+    branch: main
 ```
 
 ## 3. Actions used

@@ -52,12 +52,12 @@ jobs:
         uses: Sunnymoon724/kozae-forge/actions/configure-lfs-remote@main
         with:
           repository-directory: .
-          token: ${{ secrets.PUBLIC_REPO_TOKEN }}
           repository: ${{ inputs.destination-repository }}
 
       - name: Upload lfs objects
         uses: Sunnymoon724/kozae-forge/actions/upload-git-lfs-objects@main
         with:
+          token: ${{ secrets.PUBLIC_REPO_TOKEN }}
           repository-directory: .
 
       - name: Copy allowed files
@@ -71,6 +71,7 @@ jobs:
       - name: Commit changes
         uses: Sunnymoon724/kozae-forge/actions/commit-changes@main
         with:
+          token: ${{ secrets.PUBLIC_REPO_TOKEN }}
           destination-directory: destination-repo
 
       - name: Push changes

@@ -1,8 +1,7 @@
 name: Configure Git LFS remote
-description: Configure an authenticated Git remote for Git LFS uploads
+description: Configure a Git remote for Git LFS uploads
 inputs:
   repository-directory: {description: Directory of the Git repository, required: true}
-  token: {description: GitHub token for the destination repository, required: true}
   repository: {description: Destination repository in owner/name format, required: true}
   remote-name: {description: Name assigned to the Git remote, required: false, default: public}
 runs: {using: node24, main: index.js}
