@@ -3,6 +3,7 @@
 ## 0.4.1
 
 - Fixed GitHub Token input forwarding and replaced token-bearing Git URLs with authorization headers for clone, LFS upload, and push operations.
+- Renamed the destination repository Secret from `PUBLIC_REPO_TOKEN` to `DESTINATION_REPO_TOKEN` for public and private destinations.
 - Updated related English and Korean documentation.
 
 ## 0.4.0

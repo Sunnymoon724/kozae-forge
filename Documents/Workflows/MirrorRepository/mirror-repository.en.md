@@ -87,7 +87,7 @@ jobs:
       destination-repository: OWNER/DESTINATION-REPOSITORY
       exclude-file: Sources/mirror-exclude.list
     secrets:
-      PUBLIC_REPO_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
+      DESTINATION_REPO_TOKEN: ${{ secrets.DESTINATION_REPO_TOKEN }}
 ```
 
 The Workflow passes `DESTINATION_REPO_TOKEN` to the Actions that access the destination repository. `configure-lfs-remote` only configures the remote URL; `upload-git-lfs-objects` and `push-changes` receive the token through their `token` input.

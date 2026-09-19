@@ -67,21 +67,21 @@ jobs:
         if: steps.find.outputs.issue-number == ''
         uses: Sunnymoon724/kozae-forge/actions/create-issue@main
         with:
-          token: ${{ secrets.PUBLIC_REPO_TOKEN }}
+          token: ${{ secrets.DESTINATION_REPO_TOKEN }}
           destination-repository: ${{ inputs.destination-repository }}
           issue: ${{ toJSON(matrix.issue) }}
 
       - if: steps.find.outputs.issue-number != ''
         uses: Sunnymoon724/kozae-forge/actions/update-issue@main
         with:
-          token: ${{ secrets.PUBLIC_REPO_TOKEN }}
+          token: ${{ secrets.DESTINATION_REPO_TOKEN }}
           destination-repository: ${{ inputs.destination-repository }}
           issue-number: ${{ steps.find.outputs.issue-number }}
           issue: ${{ toJSON(matrix.issue) }}
 
       - uses: Sunnymoon724/kozae-forge/actions/sync-issue-labels@main
         with:
-          token: ${{ secrets.PUBLIC_REPO_TOKEN }}
+          token: ${{ secrets.DESTINATION_REPO_TOKEN }}
           destination-repository: ${{ inputs.destination-repository }}
           issue-number: ${{ steps.find.outputs.issue-number || steps.create.outputs.issue-number }}
           issue: ${{ toJSON(matrix.issue) }}
@@ -89,7 +89,7 @@ jobs:
 
       - uses: Sunnymoon724/kozae-forge/actions/sync-issue-state@main
         with:
-          token: ${{ secrets.PUBLIC_REPO_TOKEN }}
+          token: ${{ secrets.DESTINATION_REPO_TOKEN }}
           destination-repository: ${{ inputs.destination-repository }}
           issue-number: ${{ steps.find.outputs.issue-number || steps.create.outputs.issue-number }}
           issue: ${{ toJSON(matrix.issue) }}

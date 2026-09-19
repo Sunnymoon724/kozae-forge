@@ -87,7 +87,7 @@ jobs:
       destination-repository: OWNER/DESTINATION-REPOSITORY
       exclude-file: Sources/mirror-exclude.list
     secrets:
-      PUBLIC_REPO_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
+      DESTINATION_REPO_TOKEN: ${{ secrets.DESTINATION_REPO_TOKEN }}
 ```
 
 Workflow는 대상 저장소에 접근하는 Action에 `DESTINATION_REPO_TOKEN`을 전달합니다. `configure-lfs-remote`는 원격 URL만 구성하며, `upload-git-lfs-objects`와 `push-changes`가 `token` 입력값으로 Token을 받습니다.

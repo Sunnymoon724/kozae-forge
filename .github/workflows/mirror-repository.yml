@@ -38,13 +38,13 @@ jobs:
       - name: Verify destination access
         uses: Sunnymoon724/kozae-forge/actions/verify-repository@main
         with:
-          token: ${{ secrets.PUBLIC_REPO_TOKEN }}
+          token: ${{ secrets.DESTINATION_REPO_TOKEN }}
           repository: ${{ inputs.destination-repository }}
 
       - name: Clone destination repository
         uses: Sunnymoon724/kozae-forge/actions/clone-destination-repository@main
         with:
-          token: ${{ secrets.PUBLIC_REPO_TOKEN }}
+          token: ${{ secrets.DESTINATION_REPO_TOKEN }}
           repository: ${{ inputs.destination-repository }}
           destination-directory: destination-repo
 
@@ -76,6 +76,6 @@ jobs:
       - name: Push changes
         uses: Sunnymoon724/kozae-forge/actions/push-changes@main
         with:
-          token: ${{ secrets.PUBLIC_REPO_TOKEN }}
+          token: ${{ secrets.DESTINATION_REPO_TOKEN }}
           destination-directory: destination-repo
           branch: main
