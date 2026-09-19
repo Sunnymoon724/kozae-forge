@@ -1,0 +1,23 @@
+name: Copy file
+description: Copy one file to a destination path
+
+inputs:
+  source-file:
+    description: Path to the source file
+    required: true
+  destination-file:
+    description: Destination path for the file
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Copy file
+      shell: bash
+      env:
+        SOURCE_FILE: ${{ inputs.source-file }}
+        DESTINATION_FILE: ${{ inputs.destination-file }}
+      run: |
+        set -euo pipefail
+        mkdir -p "$(dirname "$DESTINATION_FILE")"
+        cp -f "$SOURCE_FILE" "$DESTINATION_FILE"

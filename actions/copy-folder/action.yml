@@ -1,0 +1,32 @@
+name: Copy folder
+description: Copy the contents of one folder to another folder
+
+inputs:
+  source-folder:
+    description: Path to the source folder
+    required: true
+  destination-folder:
+    description: Destination folder
+    required: true
+  delete-extra:
+    description: Delete destination files that are not present in the source folder
+    required: false
+    default: 'false'
+
+runs:
+  using: composite
+  steps:
+    - name: Copy folder
+      shell: bash
+      env:
+        SOURCE_FOLDER: ${{ inputs.source-folder }}
+        DESTINATION_FOLDER: ${{ inputs.destination-folder }}
+        DELETE_EXTRA: ${{ inputs.delete-extra }}
+      run: |
+        set -euo pipefail
+        mkdir -p "$DESTINATION_FOLDER"
+        if [[ "$DELETE_EXTRA" == 'true' ]]; then
+          rsync -a --delete "$SOURCE_FOLDER"/ "$DESTINATION_FOLDER"/
+        else
+          cp -R "$SOURCE_FOLDER"/. "$DESTINATION_FOLDER"/
+        fi

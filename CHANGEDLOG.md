@@ -1,10 +1,11 @@
 # Changelog
 
-<<<<<<< HEAD
-## 0.2.7
+## 0.3.16
 
-- Changed `generate-commit-log` to create generated files in the job workspace root and pass them through the `generated-content` artifact.
-=======
+- Added `copy-file`, `copy-folder`, `validate-npm-build`, and `notify-webhook` Actions.
+- Updated `generate-commit-log` to create generated files in the job workspace root and pass them through the `generated-content` artifact.
+- Organized the English and Korean README feature lists by category.
+
 ## 0.3.15
 
 - Removed the single-author input from Git commit collection and commit log generation.
@@ -85,11 +86,6 @@
 
 - Separated destination repository cloning from Git LFS initialization.
 - Added focused content preparation, content-size validation, and AI request Actions.
-
-## 0.2.7
-
-- Added reusable issue mirroring Workflow and Action.
->>>>>>> de25ec34ac4186d9d783685bc7b53af9cc48d184
 
 ## 0.2.6
 
