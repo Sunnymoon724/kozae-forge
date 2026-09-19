@@ -1,6 +1,8 @@
 const fs = require('node:fs');
 const path = require('node:path');
 
+for (const [name, value] of Object.entries(process.env)) if (name.startsWith('INPUT_')) process.env[name.replaceAll('-', '_')] = value;
+
 const source = path.resolve(process.env.INPUT_SOURCE_FOLDER);
 const destination = path.resolve(process.env.INPUT_DESTINATION_FOLDER);
 const patterns = ['.git', 'destination-repo', '.github/workflows/mirror-repository.yml'];
