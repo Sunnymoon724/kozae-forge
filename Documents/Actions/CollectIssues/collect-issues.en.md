@@ -22,7 +22,7 @@ A GitHub Action that collects issues selected by a label.
 - id: collect
   uses: Sunnymoon724/kozae-forge/actions/collect-issues@main
   with:
-    token: ${{ secrets.PUBLIC_REPO_TOKEN }}
+    token: ${{ secrets.DESTINATION_REPO_TOKEN }}
     source-repository: OWNER/PRIVATE-REPOSITORY
     visibility-label: mirror:public
 ```

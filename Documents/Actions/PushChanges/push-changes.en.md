@@ -15,7 +15,7 @@ A GitHub Action that pushes committed changes to a remote branch.
 ```yaml
 - uses: Sunnymoon724/kozae-forge/actions/push-changes@main
   with:
-    token: ${{ secrets.PUBLIC_REPO_TOKEN }}
+    token: ${{ secrets.DESTINATION_REPO_TOKEN }}
     destination-directory: destination-repo
     branch: main
 ```

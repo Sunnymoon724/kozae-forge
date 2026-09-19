@@ -10,7 +10,7 @@
 
 ### 토큰 등록
 
-원본 저장소에 `PUBLIC_REPO_TOKEN` Actions Secret을 등록합니다.
+원본 저장소에 `DESTINATION_REPO_TOKEN` Actions Secret을 등록합니다.
 
 Token은 복사할 대상 저장소에 push 권한이 있어야 합니다.
 
@@ -21,14 +21,14 @@ Settings → Secrets and variables → Actions
 Secret 이름:
 
 ```text
-PUBLIC_REPO_TOKEN
+DESTINATION_REPO_TOKEN
 ```
 
 호출하는 저장소의 Workflow에서 이 Secret을 재사용 Workflow에 전달합니다.
 
 ```yaml
 secrets:
-  PUBLIC_REPO_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
+  DESTINATION_REPO_TOKEN: ${{ secrets.DESTINATION_REPO_TOKEN }}
 ```
 
 ### 제외 목록 작성
@@ -90,7 +90,7 @@ jobs:
       PUBLIC_REPO_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
 ```
 
-Workflow는 대상 저장소에 접근하는 Action에 `PUBLIC_REPO_TOKEN`을 전달합니다. `configure-lfs-remote`는 원격 URL만 구성하며, `upload-git-lfs-objects`와 `push-changes`가 `token` 입력값으로 Token을 받습니다.
+Workflow는 대상 저장소에 접근하는 Action에 `DESTINATION_REPO_TOKEN`을 전달합니다. `configure-lfs-remote`는 원격 URL만 구성하며, `upload-git-lfs-objects`와 `push-changes`가 `token` 입력값으로 Token을 받습니다.
 
 ```yaml
 - uses: Sunnymoon724/kozae-forge/actions/configure-lfs-remote@main
@@ -100,7 +100,7 @@ Workflow는 대상 저장소에 접근하는 Action에 `PUBLIC_REPO_TOKEN`을 �
 
 - uses: Sunnymoon724/kozae-forge/actions/push-changes@main
   with:
-    token: ${{ secrets.PUBLIC_REPO_TOKEN }}
+    token: ${{ secrets.DESTINATION_REPO_TOKEN }}
     destination-directory: destination-repo
     branch: main
 ```

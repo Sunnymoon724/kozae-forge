@@ -16,7 +16,7 @@ Uploads all Git LFS objects for one branch through an already configured remote.
 ```yaml
 - uses: Sunnymoon724/kozae-forge/actions/upload-git-lfs-objects@main
   with:
-    token: ${{ secrets.PUBLIC_REPO_TOKEN }}
+    token: ${{ secrets.DESTINATION_REPO_TOKEN }}
     repository-directory: .
     remote-name: public
     branch: main

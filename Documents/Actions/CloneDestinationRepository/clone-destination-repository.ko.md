@@ -15,7 +15,7 @@ GitHub 토큰을 사용해 대상 저장소를 Clone하고 Git LFS를 초기화�
 ```yaml
 - uses: Sunnymoon724/kozae-forge/actions/clone-destination-repository@main
   with:
-    token: ${{ secrets.PUBLIC_REPO_TOKEN }}
+    token: ${{ secrets.DESTINATION_REPO_TOKEN }}
     repository: OWNER/DESTINATION-REPOSITORY
     destination-directory: destination-repo
 ```

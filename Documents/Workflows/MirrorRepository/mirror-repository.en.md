@@ -10,7 +10,7 @@ The workflow checks the destination repository, clones it, uploads Git LFS objec
 
 ### Token registration
 
-Add a `PUBLIC_REPO_TOKEN` Actions secret to the source repository.
+Add a `DESTINATION_REPO_TOKEN` Actions secret to the source repository.
 
 The token must have push access to the destination repository.
 
@@ -21,14 +21,14 @@ Settings → Secrets and variables → Actions
 Secret name:
 
 ```text
-PUBLIC_REPO_TOKEN
+DESTINATION_REPO_TOKEN
 ```
 
 Pass this Secret to the reusable Workflow from the calling repository:
 
 ```yaml
 secrets:
-  PUBLIC_REPO_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
+  DESTINATION_REPO_TOKEN: ${{ secrets.DESTINATION_REPO_TOKEN }}
 ```
 
 ### Exclusion list
@@ -90,7 +90,7 @@ jobs:
       PUBLIC_REPO_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
 ```
 
-The Workflow passes `PUBLIC_REPO_TOKEN` to the Actions that access the destination repository. `configure-lfs-remote` only configures the remote URL; `upload-git-lfs-objects` and `push-changes` receive the token through their `token` input.
+The Workflow passes `DESTINATION_REPO_TOKEN` to the Actions that access the destination repository. `configure-lfs-remote` only configures the remote URL; `upload-git-lfs-objects` and `push-changes` receive the token through their `token` input.
 
 ```yaml
 - uses: Sunnymoon724/kozae-forge/actions/configure-lfs-remote@main
@@ -100,7 +100,7 @@ The Workflow passes `PUBLIC_REPO_TOKEN` to the Actions that access the destinati
 
 - uses: Sunnymoon724/kozae-forge/actions/push-changes@main
   with:
-    token: ${{ secrets.PUBLIC_REPO_TOKEN }}
+    token: ${{ secrets.DESTINATION_REPO_TOKEN }}
     destination-directory: destination-repo
     branch: main
 ```

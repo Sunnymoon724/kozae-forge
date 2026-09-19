@@ -16,6 +16,6 @@ push 권한이 없거나 저장소에 접근할 수 없으면 Action이 실패�
 ```yaml
 - uses: Sunnymoon724/kozae-forge/actions/verify-repository@main
   with:
-    token: ${{ secrets.PUBLIC_REPO_TOKEN }}
+    token: ${{ secrets.DESTINATION_REPO_TOKEN }}
     repository: OWNER/DESTINATION-REPOSITORY
 ```

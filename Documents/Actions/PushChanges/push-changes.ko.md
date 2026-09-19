@@ -15,7 +15,7 @@ commit된 변경사항을 원격 브랜치로 push하는 GitHub Action입니다.
 ```yaml
 - uses: Sunnymoon724/kozae-forge/actions/push-changes@main
   with:
-    token: ${{ secrets.PUBLIC_REPO_TOKEN }}
+    token: ${{ secrets.DESTINATION_REPO_TOKEN }}
     destination-directory: destination-repo
     branch: main
 ```

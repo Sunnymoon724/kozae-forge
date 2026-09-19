@@ -15,7 +15,7 @@ A GitHub Action that clones a destination repository using a GitHub token and in
 ```yaml
 - uses: Sunnymoon724/kozae-forge/actions/clone-destination-repository@main
   with:
-    token: ${{ secrets.PUBLIC_REPO_TOKEN }}
+    token: ${{ secrets.DESTINATION_REPO_TOKEN }}
     repository: OWNER/DESTINATION-REPOSITORY
     destination-directory: destination-repo
 ```

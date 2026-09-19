@@ -16,6 +16,6 @@ The action fails when the repository cannot be accessed or the token lacks push 
 ```yaml
 - uses: Sunnymoon724/kozae-forge/actions/verify-repository@main
   with:
-    token: ${{ secrets.PUBLIC_REPO_TOKEN }}
+    token: ${{ secrets.DESTINATION_REPO_TOKEN }}
     repository: OWNER/DESTINATION-REPOSITORY
 ```
