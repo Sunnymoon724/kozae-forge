@@ -1,5 +1,7 @@
 # KoZae Forge
 
+재사용 Action은 Linux와 Windows Runner에서 실행되는 Node.js 24 Action입니다.
+
 KoZae 프로젝트에서 재사용할 수 있는 GitHub Actions와 Workflow 모음입니다.
 
 ## ✨ 제공 기능
@@ -22,7 +24,6 @@ KoZae 프로젝트에서 재사용할 수 있는 GitHub Actions와 Workflow 모�
     - [콘텐츠 저장](Documents/Actions/SaveContent/save-content.ko.md)
     - [파일 복사](Documents/Actions/CopyFile/copy-file.ko.md)
     - [폴더 복사](Documents/Actions/CopyFolder/copy-folder.ko.md)
-    - [파일 동기화](Documents/Actions/SyncFiles/sync-files.ko.md)
     - [콘텐츠 게시](Documents/Actions/PublishContent/publish-content.ko.md)
   - Git·저장소
     - [날짜 범위 계산](Documents/Actions/CalculateDateRange/calculate-date-range.ko.md)
@@ -38,6 +39,7 @@ KoZae 프로젝트에서 재사용할 수 있는 GitHub Actions와 Workflow 모�
     - [문서 대상 매핑](Documents/Actions/MapDocumentTargets/map-document-targets.ko.md)
   - Notion
     - [Notion 페이지 콘텐츠 추가](Documents/Actions/AppendNotionPageContent/append-notion-page-content.ko.md)
+    - [Notion 페이지 비우기](Documents/Actions/ClearNotionPage/clear-notion-page.ko.md)
     - [Notion 데이터베이스 항목 속성 갱신](Documents/Actions/UpdateNotionDatabaseEntryProperties/update-notion-database-entry-properties.ko.md)
     - [Notion 페이지 생성](Documents/Actions/CreateNotionPage/create-notion-page.ko.md)
     - [Notion 데이터 소스 조회](Documents/Actions/ResolveNotionDataSource/resolve-notion-data-source.ko.md)

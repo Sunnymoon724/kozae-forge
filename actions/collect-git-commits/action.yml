@@ -1,41 +1,24 @@
 name: Collect Git commits
-description: Collect Git commits in a time range
+description: Collect formatted Git commits in a time range
 inputs:
   start-time:
-    description: Start time in YYYY-MM-DD HH:mm format
+    description: Inclusive range start in YYYY-MM-DD HH:mm format
     required: true
   end-time:
-    description: End time in YYYY-MM-DD HH:mm format
+    description: Exclusive range end in YYYY-MM-DD HH:mm format
     required: true
   timezone:
     description: IANA timezone used to interpret the time range
     required: true
   authors:
-    description: Optional comma-separated author name or email filters
+    description: Optional comma-separated Git author filters
     required: false
     default: ''
 outputs:
-  has-content:
-    description: Whether commits were found
-    value: ${{ steps.collect.outputs.has-content }}
   commits:
-    description: Collected commit messages
-    value: ${{ steps.collect.outputs.commits }}
+    description: Formatted commits
+  has-content:
+    description: Whether at least one commit was found
 runs:
-  using: composite
-  steps:
-    - id: collect
-      shell: bash
-      env:
-        START_TIME: ${{ inputs.start-time }}
-        END_TIME: ${{ inputs.end-time }}
-        TIMEZONE: ${{ inputs.timezone }}
-        AUTHORS: ${{ inputs.authors }}
-      run: |
-        set -euo pipefail
-        export TZ="$TIMEZONE"
-        filter="$AUTHORS"
-        args=()
-        if [ -n "$filter" ]; then args+=("--author=${filter//,/\\|}"); fi
-        commits="$(git log --since="$(date -d "$START_TIME" '+%Y-%m-%dT%H:%M:%S%z')" --until="$(date -d "$END_TIME" '+%Y-%m-%dT%H:%M:%S%z')" "${args[@]}" --format='- %s (%h) [author: %an]' "$GITHUB_SHA")"
-        { echo 'commits<<EOF'; echo "$commits"; echo EOF; echo "has-content=$([ -n "$commits" ] && echo true || echo false)"; } >> "$GITHUB_OUTPUT"
+  using: node24
+  main: index.js

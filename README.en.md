@@ -1,5 +1,7 @@
 # KoZae Forge
 
+Reusable Actions run as Node.js 24 Actions on Linux and Windows runners.
+
 Reusable GitHub Actions and Workflows for KoZae projects.
 
 ## ✨ Available features
@@ -22,7 +24,6 @@ Reusable GitHub Actions and Workflows for KoZae projects.
     - [Save content](Documents/Actions/SaveContent/save-content.en.md)
     - [Copy file](Documents/Actions/CopyFile/copy-file.en.md)
     - [Copy folder](Documents/Actions/CopyFolder/copy-folder.en.md)
-    - [Synchronize files](Documents/Actions/SyncFiles/sync-files.en.md)
     - [Publish content](Documents/Actions/PublishContent/publish-content.en.md)
   - Git and repository
     - [Calculate date range](Documents/Actions/CalculateDateRange/calculate-date-range.en.md)
@@ -38,6 +39,7 @@ Reusable GitHub Actions and Workflows for KoZae projects.
     - [Map document targets](Documents/Actions/MapDocumentTargets/map-document-targets.en.md)
   - Notion
     - [Append Notion page content](Documents/Actions/AppendNotionPageContent/append-notion-page-content.en.md)
+    - [Clear Notion page](Documents/Actions/ClearNotionPage/clear-notion-page.en.md)
     - [Update Notion database entry properties](Documents/Actions/UpdateNotionDatabaseEntryProperties/update-notion-database-entry-properties.en.md)
     - [Create Notion page](Documents/Actions/CreateNotionPage/create-notion-page.en.md)
     - [Resolve Notion data source](Documents/Actions/ResolveNotionDataSource/resolve-notion-data-source.en.md)

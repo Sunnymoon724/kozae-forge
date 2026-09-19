@@ -1,32 +1,8 @@
 name: Configure Git LFS remote
 description: Configure an authenticated Git remote for Git LFS uploads
 inputs:
-  repository-directory:
-    description: Directory of the Git repository
-    required: true
-  token:
-    description: GitHub token for the destination repository
-    required: true
-  repository:
-    description: Destination repository in owner/name format
-    required: true
-  remote-name:
-    description: Name assigned to the Git remote
-    required: false
-    default: public
-runs:
-  using: composite
-  steps:
-    - name: Configure Git LFS remote
-      shell: bash
-      working-directory: ${{ inputs.repository-directory }}
-      env:
-        TOKEN: ${{ inputs.token }}
-        REPOSITORY: ${{ inputs.repository }}
-        REMOTE_NAME: ${{ inputs.remote-name }}
-      run: |
-        set -euo pipefail
-        git lfs install
-        git remote remove "$REMOTE_NAME" 2>/dev/null || true
-        git remote add "$REMOTE_NAME" "https://x-access-token:${TOKEN}@github.com/${REPOSITORY}.git"
-        git config "lfs.https://github.com/${REPOSITORY}.git/info/lfs.access" basic
+  repository-directory: {description: Directory of the Git repository, required: true}
+  token: {description: GitHub token for the destination repository, required: true}
+  repository: {description: Destination repository in owner/name format, required: true}
+  remote-name: {description: Name assigned to the Git remote, required: false, default: public}
+runs: {using: node24, main: index.js}

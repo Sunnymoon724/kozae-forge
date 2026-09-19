@@ -1,31 +1,9 @@
 name: Create issue
 description: Create a destination issue from source issue data
 inputs:
-  token:
-    description: GitHub token with destination repository issue write access
-    required: true
-  destination-repository:
-    description: Destination repository in owner/name format
-    required: true
-  issue:
-    description: Source issue JSON object
-    required: true
+  token: {description: GitHub token with destination repository issue write access, required: true}
+  destination-repository: {description: Destination repository in owner/name format, required: true}
+  issue: {description: Source issue JSON object, required: true}
 outputs:
-  issue-number:
-    description: Created destination issue number
-    value: ${{ steps.create.outputs.issue-number }}
-runs:
-  using: composite
-  steps:
-    - id: create
-      shell: bash
-      env:
-        GH_TOKEN: ${{ inputs.token }}
-        DESTINATION_REPOSITORY: ${{ inputs.destination-repository }}
-        ISSUE: ${{ inputs.issue }}
-      run: |
-        set -euo pipefail
-        source_number=$(jq -r '.number' <<<"${ISSUE}")
-        payload=$(jq -n --arg title "$(jq -r '.title' <<<"${ISSUE}")" --arg body "$(jq -r '.body // ""' <<<"${ISSUE}")" --arg marker "<!-- kozae-forge-mirror:source-issue=${source_number} -->" '{title:$title,body:($body+"\n\n"+$marker)}')
-        created=$(gh api "repos/${DESTINATION_REPOSITORY}/issues" --method POST --input <(printf '%s' "${payload}"))
-        echo "issue-number=$(jq -r '.number' <<<"${created}")" >> "$GITHUB_OUTPUT"
+  issue-number: {description: Created destination issue number}
+runs: {using: node24, main: index.js}

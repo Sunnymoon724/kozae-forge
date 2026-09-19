@@ -18,8 +18,16 @@ Provide only `source-file` to read a file without modifying its content.
 |---|---|
 | `content` | Prepared content |
 
+## Input example
+
 ```yaml
 - uses: Sunnymoon724/kozae-forge/actions/prepare-content@main
   with:
     source-file: source.md
+```
+
+## Output example
+
+```yaml
+content: Prepared source content
 ```

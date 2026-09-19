@@ -17,3 +17,20 @@ Collects Markdown source files from mapped directories or a Git change range.
 | Output | Default | Description |
 |---|---|---|
 | `source-files` | - | Newline-delimited Markdown file paths |
+
+## Input example
+
+```yaml
+- id: sources
+  uses: Sunnymoon724/kozae-forge/actions/collect-document-sources@main
+  with:
+    mapping-file: .github/chronicle-map.json
+    sync-mode: changed
+    base-ref: ${{ github.event.before }}
+```
+
+## Output example
+
+```yaml
+source-files: docs/architecture/overview.md
+```

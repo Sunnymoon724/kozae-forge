@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.4.0
+
+- Replaced the `sync-files` Action with `copy-folder` and added exclusion-list support.
+- Converted all reusable Actions to single Node.js 24 Actions that run on Linux and Windows.
+- Added an optional `runner` input to every reusable Workflow, defaulting to `ubuntu-latest`.
+- Replaced the remaining Bash file staging step in `refine-documents` with the cross-platform `copy-file` Action.
+- Updated related workflows, English and Korean documentation, and README entries.
+
 ## 0.3.16
 
 - Added `copy-file`, `copy-folder`, `validate-npm-build`, and `notify-webhook` Actions.

@@ -9,7 +9,7 @@
 | `source-file` | 예 | - | 원본 파일 경로 |
 | `destination-file` | 예 | - | 대상 파일 경로 |
 
-## 사용 예
+## 입력 예시
 
 ```yaml
 - uses: Sunnymoon724/kozae-forge/actions/copy-file@main

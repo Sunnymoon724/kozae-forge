@@ -26,6 +26,7 @@ PUBLIC_REPO_TOKEN
 
 | Input | Required | Default | Description |
 |---|---:|---|---|
+| `runner` | No | `ubuntu-latest` | Runner label used for workflow jobs |
 | `destination-repository` | Yes | - | Destination repository in `OWNER/REPOSITORY` format |
 | `visibility-label` | No | `mirror:public` | Source label that selects issues |
 | `sync-comments` | No | `false` | Reserved comment synchronization option |
@@ -48,6 +49,7 @@ jobs:
   mirror:
     uses: Sunnymoon724/kozae-forge/.github/workflows/mirror-issues.yml@main
     with:
+      runner: self-hosted
       destination-repository: OWNER/PUBLIC-REPOSITORY
       visibility-label: mirror:public
       sync-comments: false

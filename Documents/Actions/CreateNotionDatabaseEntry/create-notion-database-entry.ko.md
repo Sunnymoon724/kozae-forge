@@ -21,3 +21,24 @@
 | 출력값 | 기본값 | 설명 |
 |---|---|---|
 | `page-id` | - | 생성된 데이터베이스 페이지 ID |
+
+## 입력 예시
+
+```yaml
+- id: page
+  uses: Sunnymoon724/kozae-forge/actions/create-notion-database-entry@main
+  with:
+    data-source-id: ${{ vars.NOTION_DATA_SOURCE_ID }}
+    title-property: Name
+    title: 주간 업데이트
+    group-property: Category
+    group-value: Engineering
+    content-file: output/article.md
+    notion-token: ${{ secrets.NOTION_TOKEN }}
+```
+
+## 출력 예시
+
+```yaml
+page-id: 12345678-1234-1234-1234-123456789abc
+```

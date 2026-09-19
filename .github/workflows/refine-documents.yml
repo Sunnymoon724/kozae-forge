@@ -3,6 +3,11 @@ name: Refine documents
 on:
   workflow_call:
     inputs:
+      runner:
+        description: Runner label used for document refinement jobs
+        required: false
+        default: ubuntu-latest
+        type: string
       mapping-file:
         description: Path to the Chronicle JSON mapping file
         required: true
@@ -61,7 +66,7 @@ on:
 
 jobs:
   find-sources:
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runner }}
     outputs:
       matrix: ${{ steps.sources.outputs.matrix }}
       has-sources: ${{ steps.sources.outputs.has-sources }}
@@ -87,7 +92,7 @@ jobs:
   sync-pages:
     needs: find-sources
     if: needs.find-sources.outputs.has-sources == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runner }}
     strategy:
       fail-fast: false
       max-parallel: 1
@@ -122,13 +127,10 @@ jobs:
           content: ${{ steps.generated.outputs.content }}
 
       - name: Stage synchronized page
-        env:
-          TARGET_FILE: ${{ matrix.target }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          mkdir -p "chronicle-artifact/$(dirname "$TARGET_FILE")"
-          cp "$TARGET_FILE" "chronicle-artifact/$TARGET_FILE"
+        uses: Sunnymoon724/kozae-forge/actions/copy-file@main
+        with:
+          source-file: ${{ matrix.target }}
+          destination-file: chronicle-artifact/${{ matrix.target }}
 
       - uses: actions/upload-artifact@v4
         with:
@@ -139,7 +141,7 @@ jobs:
   collect-pages:
     needs: [find-sources, sync-pages]
     if: needs.sync-pages.result == 'success'
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runner }}
     steps:
       - uses: actions/download-artifact@v4
         with:

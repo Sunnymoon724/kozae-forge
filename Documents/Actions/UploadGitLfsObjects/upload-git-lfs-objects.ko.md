@@ -9,3 +9,13 @@
 | `repository-directory` | 예 | - | Git 저장소 디렉터리 |
 | `remote-name` | 아니오 | `public` | 구성된 원격 이름 |
 | `branch` | 아니오 | `main` | 업로드할 브랜치 |
+
+## 입력 예시
+
+```yaml
+- uses: Sunnymoon724/kozae-forge/actions/upload-git-lfs-objects@main
+  with:
+    repository-directory: .
+    remote-name: public
+    branch: main
+```

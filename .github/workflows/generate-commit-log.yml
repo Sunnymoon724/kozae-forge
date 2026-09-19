@@ -3,6 +3,11 @@ name: Generate commit log
 on:
   workflow_call:
     inputs:
+      runner:
+        description: Runner label used for generated jobs
+        required: false
+        default: ubuntu-latest
+        type: string
       branch:
         required: false
         default: main
@@ -53,7 +58,7 @@ permissions:
 
 jobs:
   generate:
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runner }}
     outputs:
       has-content: ${{ steps.collect.outputs.has-content }}
       file-name: ./${{ steps.time-range.outputs.date }}-${{ inputs.tag }}.md

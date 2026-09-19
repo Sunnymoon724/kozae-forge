@@ -3,9 +3,9 @@
 ## 1. Process
 
 1. Calculate the previous day's time range using the selected timezone.
-2. `collect-commits` collects commits as text.
+2. `collect-git-commits` collects commits as text.
 3. `prepare-content`, `validate-content-size`, and `request-content` use AI to write content in the requested format.
-4. `write-content` saves the generated content in the job's temporary workspace as `${date}-${tag}.md`.
+4. `save-content` saves the generated content in the job's temporary workspace as `${date}-${tag}.md`.
 5. The generated file is always uploaded as the `generated-content` artifact.
 
 This workflow does not persist or commit files to the repository. Use the `save-content` Action in a later job to restore the artifact to its workspace, then commit and push it separately if needed.
@@ -18,9 +18,31 @@ The workflow processes `target-date` from 00:00 through the following day's 00:0
 
 Register the `API_KEY` Actions secret required by the AI provider.
 
+```text
+Settings → Secrets and variables → Actions
+```
+
+Secret name:
+
+```text
+API_KEY
+```
+
 ### Input configuration
 
-Configure the workflow inputs shown in the example below.
+| Input | Required | Default | Description |
+|---|---:|---|---|
+| `runner` | No | `ubuntu-latest` | Runner label used for workflow jobs |
+| `branch` | No | `main` | Branch to read commits from |
+| `timezone` | Yes | - | IANA timezone |
+| `target-date` | Yes | - | Date to generate the log for |
+| `authors` | No | Empty | Commit author filters |
+| `provider` | Yes | - | AI provider |
+| `api-base` | Yes | - | AI API base URL |
+| `model` | Yes | - | AI model |
+| `max-content-bytes` | Yes | - | Maximum input content size |
+| `prompt` | Yes | - | Content generation prompt |
+| `tag` | Yes | - | Tag in the generated filename |
 
 ### Workflow configuration
 
@@ -29,6 +51,7 @@ jobs:
   generate:
     uses: Sunnymoon724/kozae-forge/.github/workflows/generate-commit-log.yml@main
     with:
+      runner: self-hosted
       provider: openai
       api-base: https://api.openai.com/v1
       model: gpt-4o-mini
@@ -51,7 +74,7 @@ With `tag: development-log`, the generated file is created in the job workspace 
 
 ## 3. Actions used
 
-- `collect-commits`
+- `collect-git-commits`
 - `prepare-content`
 - `validate-content-size`
 - `request-content`

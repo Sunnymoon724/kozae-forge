@@ -8,7 +8,7 @@
 
 ## 2. 사용 방법
 
-### Token registration
+### 토큰 등록
 
 원본 저장소에 `PUBLIC_REPO_TOKEN` Actions Secret을 등록합니다.
 
@@ -52,7 +52,15 @@ path/to/private-file.ext
 OWNER/DESTINATION-REPOSITORY
 ```
 
-### Workflow configuration
+### 입력값
+
+| 입력값 | 필수 | 기본값 | 설명 |
+|---|---:|---|---|
+| `runner` | 아니오 | `ubuntu-latest` | 미러링 Job에 사용할 Runner 레이블 |
+| `destination-repository` | 예 | - | `OWNER/REPOSITORY` 형식의 대상 저장소 |
+| `exclude-file` | 예 | - | 원본 저장소의 제외 목록 파일 경로 |
+
+### Workflow 설정
 
 원본 저장소에 `.github/workflows/mirror-repository.yml`을 만들고 다음을 작성합니다.
 
@@ -68,6 +76,7 @@ jobs:
   mirror:
     uses: Sunnymoon724/kozae-forge/.github/workflows/mirror-repository.yml@main
     with:
+      runner: self-hosted
       destination-repository: OWNER/DESTINATION-REPOSITORY
       exclude-file: Sources/mirror-exclude.list
     secrets:
@@ -79,6 +88,6 @@ jobs:
 - `verify-repository`
 - `configure-lfs-remote`
 - `upload-git-lfs-objects`
-- `sync-files`
+- `copy-folder`
 - `commit-changes`
 - `push-changes`

@@ -3,6 +3,11 @@ name: Publish Notion database entry
 on:
   workflow_call:
     inputs:
+      runner:
+        description: Runner label used for the publish job
+        required: false
+        default: ubuntu-latest
+        type: string
       content-file:
         description: Repository-relative path of the content file
         required: true
@@ -48,7 +53,7 @@ on:
 
 jobs:
   publish:
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runner }}
     outputs:
       page-id: ${{ steps.find.outputs.page-id || steps.create.outputs.page-id }}
     steps:

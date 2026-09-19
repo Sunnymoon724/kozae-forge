@@ -18,3 +18,23 @@ OpenAI 호환 API에 생성된 콘텐츠를 요청합니다.
 | 출력값 | 설명 |
 |---|---|
 | `content` | 생성된 콘텐츠 |
+
+## 입력 예시
+
+```yaml
+- id: generated
+  uses: Sunnymoon724/kozae-forge/actions/request-content@main
+  with:
+    provider: openai
+    api-base: https://api.openai.com/v1
+    model: gpt-4o-mini
+    prompt: Markdown 요약을 작성합니다.
+    content: 원본 콘텐츠
+    api-key: ${{ secrets.API_KEY }}
+```
+
+## 출력 예시
+
+```yaml
+content: 생성된 Markdown 콘텐츠
+```

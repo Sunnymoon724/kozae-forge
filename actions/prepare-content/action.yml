@@ -16,21 +16,6 @@ inputs:
 outputs:
   content:
     description: Prepared content
-    value: ${{ steps.prepare.outputs.content }}
 runs:
-  using: composite
-  steps:
-    - id: prepare
-      shell: bash
-      env:
-        CONTENT: ${{ inputs.content }}
-        SOURCE_FILE: ${{ inputs.source-file }}
-        TEMPLATE_FILE: ${{ inputs.template-file }}
-      run: |
-        set -euo pipefail
-        if [ -n "$SOURCE_FILE" ]; then CONTENT="$(cat "$SOURCE_FILE")"; fi
-        if [ -n "$TEMPLATE_FILE" ]; then
-          test -f "$TEMPLATE_FILE"
-          CONTENT="${CONTENT}"$'\n\n## Template\n\n'"$(cat "$TEMPLATE_FILE")"
-        fi
-        { echo 'content<<EOF'; echo "$CONTENT"; echo EOF; } >> "$GITHUB_OUTPUT"
+  using: node24
+  main: index.js

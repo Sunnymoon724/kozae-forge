@@ -10,27 +10,10 @@ inputs:
 outputs:
   start-time:
     description: Start time in YYYY-MM-DD HH:mm format
-    value: ${{ steps.calculate.outputs.start-time }}
   end-time:
     description: End time in YYYY-MM-DD HH:mm format
-    value: ${{ steps.calculate.outputs.end-time }}
   date:
     description: Date represented by the calculated range in YYYY-MM-DD format
-    value: ${{ steps.calculate.outputs.date }}
 runs:
-  using: composite
-  steps:
-    - id: calculate
-      shell: bash
-      env:
-        TIMEZONE: ${{ inputs.timezone }}
-        TARGET_DATE: ${{ inputs.target-date }}
-      run: |
-        set -euo pipefail
-        export TZ="$TIMEZONE"
-        DATE="$(date -d "$TARGET_DATE" +%F)"
-        START_TIME="$(date -d "$DATE 00:00" '+%F %H:%M')"
-        END_TIME="$(date -d "$DATE + 1 day 00:00" '+%F %H:%M')"
-        echo "start-time=$START_TIME" >> "$GITHUB_OUTPUT"
-        echo "end-time=$END_TIME" >> "$GITHUB_OUTPUT"
-        echo "date=$DATE" >> "$GITHUB_OUTPUT"
+  using: node24
+  main: index.js

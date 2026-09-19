@@ -9,8 +9,9 @@ Copies the contents of one folder to another folder.
 | `source-folder` | Yes | - | Path to the source folder |
 | `destination-folder` | Yes | - | Destination folder |
 | `delete-extra` | No | `false` | Delete destination files that are not present in the source folder |
+| `exclude-file` | No | - | Optional exclusion list |
 
-## Example
+## Input example
 
 ```yaml
 - uses: Sunnymoon724/kozae-forge/actions/copy-folder@main
@@ -18,4 +19,5 @@ Copies the contents of one folder to another folder.
     source-folder: generated-content
     destination-folder: Chronicle/blog
     delete-extra: false
+    exclude-file: Sources/mirror-exclude.list
 ```

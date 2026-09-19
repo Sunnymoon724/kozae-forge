@@ -15,3 +15,20 @@ Finds a Notion page by title and parent page.
 | Output | Description |
 |---|---|
 | `page-id` | Matching page ID, if found |
+
+## Input example
+
+```yaml
+- id: page
+  uses: Sunnymoon724/kozae-forge/actions/find-notion-page@main
+  with:
+    parent-page-id: ${{ vars.NOTION_PARENT_PAGE_ID }}
+    title: Weekly update
+    notion-token: ${{ secrets.NOTION_TOKEN }}
+```
+
+## Output example
+
+```yaml
+page-id: 12345678-1234-1234-1234-123456789abc
+```

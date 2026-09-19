@@ -5,7 +5,7 @@
 1. 호출 저장소를 checkout합니다.
 2. `collect-document-sources`가 매핑 파일과 동기화 모드에 따라 원본 문서를 수집합니다.
 3. `map-document-targets`가 선택된 원본과 대상 문서를 연결합니다.
-4. `prepare-content`, `validate-content-size`, `request-content`, `write-content`가 원본과 양식을 사용해 대상 문서를 새로 작성합니다.
+4. `prepare-content`, `validate-content-size`, `request-content`, `save-content`가 원본과 양식을 사용해 대상 문서를 새로 작성합니다.
 5. 생성된 Chronicle 페이지를 문서별 Artifact에 업로드합니다.
 6. 업로드된 페이지를 `refined-documents` Artifact로 묶어 제공합니다.
 
@@ -15,13 +15,33 @@
 
 ## 2. 사용 방법
 
-### Token 등록
+### 토큰 등록
 
 AI Provider에 필요한 `api-key` Secret을 등록합니다.
 
-### 인자 설정
+```text
+Settings → Secrets and variables → Actions
+```
 
-아래 예시와 같이 Workflow 인자를 설정합니다.
+Secret 이름:
+
+```text
+AI_API_KEY
+```
+
+### 입력값 설정
+
+| 입력값 | 필수 | 기본값 | 설명 |
+|---|---:|---|---|
+| `runner` | 아니오 | `ubuntu-latest` | Workflow Job에 사용할 Runner 레이블 |
+| `mapping-file` | 예 | - | JSON 매핑 파일 |
+| `sync-mode` | 예 | - | `changed` 또는 `full` |
+| `base-ref` | 아니오 | 빈 값 | `changed` 모드의 비교 기준 |
+| `head-ref` | 아니오 | 빈 값 | 비교 대상 커밋 또는 참조 |
+| `max-content-bytes` | 예 | - | 입력 콘텐츠 최대 크기 |
+| `provider` | 예 | - | AI Provider |
+| `api-base` | 예 | - | AI API 기본 URL |
+| `model` | 예 | - | AI 모델 |
 
 ### 매핑 파일 준비
 
@@ -39,7 +59,7 @@ AI Provider에 필요한 `api-key` Secret을 등록합니다.
 }
 ```
 
-### Workflow configuration
+### Workflow 설정
 
 외부 Workflow에서 재사용 Workflow를 호출합니다. `sync-mode`는 필수이며, `changed`를 사용할 때는 `base-ref`도 전달합니다.
 
@@ -48,6 +68,7 @@ jobs:
   sync:
     uses: Sunnymoon724/kozae-forge/.github/workflows/refine-documents.yml@main
     with:
+      runner: self-hosted
       mapping-file: .github/chronicle-map.json
       sync-mode: changed
       base-ref: ${{ github.event.before }}
@@ -81,5 +102,6 @@ jobs:
 - `validate-content-size`
 - `request-content`
 - `save-content`
+- `copy-file`
 - `actions/upload-artifact`
 - `actions/download-artifact`

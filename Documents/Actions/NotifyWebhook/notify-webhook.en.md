@@ -11,7 +11,7 @@ Sends an HTTP request to a notification webhook.
 | `headers` | No | `{"Content-Type":"application/json"}` | JSON object containing HTTP headers |
 | `body` | Yes | - | HTTP request body |
 
-## Example
+## Input example
 
 ```yaml
 - uses: Sunnymoon724/kozae-forge/actions/notify-webhook@main

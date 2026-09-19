@@ -15,3 +15,20 @@
 |---|---|---|
 | `matrix` | - | `source`, `target`, `template`을 담은 매트릭스 |
 | `has-sources` | - | 하나 이상의 대상을 매핑했는지 여부 |
+
+## 입력 예시
+
+```yaml
+- id: targets
+  uses: Sunnymoon724/kozae-forge/actions/map-document-targets@main
+  with:
+    mapping-file: .github/chronicle-map.json
+    source-files: docs/architecture/overview.md
+```
+
+## 출력 예시
+
+```yaml
+has-sources: true
+matrix: '{"include":[{"source":"docs/architecture/overview.md","target":"Chronicle/docs/architecture/overview.md"}]}'
+```

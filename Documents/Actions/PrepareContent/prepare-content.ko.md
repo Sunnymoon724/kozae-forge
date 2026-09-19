@@ -17,3 +17,17 @@
 | 출력값 | 설명 |
 |---|---|
 | `content` | 준비된 콘텐츠 |
+
+## 입력 예시
+
+```yaml
+- uses: Sunnymoon724/kozae-forge/actions/prepare-content@main
+  with:
+    source-file: source.md
+```
+
+## 출력 예시
+
+```yaml
+content: 준비된 원본 콘텐츠
+```

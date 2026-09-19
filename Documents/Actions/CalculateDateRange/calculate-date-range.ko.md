@@ -1,6 +1,6 @@
 # calculate-date-range
 
-지정한 날짜와 시간대를 기준으로 GitHub Actions에서 사용할 시간 범위를 계산하는 GitHub Action입니다.
+지정한 날짜와 시간대를 기준으로 GitHub Actions에서 사용할 시간 범위를 계산합니다.
 
 ## 입력값
 
@@ -26,7 +26,6 @@
     timezone: Asia/Seoul
     target-date: 2026-09-08
 ```
-
 
 ## 출력 예시
 

@@ -17,3 +17,22 @@
 |---|---|
 | `has-content` | 커밋 존재 여부 |
 | `commits` | 수집한 커밋 메시지 |
+
+## 입력 예시
+
+```yaml
+- id: commits
+  uses: Sunnymoon724/kozae-forge/actions/collect-git-commits@main
+  with:
+    start-time: 2026-09-18 00:00
+    end-time: 2026-09-19 00:00
+    timezone: Asia/Seoul
+    authors: 홍길동
+```
+
+## 출력 예시
+
+```yaml
+has-content: true
+commits: '- 개발일지 추가 (abc123) [author: 홍길동]'
+```

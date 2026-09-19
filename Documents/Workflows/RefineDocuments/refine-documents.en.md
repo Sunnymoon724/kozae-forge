@@ -5,7 +5,7 @@
 1. Check out the calling repository.
 2. `collect-document-sources` collects source documents according to the mapping file and synchronization mode.
 3. `map-document-targets` connects the selected source and destination documents.
-4. `prepare-content`, `validate-content-size`, `request-content`, and `write-content` rewrite each document from the source and template.
+4. `prepare-content`, `validate-content-size`, `request-content`, and `save-content` rewrite each document from the source and template.
 5. Upload generated Chronicle pages to per-document artifacts.
 6. Combine the uploaded pages into the `refined-documents` artifact.
 
@@ -19,9 +19,29 @@ Set `sync-mode` to `changed` (changed documents) or `full` (all documents).
 
 Register the `api-key` secret required by the AI provider.
 
+```text
+Settings → Secrets and variables → Actions
+```
+
+Secret name:
+
+```text
+AI_API_KEY
+```
+
 ### Input configuration
 
-Configure the workflow inputs shown in the example below.
+| Input | Required | Default | Description |
+|---|---:|---|---|
+| `runner` | No | `ubuntu-latest` | Runner label used for workflow jobs |
+| `mapping-file` | Yes | - | JSON mapping file |
+| `sync-mode` | Yes | - | `changed` or `full` |
+| `base-ref` | No | Empty | Comparison base for `changed` mode |
+| `head-ref` | No | Empty | Comparison head |
+| `max-content-bytes` | Yes | - | Maximum input content size |
+| `provider` | Yes | - | AI provider |
+| `api-base` | Yes | - | AI API base URL |
+| `model` | Yes | - | AI model |
 
 ### Prepare the mapping file
 
@@ -48,6 +68,7 @@ jobs:
   sync:
     uses: Sunnymoon724/kozae-forge/.github/workflows/refine-documents.yml@main
     with:
+      runner: self-hosted
       mapping-file: .github/chronicle-map.json
       sync-mode: changed
       base-ref: ${{ github.event.before }}
@@ -81,5 +102,6 @@ When run with `full`, all documents are processed. The result files are availabl
 - `validate-content-size`
 - `request-content`
 - `save-content`
+- `copy-file`
 - `actions/upload-artifact`
 - `actions/download-artifact`

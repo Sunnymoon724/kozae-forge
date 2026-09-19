@@ -11,7 +11,7 @@
 | `headers` | 아니오 | `{"Content-Type":"application/json"}` | HTTP 헤더 JSON 객체 |
 | `body` | 예 | - | HTTP 요청 본문 |
 
-## 사용 예
+## 입력 예시
 
 ```yaml
 - uses: Sunnymoon724/kozae-forge/actions/notify-webhook@main

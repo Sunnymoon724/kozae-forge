@@ -1,6 +1,5 @@
 name: Notify webhook
 description: Send an HTTP request to a notification webhook
-
 inputs:
   url:
     description: Webhook URL
@@ -16,21 +15,6 @@ inputs:
   body:
     description: HTTP request body
     required: true
-
 runs:
-  using: composite
-  steps:
-    - name: Send webhook notification
-      shell: bash
-      env:
-        WEBHOOK_URL: ${{ inputs.url }}
-        HTTP_METHOD: ${{ inputs.method }}
-        HTTP_HEADERS: ${{ inputs.headers }}
-        HTTP_BODY: ${{ inputs.body }}
-      run: |
-        set -euo pipefail
-        curl_args=(--fail-with-body --silent --show-error --request "$HTTP_METHOD" --data "$HTTP_BODY")
-        while IFS= read -r header; do
-          curl_args+=(--header "$header")
-        done < <(jq -r 'to_entries[] | "\(.key): \(.value)"' <<< "$HTTP_HEADERS")
-        curl "${curl_args[@]}" "$WEBHOOK_URL"
+  using: node24
+  main: index.js

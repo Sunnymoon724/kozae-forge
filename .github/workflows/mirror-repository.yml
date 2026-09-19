@@ -3,6 +3,11 @@ name: Mirror repository
 on:
   workflow_call:
     inputs:
+      runner:
+        description: Runner label used for the mirror job
+        required: false
+        default: ubuntu-latest
+        type: string
       destination-repository:
         description: 'Owner and name of the destination repository'
         required: true
@@ -20,7 +25,7 @@ permissions:
 
 jobs:
   mirror:
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runner }}
 
     steps:
       - name: Checkout source repository
@@ -55,11 +60,13 @@ jobs:
         with:
           repository-directory: .
 
-      - name: Synchronize allowed files
-        uses: Sunnymoon724/kozae-forge/actions/sync-files@main
+      - name: Copy allowed files
+        uses: Sunnymoon724/kozae-forge/actions/copy-folder@main
         with:
+          source-folder: .
+          destination-folder: destination-repo
+          delete-extra: true
           exclude-file: ${{ inputs.exclude-file }}
-          destination-directory: destination-repo
 
       - name: Commit changes
         uses: Sunnymoon724/kozae-forge/actions/commit-changes@main

@@ -11,16 +11,8 @@
 | `issue-number` | 예 | - | 대상 이슈 번호 |
 | `issue` | 예 | - | 원본 이슈 JSON 객체 |
 
-## 출력
-
-이 Action은 출력값을 제공하지 않습니다.
-
 ## 입력 예시
 
 ```yaml
 - uses: Sunnymoon724/kozae-forge/actions/sync-issue-state@main
 ```
-
-## 출력 예시
-
-출력값이 없습니다.

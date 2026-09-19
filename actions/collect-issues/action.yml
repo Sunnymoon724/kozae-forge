@@ -1,34 +1,9 @@
 name: Collect issues
 description: Collect source repository issues selected by a label
 inputs:
-  token:
-    description: GitHub token with source repository issue read access
-    required: true
-  source-repository:
-    description: Source repository in owner/name format
-    required: true
-  visibility-label:
-    description: Label that selects issues for mirroring
-    required: true
+  token: {description: GitHub token with source repository issue read access, required: true}
+  source-repository: {description: Source repository in owner/name format, required: true}
+  visibility-label: {description: Label that selects issues for mirroring, required: true}
 outputs:
-  issues:
-    description: JSON array of selected issues
-    value: ${{ steps.collect.outputs.issues }}
-runs:
-  using: composite
-  steps:
-    - id: collect
-      shell: bash
-      env:
-        GH_TOKEN: ${{ inputs.token }}
-        SOURCE_REPOSITORY: ${{ inputs.source-repository }}
-        VISIBILITY_LABEL: ${{ inputs.visibility-label }}
-      run: |
-        set -euo pipefail
-        issues=$(gh api --paginate "repos/${SOURCE_REPOSITORY}/issues?state=all&per_page=100" \
-          | jq -cs --arg label "${VISIBILITY_LABEL}" '[.[] | .[] | select(.pull_request == null and ([.labels[].name] | index($label)))]')
-        {
-          echo 'issues<<EOF'
-          echo "${issues}"
-          echo EOF
-        } >> "$GITHUB_OUTPUT"
+  issues: {description: JSON array of selected issues}
+runs: {using: node24, main: index.js}

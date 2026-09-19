@@ -15,10 +15,21 @@ A reusable GitHub Actions Workflow that creates a Notion database entry when abs
 
 Register a Notion integration token as an Actions secret named `NOTION_TOKEN`.
 
+```text
+Settings → Secrets and variables → Actions
+```
+
+Secret name:
+
+```text
+NOTION_TOKEN
+```
+
 ### Input configuration
 
 | Input | Required | Default | Description |
 |---|---:|---|---|
+| `runner` | No | `ubuntu-latest` | Runner label used for the publish job |
 | `content-file` | Yes | - | Repository-relative content file path |
 | `source-url` | Yes | - | Notion database URL |
 | `title-property` | Yes | - | Database title property name |
@@ -35,6 +46,7 @@ jobs:
   publish:
     uses: Sunnymoon724/kozae-forge/.github/workflows/publish-notion-database.yml@main
     with:
+      runner: self-hosted
       content-file: output/article.md
       source-url: ${{ vars.NOTION_DATABASE_URL }}
       title-property: Name

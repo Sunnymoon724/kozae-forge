@@ -1,31 +1,12 @@
 name: Request content
 description: Request generated content from an OpenAI-compatible API
 inputs:
-  provider: { required: true, description: AI provider name }
-  api-base: { required: true, description: OpenAI-compatible API base URL }
-  model: { required: true, description: AI model name }
-  prompt: { required: true, description: Instructions for generating content }
-  content: { required: true, description: Input content sent to the AI provider }
-  api-key: { required: true, description: API key for the AI provider }
+  provider: {description: AI provider name, required: true}
+  api-base: {description: OpenAI-compatible API base URL, required: true}
+  model: {description: AI model name, required: true}
+  prompt: {description: Instructions for generating content, required: true}
+  content: {description: Input content sent to the AI provider, required: true}
+  api-key: {description: API key for the AI provider, required: true}
 outputs:
-  content:
-    description: Generated content returned by the AI provider
-    value: ${{ steps.request.outputs.content }}
-runs:
-  using: composite
-  steps:
-    - id: request
-      shell: bash
-      env:
-        PROVIDER: ${{ inputs.provider }}
-        API_BASE: ${{ inputs.api-base }}
-        MODEL: ${{ inputs.model }}
-        PROMPT: ${{ inputs.prompt }}
-        CONTENT: ${{ inputs.content }}
-        API_KEY: ${{ inputs.api-key }}
-      run: |
-        set -euo pipefail
-        case "$PROVIDER" in openai|openai-compatible) API_URL="${API_BASE%/}/chat/completions";; *) exit 1;; esac
-        request=$(jq -n --arg model "$MODEL" --arg system "$PROMPT" --arg content "$CONTENT" '{model:$model,messages:[{role:"system",content:$system},{role:"user",content:$content}]}')
-        result=$(curl --fail-with-body --silent --show-error -X POST "$API_URL" -H "Authorization: Bearer $API_KEY" -H 'Content-Type: application/json' --data "$request" | jq -e -r '.choices[0].message.content')
-        { echo 'content<<EOF'; echo "$result"; echo EOF; } >> "$GITHUB_OUTPUT"
+  content: {description: Generated content returned by the AI provider}
+runs: {using: node24, main: index.js}

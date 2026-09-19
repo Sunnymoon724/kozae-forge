@@ -15,3 +15,20 @@
 | 출력값 | 설명 |
 |---|---|
 | `page-id` | 일치하는 페이지 ID, 없으면 빈 값 |
+
+## 입력 예시
+
+```yaml
+- id: page
+  uses: Sunnymoon724/kozae-forge/actions/find-notion-page@main
+  with:
+    parent-page-id: ${{ vars.NOTION_PARENT_PAGE_ID }}
+    title: Weekly update
+    notion-token: ${{ secrets.NOTION_TOKEN }}
+```
+
+## 출력 예시
+
+```yaml
+page-id: 12345678-1234-1234-1234-123456789abc
+```

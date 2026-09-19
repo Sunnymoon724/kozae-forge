@@ -29,17 +29,19 @@ NOTION_TOKEN
 
 | 입력값 | 필수 | 기본값 | 설명 |
 |---|---:|---|---|
+| `runner` | 아니오 | `ubuntu-latest` | 게시 Job에 사용할 Runner 레이블 |
 | `content-file` | 예 | - | 저장소 기준 콘텐츠 파일 경로 |
 | `parent-page-id` | 예 | - | 새 페이지의 상위 페이지 ID |
 | `title` | 예 | - | 페이지 제목 |
 
-### 워크플로 설정
+### Workflow 설정
 
 ```yaml
 jobs:
   publish:
     uses: Sunnymoon724/kozae-forge/.github/workflows/publish-notion-page.yml@main
     with:
+      runner: self-hosted
       content-file: output/article.md
       parent-page-id: ${{ vars.NOTION_PARENT_PAGE_ID }}
       title: Weekly update

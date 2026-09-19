@@ -11,3 +11,12 @@ Saves either inline content or one existing file to a target path.
 | `source-file` | No | Empty | Existing file to copy |
 
 Provide exactly one of `content` or `source-file`.
+
+## Input example
+
+```yaml
+- uses: Sunnymoon724/kozae-forge/actions/save-content@main
+  with:
+    file-path: Chronicle/blog/article.md
+    source-file: generated-content/article.md
+```

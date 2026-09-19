@@ -11,3 +11,12 @@
 | `source-file` | 아니오 | 빈 값 | 복사할 기존 파일 |
 
 `content`와 `source-file` 중 정확히 하나를 제공합니다.
+
+## 입력 예시
+
+```yaml
+- uses: Sunnymoon724/kozae-forge/actions/save-content@main
+  with:
+    file-path: Chronicle/blog/article.md
+    source-file: generated-content/article.md
+```

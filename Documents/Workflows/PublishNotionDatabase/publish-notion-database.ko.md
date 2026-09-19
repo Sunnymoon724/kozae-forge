@@ -15,10 +15,21 @@
 
 Notion 통합 토큰을 `NOTION_TOKEN` 이름의 Actions Secret으로 등록합니다.
 
+```text
+Settings → Secrets and variables → Actions
+```
+
+Secret 이름:
+
+```text
+NOTION_TOKEN
+```
+
 ### 입력값 설정
 
 | 입력값 | 필수 | 기본값 | 설명 |
 |---|---:|---|---|
+| `runner` | 아니오 | `ubuntu-latest` | 게시 Job에 사용할 Runner 레이블 |
 | `content-file` | 예 | - | 저장소 기준 콘텐츠 파일 경로 |
 | `source-url` | 예 | - | Notion 데이터베이스 URL |
 | `title-property` | 예 | - | 데이터베이스 제목 속성 이름 |
@@ -28,13 +39,14 @@ Notion 통합 토큰을 `NOTION_TOKEN` 이름의 Actions Secret으로 등록합�
 | `date-property` | 아니오 | 빈 값 | 날짜 속성 이름 |
 | `date` | 아니오 | 빈 값 | 날짜 값 |
 
-### 워크플로 설정
+### Workflow 설정
 
 ```yaml
 jobs:
   publish:
     uses: Sunnymoon724/kozae-forge/.github/workflows/publish-notion-database.yml@main
     with:
+      runner: self-hosted
       content-file: output/article.md
       source-url: ${{ vars.NOTION_DATABASE_URL }}
       title-property: Name

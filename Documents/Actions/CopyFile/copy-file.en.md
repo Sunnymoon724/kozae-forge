@@ -9,7 +9,7 @@ Copies one file to a destination path.
 | `source-file` | Yes | - | Path to the source file |
 | `destination-file` | Yes | - | Destination path for the file |
 
-## Example
+## Input example
 
 ```yaml
 - uses: Sunnymoon724/kozae-forge/actions/copy-file@main

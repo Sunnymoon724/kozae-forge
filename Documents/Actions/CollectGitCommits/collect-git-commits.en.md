@@ -17,3 +17,22 @@ Collects Git commits in a selected time range.
 |---|---|
 | `has-content` | Whether commits were found |
 | `commits` | Collected commit messages |
+
+## Input example
+
+```yaml
+- id: commits
+  uses: Sunnymoon724/kozae-forge/actions/collect-git-commits@main
+  with:
+    start-time: 2026-09-18 00:00
+    end-time: 2026-09-19 00:00
+    timezone: Asia/Seoul
+    authors: 홍길동
+```
+
+## Output example
+
+```yaml
+has-content: true
+commits: '- Add development log (abc123) [author: Jane Doe]'
+```

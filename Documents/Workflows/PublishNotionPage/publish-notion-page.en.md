@@ -29,6 +29,7 @@ NOTION_TOKEN
 
 | Input | Required | Default | Description |
 |---|---:|---|---|
+| `runner` | No | `ubuntu-latest` | Runner label used for the publish job |
 | `content-file` | Yes | - | Repository-relative content file path |
 | `parent-page-id` | Yes | - | Parent page ID for new pages |
 | `title` | Yes | - | Page title |
@@ -40,6 +41,7 @@ jobs:
   publish:
     uses: Sunnymoon724/kozae-forge/.github/workflows/publish-notion-page.yml@main
     with:
+      runner: self-hosted
       content-file: output/article.md
       parent-page-id: ${{ vars.NOTION_PARENT_PAGE_ID }}
       title: Weekly update

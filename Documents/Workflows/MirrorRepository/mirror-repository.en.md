@@ -52,6 +52,14 @@ Format:
 OWNER/DESTINATION-REPOSITORY
 ```
 
+### Inputs
+
+| Input | Required | Default | Description |
+|---|---:|---|---|
+| `runner` | No | `ubuntu-latest` | Runner label used for the mirror job |
+| `destination-repository` | Yes | - | Destination repository in `OWNER/REPOSITORY` format |
+| `exclude-file` | Yes | - | Path to the exclusion list in the source repository |
+
 ### Workflow configuration
 
 Create `.github/workflows/mirror-repository.yml` in the source repository:
@@ -68,6 +76,7 @@ jobs:
   mirror:
     uses: Sunnymoon724/kozae-forge/.github/workflows/mirror-repository.yml@main
     with:
+      runner: self-hosted
       destination-repository: OWNER/DESTINATION-REPOSITORY
       exclude-file: Sources/mirror-exclude.list
     secrets:
@@ -79,6 +88,6 @@ jobs:
 - `verify-repository`
 - `configure-lfs-remote`
 - `upload-git-lfs-objects`
-- `sync-files`
+- `copy-folder`
 - `commit-changes`
 - `push-changes`

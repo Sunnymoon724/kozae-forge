@@ -1,31 +1,9 @@
 name: Validate npm build
-description: Install npm dependencies and run the project build
-
+description: Install npm dependencies and run the project build with Node.js 24
 inputs:
   working-directory:
     description: Directory containing package.json and package-lock.json
     required: true
-  node-version:
-    description: Node.js version to use
-    required: false
-    default: '20'
-
 runs:
-  using: composite
-  steps:
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ inputs.node-version }}
-        cache: npm
-        cache-dependency-path: ${{ inputs.working-directory }}/package-lock.json
-
-    - name: Install npm dependencies
-      shell: bash
-      working-directory: ${{ inputs.working-directory }}
-      run: npm ci
-
-    - name: Build npm project
-      shell: bash
-      working-directory: ${{ inputs.working-directory }}
-      run: npm run build
+  using: node24
+  main: index.js

@@ -1,24 +1,7 @@
 name: Clone destination repository
 description: Clone a destination repository with a GitHub token
 inputs:
-  token:
-    description: GitHub token for the destination repository
-    required: true
-  repository:
-    description: Destination repository in owner/name format
-    required: true
-  destination-directory:
-    description: Directory where the repository is cloned
-    required: true
-runs:
-  using: composite
-  steps:
-    - name: Clone destination repository
-      shell: bash
-      env:
-        TOKEN: ${{ inputs.token }}
-        REPOSITORY: ${{ inputs.repository }}
-        DESTINATION_DIRECTORY: ${{ inputs.destination-directory }}
-      run: |
-        set -euo pipefail
-        git clone "https://x-access-token:${TOKEN}@github.com/${REPOSITORY}.git" "$DESTINATION_DIRECTORY"
+  token: {description: GitHub token for the destination repository, required: true}
+  repository: {description: Destination repository in owner/name format, required: true}
+  destination-directory: {description: Directory where the repository is cloned, required: true}
+runs: {using: node24, main: index.js}

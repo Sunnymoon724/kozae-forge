@@ -1,27 +1,6 @@
 name: Commit changes
 description: Commit staged changes in a directory
 inputs:
-  destination-directory:
-    description: Directory containing the changes
-    required: true
-  message:
-    description: Commit message
-    required: false
-    default: Update files
-runs:
-  using: composite
-  steps:
-    - name: Commit changes
-      shell: bash
-      working-directory: ${{ inputs.destination-directory }}
-      env:
-        MESSAGE: ${{ inputs.message }}
-      run: |
-        git add -A
-        if git diff --cached --quiet; then
-          echo "No changes to commit"
-        else
-          git config user.name "forge-bot"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "$MESSAGE"
-        fi
+  destination-directory: {description: Directory containing the changes, required: true}
+  message: {description: Commit message, required: false, default: Update files}
+runs: {using: node24, main: index.js}

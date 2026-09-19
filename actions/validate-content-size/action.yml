@@ -8,14 +8,5 @@ inputs:
     description: Maximum permitted content size in bytes
     required: true
 runs:
-  using: composite
-  steps:
-    - shell: bash
-      env:
-        CONTENT: ${{ inputs.content }}
-        MAX_CONTENT_BYTES: ${{ inputs.max-content-bytes }}
-      run: |
-        set -euo pipefail
-        case "$MAX_CONTENT_BYTES" in ''|*[!0-9]*) echo 'max-content-bytes must be a positive integer.' >&2; exit 1;; esac
-        [ "$MAX_CONTENT_BYTES" -gt 0 ]
-        [ "$(printf '%s' "$CONTENT" | wc -c | tr -d '[:space:]')" -le "$MAX_CONTENT_BYTES" ]
+  using: node24
+  main: index.js

@@ -9,8 +9,9 @@
 | `source-folder` | 예 | - | 원본 폴더 경로 |
 | `destination-folder` | 예 | - | 대상 폴더 경로 |
 | `delete-extra` | 아니오 | `false` | 원본 폴더에 없는 대상 파일 삭제 여부 |
+| `exclude-file` | 아니오 | - | 선택적 제외 목록 |
 
-## 사용 예
+## 입력 예시
 
 ```yaml
 - uses: Sunnymoon724/kozae-forge/actions/copy-folder@main
@@ -18,4 +19,5 @@
     source-folder: generated-content
     destination-folder: Chronicle/blog
     delete-extra: false
+    exclude-file: Sources/mirror-exclude.list
 ```

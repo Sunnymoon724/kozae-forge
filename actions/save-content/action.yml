@@ -13,27 +13,5 @@ inputs:
     required: false
     default: ''
 runs:
-  using: composite
-  steps:
-    - name: Save content
-      shell: bash
-      env:
-        FILE_PATH: ${{ inputs.file-path }}
-        CONTENT: ${{ inputs.content }}
-        SOURCE_FILE: ${{ inputs.source-file }}
-      run: |
-        set -euo pipefail
-        if [ -n "$CONTENT" ] && [ -n "$SOURCE_FILE" ]; then
-          echo "Specify either content or source-file, not both." >&2
-          exit 1
-        fi
-        mkdir -p "$(dirname "$FILE_PATH")"
-        if [ -n "$SOURCE_FILE" ]; then
-          test -f "$SOURCE_FILE"
-          cp "$SOURCE_FILE" "$FILE_PATH"
-        elif [ -n "$CONTENT" ]; then
-          printf '%s\n' "$CONTENT" > "$FILE_PATH"
-        else
-          echo "Specify content or source-file." >&2
-          exit 1
-        fi
+  using: node24
+  main: index.js

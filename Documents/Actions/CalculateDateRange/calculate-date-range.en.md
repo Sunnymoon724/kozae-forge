@@ -27,7 +27,6 @@ Calculates a time range for GitHub Actions using the specified date and timezone
     target-date: 2026-09-08
 ```
 
-
 ## Output example
 
 ```yaml

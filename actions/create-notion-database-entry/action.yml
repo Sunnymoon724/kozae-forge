@@ -1,38 +1,15 @@
 name: Create Notion database entry
 description: Create a Notion database entry with title, grouping, date, and content
 inputs:
-  data-source-id: { required: true, description: Notion data source ID }
-  title-property: { required: true, description: Database title property name }
-  title: { required: true, description: Entry title }
-  group-property: { required: true, description: Select property name }
-  group-value: { required: true, description: Select property value }
-  date-property: { required: false, default: '', description: Optional date property name }
-  date: { required: false, default: '', description: Optional date in YYYY-MM-DD format }
-  content-file: { required: true, description: File containing entry content }
-  notion-token: { required: true, description: Notion integration token }
+  data-source-id: {description: Notion data source ID, required: true}
+  title-property: {description: Database title property name, required: true}
+  title: {description: Entry title, required: true}
+  group-property: {description: Select property name, required: true}
+  group-value: {description: Select property value, required: true}
+  date-property: {description: Optional date property name, required: false, default: ''}
+  date: {description: Optional date in YYYY-MM-DD format, required: false, default: ''}
+  content-file: {description: File containing entry content, required: true}
+  notion-token: {description: Notion integration token, required: true}
 outputs:
-  page-id:
-    description: Created database page ID
-    value: ${{ steps.create.outputs.page-id }}
-runs:
-  using: composite
-  steps:
-    - id: create
-      shell: bash
-      env:
-        DATA_SOURCE_ID: ${{ inputs.data-source-id }}
-        TITLE_PROPERTY: ${{ inputs.title-property }}
-        TITLE: ${{ inputs.title }}
-        GROUP_PROPERTY: ${{ inputs.group-property }}
-        GROUP_VALUE: ${{ inputs.group-value }}
-        DATE_PROPERTY: ${{ inputs.date-property }}
-        DATE: ${{ inputs.date }}
-        CONTENT_FILE: ${{ inputs.content-file }}
-        NOTION_TOKEN: ${{ inputs.notion-token }}
-      run: |
-        set -euo pipefail
-        if { [ -n "$DATE_PROPERTY" ] && [ -z "$DATE" ]; } || { [ -z "$DATE_PROPERTY" ] && [ -n "$DATE" ]; }; then exit 1; fi
-        content="$(cat "$CONTENT_FILE")"
-        payload="$(jq -n --arg source "$DATA_SOURCE_ID" --arg property "$TITLE_PROPERTY" --arg title "$TITLE" --arg group "$GROUP_PROPERTY" --arg value "$GROUP_VALUE" --arg date_property "$DATE_PROPERTY" --arg date "$DATE" --arg content "$content" '{parent:{data_source_id:$source},properties:({($property):{title:[{type:"text",text:{content:$title}}]},($group):{select:{name:$value}}} + (if $date_property == "" then {} else {($date_property):{date:{start:$date}}} end)),children:[{object:"block",type:"paragraph",paragraph:{rich_text:[{type:"text",text:{content:$content}}]}}]}')"
-        response="$(curl --fail-with-body --silent --show-error -X POST https://api.notion.com/v1/pages -H "Authorization: Bearer $NOTION_TOKEN" -H 'Content-Type: application/json' -H 'Notion-Version: 2026-03-11' --data "$payload")"
-        echo "page-id=$(jq -er '.id' <<< "$response")" >> "$GITHUB_OUTPUT"
+  page-id: {description: Created database page ID}
+runs: {using: node24, main: index.js}
