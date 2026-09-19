@@ -1,4 +1,5 @@
 const {spawnSync} = require('node:child_process');
+for (const [name, value] of Object.entries(process.env)) if (name.startsWith('INPUT_')) process.env[name.replaceAll('-', '_')] = value;
 const options = {cwd: process.env.INPUT_DESTINATION_DIRECTORY, stdio: 'inherit'};
 function git(args) { const result = spawnSync('git', args, options); if (result.status !== 0) process.exit(result.status || 1); }
 git(['add', '-A']);

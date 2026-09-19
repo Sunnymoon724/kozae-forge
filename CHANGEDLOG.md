@@ -6,6 +6,7 @@
 - Converted all reusable Actions to single Node.js 24 Actions that run on Linux and Windows.
 - Added an optional `runner` input to every reusable Workflow, defaulting to `ubuntu-latest`.
 - Replaced the remaining Bash file staging step in `refine-documents` with the cross-platform `copy-file` Action.
+- Fixed hyphenated input handling in Git commit and push Actions and added a non-interactive push timeout.
 - Updated related workflows, English and Korean documentation, and README entries.
 
 ## 0.3.16
