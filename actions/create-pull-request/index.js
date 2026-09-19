@@ -1,4 +1,5 @@
 const {spawnSync} = require('node:child_process');
+for (const [name, value] of Object.entries(process.env)) if (name.startsWith('INPUT_')) process.env[name.replaceAll('-', '_')] = value;
 
 function git(args) {
   const result = spawnSync('git', args, {stdio: 'inherit'});
@@ -23,13 +24,19 @@ async function main() {
   if (!repositoryResponse.ok) throw new Error(await repositoryResponse.text());
   const {default_branch: base} = await repositoryResponse.json();
   const pullResponse = await fetch(`https://api.github.com/repos/${repository}/pulls`, {method: 'POST', headers, body: JSON.stringify({title: p.INPUT_TITLE, body: p.INPUT_BODY, head: p.INPUT_BRANCH, base})});
-  if (!pullResponse.ok) throw new Error(await pullResponse.text());
+  let pullRequest;
+  if (pullResponse.ok) pullRequest = await pullResponse.json();
+  else if (pullResponse.status === 422) {
+    const owner = repository.split('/')[0];
+    const existingResponse = await fetch(`https://api.github.com/repos/${repository}/pulls?state=open&head=${encodeURIComponent(`${owner}:${p.INPUT_BRANCH}`)}&base=${encodeURIComponent(base)}`, {headers});
+    if (!existingResponse.ok) throw new Error(await existingResponse.text());
+    [pullRequest] = await existingResponse.json();
+    if (!pullRequest) throw new Error(await pullResponse.text());
+  } else throw new Error(await pullResponse.text());
   if (!p.INPUT_LABELS) return;
 
-  const pullRequest = await pullResponse.json();
   const labelsResponse = await fetch(`https://api.github.com/repos/${repository}/issues/${pullRequest.number}/labels`, {method: 'POST', headers, body: JSON.stringify({labels: p.INPUT_LABELS.split(',').map((label) => label.trim()).filter(Boolean)})});
   if (!labelsResponse.ok) throw new Error(await labelsResponse.text());
 }
 
 main().catch((error) => { console.error(error); process.exit(1); });
-for (const [name, value] of Object.entries(process.env)) if (name.startsWith('INPUT_')) process.env[name.replaceAll('-', '_')] = value;
