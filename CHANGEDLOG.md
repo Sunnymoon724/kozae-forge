@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.2
+
+- Reduced Git LFS uploads to one concurrent transfer, increased per-object retry handling, and extended the upload timeout for unreliable self-hosted Runner networks.
+
 ## 0.4.1
 
 - Fixed GitHub Token input forwarding and replaced token-bearing Git URLs with authorization headers for clone, LFS upload, and push operations.
