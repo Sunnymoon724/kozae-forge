@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.4.4
+
+- Increased the default Git LFS concurrent uploads to five while keeping three retries per object.
+
+## 0.4.3
+
+- Set balanced Git LFS upload defaults of three concurrent transfers and three retries per object to avoid long-running failed mirror jobs.
+
 ## 0.4.2
 
 - Reduced Git LFS uploads to one concurrent transfer, increased per-object retry handling, and extended the upload timeout for unreliable self-hosted Runner networks.

@@ -92,7 +92,7 @@ jobs:
 
 Workflow는 대상 저장소에 접근하는 Action에 `DESTINATION_REPO_TOKEN`을 전달합니다. `configure-lfs-remote`는 원격 URL만 구성하며, `upload-git-lfs-objects`와 `push-changes`가 `token` 입력값으로 Token을 받습니다.
 
-self-hosted Runner 안정성을 위해 Git LFS 업로드는 기본적으로 한 번에 하나씩 전송하며, 객체별로 최대 12회 재시도합니다.
+self-hosted Runner 안정성을 위해 Git LFS 업로드는 기본적으로 한 번에 최대 다섯 개를 전송하며, 객체별로 최대 세 번 재시도합니다.
 
 ```yaml
 - uses: Sunnymoon724/kozae-forge/actions/configure-lfs-remote@main

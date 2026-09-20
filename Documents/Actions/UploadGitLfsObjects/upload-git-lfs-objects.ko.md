@@ -12,8 +12,8 @@ Token은 Git의 임시 인증 설정으로 전달하며, 대화형 자격 증명
 | `repository-directory` | 예 | - | Git 저장소 디렉터리 |
 | `remote-name` | 아니오 | `public` | 구성된 원격 이름 |
 | `branch` | 아니오 | `main` | 업로드할 브랜치 |
-| `concurrent-transfers` | 아니오 | `1` | 동시에 업로드할 최대 LFS 객체 수 |
-| `max-retries` | 아니오 | `12` | LFS 객체별 최대 재시도 횟수 |
+| `concurrent-transfers` | 아니오 | `5` | 동시에 업로드할 최대 LFS 객체 수 |
+| `max-retries` | 아니오 | `3` | LFS 객체별 최대 재시도 횟수 |
 
 ## 입력 예시
 
@@ -24,6 +24,6 @@ Token은 Git의 임시 인증 설정으로 전달하며, 대화형 자격 증명
     repository-directory: .
     remote-name: public
     branch: main
-    concurrent-transfers: 1
-    max-retries: 12
+    concurrent-transfers: 5
+    max-retries: 3
 ```

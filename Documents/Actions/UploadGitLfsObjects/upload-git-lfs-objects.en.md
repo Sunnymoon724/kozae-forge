@@ -12,8 +12,8 @@ The token is passed through Git's temporary authorization configuration, and int
 | `repository-directory` | Yes | - | Git repository directory |
 | `remote-name` | No | `public` | Configured remote name |
 | `branch` | No | `main` | Branch to upload |
-| `concurrent-transfers` | No | `1` | Maximum simultaneous LFS uploads |
-| `max-retries` | No | `12` | Maximum retries for each LFS object |
+| `concurrent-transfers` | No | `5` | Maximum simultaneous LFS uploads |
+| `max-retries` | No | `3` | Maximum retries for each LFS object |
 
 ## Input example
 
@@ -24,6 +24,6 @@ The token is passed through Git's temporary authorization configuration, and int
     repository-directory: .
     remote-name: public
     branch: main
-    concurrent-transfers: 1
-    max-retries: 12
+    concurrent-transfers: 5
+    max-retries: 3
 ```

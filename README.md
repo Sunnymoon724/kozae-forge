@@ -5,7 +5,7 @@
 A collection of reusable GitHub Actions for KoZae projects.
 
 <p>
-  <img src="https://img.shields.io/badge/version-0.4.2-0f766e" alt="Version 0.4.2">
+  <img src="https://img.shields.io/badge/version-0.4.4-0f766e" alt="Version 0.4.4">
   <img src="https://img.shields.io/badge/GitHub%20Actions-2088FF?logo=githubactions&logoColor=white" alt="GitHub Actions">
   <img src="https://img.shields.io/badge/license-MIT-111827" alt="MIT License">
 </p>
