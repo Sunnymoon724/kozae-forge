@@ -1,3 +1,9 @@
+for (const [name, value] of Object.entries(process.env)) {
+  if (name.startsWith('INPUT_')) {
+    process.env[name.replaceAll('-', '_')] = value;
+  }
+}
+
 const {readFileSync} = require('node:fs');
 async function main() {
   const content = readFileSync(process.env.INPUT_CONTENT_FILE, 'utf8');
@@ -6,4 +12,3 @@ async function main() {
   if (!response.ok) throw new Error(`Notion request failed: ${response.status} ${await response.text()}`);
 }
 main().catch((error) => { console.error(error); process.exit(1); });
-for (const [name, value] of Object.entries(process.env)) if (name.startsWith('INPUT_')) process.env[name.replaceAll('-', '_')] = value;

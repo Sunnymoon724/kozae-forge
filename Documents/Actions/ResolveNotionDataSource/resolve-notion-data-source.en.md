@@ -2,6 +2,8 @@
 
 Resolves a Notion database URL to its data source ID.
 
+Hyphenated input names such as `source-url` and `notion-token` are normalized before the URL is parsed or the Notion API is called.
+
 ## Inputs
 
 | Input | Required | Default | Description |

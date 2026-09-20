@@ -2,6 +2,8 @@
 
 Notion 데이터베이스 URL에서 데이터 소스 ID를 구합니다.
 
+`source-url`, `notion-token`처럼 하이픈이 있는 입력값은 URL을 해석하거나 Notion API를 호출하기 전에 정규화합니다.
+
 ## 입력값
 
 | 입력값 | 필수 | 기본값 | 설명 |

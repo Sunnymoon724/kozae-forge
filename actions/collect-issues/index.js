@@ -1,3 +1,8 @@
+for (const [name, value] of Object.entries(process.env)) {
+  if (name.startsWith('INPUT_')) {
+    process.env[name.replaceAll('-', '_')] = value;
+  }
+}
+
 const {appendFileSync} = require('node:fs');
 async function main() { let url = `https://api.github.com/repos/${process.env.INPUT_SOURCE_REPOSITORY}/issues?state=all&per_page=100`; const issues = []; while (url) { const r = await fetch(url, {headers: {Authorization: `Bearer ${process.env.INPUT_TOKEN}`, Accept: 'application/vnd.github+json'}}); if (!r.ok) throw new Error(await r.text()); issues.push(...await r.json()); url = r.headers.get('link')?.match(/<([^>]+)>; rel="next"/)?.[1]; } const selected = issues.filter((issue) => !issue.pull_request && issue.labels.some((label) => label.name === process.env.INPUT_VISIBILITY_LABEL)); appendFileSync(process.env.GITHUB_OUTPUT, `issues<<EOF\n${JSON.stringify(selected)}\nEOF\n`); } main().catch((e) => { console.error(e); process.exit(1); });
-for (const [name, value] of Object.entries(process.env)) if (name.startsWith('INPUT_')) process.env[name.replaceAll('-', '_')] = value;

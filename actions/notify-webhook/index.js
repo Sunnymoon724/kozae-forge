@@ -1,3 +1,9 @@
+for (const [name, value] of Object.entries(process.env)) {
+  if (name.startsWith('INPUT_')) {
+    process.env[name.replaceAll('-', '_')] = value;
+  }
+}
+
 async function notify() {
   const headers = JSON.parse(process.env.INPUT_HEADERS);
   const response = await fetch(process.env.INPUT_URL, {method: process.env.INPUT_METHOD, headers, body: process.env.INPUT_BODY});
@@ -5,4 +11,3 @@ async function notify() {
 }
 
 notify().catch((error) => { console.error(error); process.exit(1); });
-for (const [name, value] of Object.entries(process.env)) if (name.startsWith('INPUT_')) process.env[name.replaceAll('-', '_')] = value;

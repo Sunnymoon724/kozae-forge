@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.8
+
+- Fixed input normalization order in 20 Actions so hyphenated inputs are available before each Action reads them.
+
 ## 0.4.7
 
 - Fixed `request-content` input normalization so hyphenated inputs such as `api-base` and `api-key` are available before the API request starts.

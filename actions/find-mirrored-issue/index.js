@@ -1,3 +1,9 @@
+for (const [name, value] of Object.entries(process.env)) {
+  if (name.startsWith('INPUT_')) {
+    process.env[name.replaceAll('-', '_')] = value;
+  }
+}
+
 const fs = require('node:fs');
 const p = process.env;
 const marker = `<!-- kozae-forge-mirror:source-issue=${p.INPUT_SOURCE_ISSUE_NUMBER} -->`;
@@ -16,4 +22,3 @@ async function main() {
 }
 
 main().catch((error) => { console.error(error); process.exit(1); });
-for (const [name, value] of Object.entries(process.env)) if (name.startsWith('INPUT_')) process.env[name.replaceAll('-', '_')] = value;
