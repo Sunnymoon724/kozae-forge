@@ -2,6 +2,8 @@
 
 Requests generated content from an OpenAI-compatible API.
 
+The Action validates every required input before sending the request and reports the missing input name when validation fails.
+
 ## Inputs
 
 | Input | Required | Description |

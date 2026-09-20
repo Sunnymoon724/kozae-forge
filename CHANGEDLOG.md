@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.7
+
+- Fixed `request-content` input normalization so hyphenated inputs such as `api-base` and `api-key` are available before the API request starts.
+
 ## 0.4.6
 
 - Scoped Git LFS authorization headers to `github.com` so GitHub credentials are not sent to presigned S3 upload URLs.
