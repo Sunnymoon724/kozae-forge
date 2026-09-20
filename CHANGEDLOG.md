@@ -5,6 +5,7 @@
 - Fixed GitHub Token input forwarding and replaced token-bearing Git URLs with authorization headers for clone, LFS upload, and push operations.
 - Renamed the destination repository Secret from `PUBLIC_REPO_TOKEN` to `DESTINATION_REPO_TOKEN` for public and private destinations.
 - Reused an existing open pull request when generated-content synchronization runs again for the same branch.
+- Added non-interactive authentication and a timeout to destination repository cloning.
 - Updated related English and Korean documentation.
 
 ## 0.4.0
