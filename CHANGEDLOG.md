@@ -6,6 +6,7 @@
 - Renamed the destination repository Secret from `PUBLIC_REPO_TOKEN` to `DESTINATION_REPO_TOKEN` for public and private destinations.
 - Reused an existing open pull request when generated-content synchronization runs again for the same branch.
 - Added non-interactive authentication and a timeout to destination repository cloning.
+- Changed Git HTTPS authentication to Basic authorization headers for GitHub token compatibility without exposing the token in repository URLs.
 - Updated related English and Korean documentation.
 
 ## 0.4.0
