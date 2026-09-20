@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.5
+
+- Forced the Git LFS upload process to use HTTP/1.1 to avoid self-hosted Runner S3 upload failures caused by HTTP/2 transport incompatibility.
+
 ## 0.4.4
 
 - Increased the default Git LFS concurrent uploads to five while keeping three retries per object.

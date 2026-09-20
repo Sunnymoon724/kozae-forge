@@ -4,6 +4,8 @@ Uploads all Git LFS objects for one branch through an already configured remote.
 
 The token is passed through Git's temporary authorization configuration, and interactive credential prompts are disabled.
 
+For GitHub S3 upload compatibility on self-hosted Runners, the Action disables HTTP/2 only for the Git LFS process.
+
 ## Inputs
 
 | Input | Required | Default | Description |
