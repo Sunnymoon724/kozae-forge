@@ -2,6 +2,8 @@
 
 A GitHub Action that clones a destination repository using a GitHub token and initializes Git LFS.
 
+Authentication is passed through Git's temporary authorization configuration, and interactive credential prompts are disabled.
+
 ## Inputs
 
 | Input | Required | Default | Description |

@@ -2,6 +2,8 @@
 
 Uploads all Git LFS objects for one branch through an already configured remote. Use `configure-lfs-remote` first.
 
+The token is passed through Git's temporary authorization configuration, and interactive credential prompts are disabled.
+
 ## Inputs
 
 | Input | Required | Default | Description |
