@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.6
+
+- Scoped Git LFS authorization headers to `github.com` so GitHub credentials are not sent to presigned S3 upload URLs.
+
 ## 0.4.5
 
 - Forced the Git LFS upload process to use HTTP/1.1 to avoid self-hosted Runner S3 upload failures caused by HTTP/2 transport incompatibility.

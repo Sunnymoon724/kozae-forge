@@ -93,7 +93,7 @@ jobs:
 The Workflow passes `DESTINATION_REPO_TOKEN` to the Actions that access the destination repository. `configure-lfs-remote` only configures the remote URL; `upload-git-lfs-objects` and `push-changes` receive the token through their `token` input.
 
 For self-hosted Runner reliability, Git LFS uploads run up to five transfers at a time and retry each object up to three times by default.
-The Git LFS upload process uses HTTP/1.1 for GitHub S3 compatibility.
+GitHub authentication is scoped to `github.com`; the presigned S3 upload URLs do not receive the GitHub authorization header.
 
 ```yaml
 - uses: Sunnymoon724/kozae-forge/actions/configure-lfs-remote@main

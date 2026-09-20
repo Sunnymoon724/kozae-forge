@@ -2,9 +2,7 @@
 
 구성된 원격 저장소로 한 브랜치의 모든 Git LFS 객체를 업로드합니다. 먼저 `configure-lfs-remote`를 사용해야 합니다.
 
-Token은 Git의 임시 인증 설정으로 전달하며, 대화형 자격 증명 입력은 비활성화됩니다.
-
-self-hosted Runner에서 GitHub S3 업로드 호환성을 위해 Git LFS 프로세스에만 HTTP/2를 비활성화합니다.
+Token은 `github.com`에 한정된 Git의 임시 인증 설정으로 전달하며, 대화형 자격 증명 입력은 비활성화됩니다. GitHub가 반환한 S3 업로드 URL에는 GitHub 인증 헤더를 보내지 않습니다.
 
 ## 입력값
 
