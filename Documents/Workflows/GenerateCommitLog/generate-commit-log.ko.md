@@ -2,15 +2,14 @@
 
 ## 1. 처리 방법
 
-1. 시간대 기준으로 전날의 시간 범위를 계산합니다.
-2. `collect-git-commits`가 커밋을 텍스트로 수집합니다.
-3. `prepare-content`, `validate-content-size`, `request-content`가 AI로 원하는 형식의 글을 작성합니다.
-4. `save-content`가 생성된 글을 Job의 임시 작업 공간에 `${date}-${tag}.md` 파일명으로 저장합니다.
-5. 생성된 파일을 항상 `generated-content` Artifact로 업로드합니다.
+1. 선택한 시간대를 기준으로 처리할 날짜를 정합니다. 두 날짜가 모두 비어 있으면 어제를 사용하고, `start-date`만 입력하면 그 날짜만 처리합니다.
+2. 날짜 형식을 확인하고, 최대 31일까지 처리할 수 있도록 제한합니다.
+3. 날짜마다 `collect-git-commits`가 해당 날짜의 커밋을 수집합니다.
+4. `prepare-content`, `validate-content-size`, `request-content`가 AI로 요청한 형식의 글을 작성합니다.
+5. 커밋이 없는 날짜는 파일을 만들지 않습니다.
+6. 생성된 파일을 하나의 `generated-content` Artifact로 묶습니다.
 
-이 Workflow는 저장소에 파일을 영구 저장하거나 커밋하지 않습니다. 후속 Job에서 작업 공간에 파일을 복원하려면 `save-content` Action을 사용하고, 저장소에 반영하려면 별도로 commit과 push를 수행해야 합니다.
-
-`target-date`에 지정한 날짜의 00:00부터 다음 날 00:00까지 처리합니다.
+이 Workflow는 저장소에 파일을 영구 저장하거나 커밋하지 않습니다. 후속 Job에서 `generated-content` Artifact를 다운로드한 뒤 별도로 commit과 push를 수행합니다.
 
 ## 2. 사용 방법
 
@@ -35,7 +34,8 @@ API_KEY
 | `runner` | 아니오 | `ubuntu-latest` | Workflow Job에 사용할 Runner 레이블 |
 | `branch` | 아니오 | `main` | 커밋을 읽을 브랜치 |
 | `timezone` | 예 | - | IANA 시간대 |
-| `target-date` | 예 | - | 로그를 생성할 날짜 |
+| `start-date` | 아니오 | 빈 값 | 시작 날짜 (`YYYY-MM-DD`). `end-date`도 비어 있으면 어제 사용 |
+| `end-date` | 아니오 | 빈 값 | 종료 날짜 (`YYYY-MM-DD`). 비어 있으면 `start-date`만 처리 |
 | `authors` | 아니오 | 빈 값 | 커밋 작성자 필터 |
 | `provider` | 예 | - | AI Provider |
 | `api-base` | 예 | - | AI API 기본 URL |
@@ -43,6 +43,8 @@ API_KEY
 | `max-content-bytes` | 예 | - | 입력 콘텐츠 최대 크기 |
 | `prompt` | 예 | - | 콘텐츠 생성 프롬프트 |
 | `tag` | 예 | - | 생성 파일명의 태그 |
+
+`start-date` 없이 `end-date`만 입력할 수 없습니다. 기간은 최대 31일까지이며, `start-date`는 `end-date`보다 늦을 수 없습니다.
 
 ### Workflow 설정
 
@@ -56,15 +58,16 @@ jobs:
       api-base: https://api.openai.com/v1
       model: gpt-4o-mini
       max-content-bytes: 100000
-      target-date: 2026-09-08
+      start-date: 2026-09-01
+      end-date: 2026-09-07
       authors: 홍길동
-      prompt: 커밋 기록을 바탕으로 한국어 개발일지를 Markdown으로 작성해줘.
+      prompt: 커밋 기록을 바탕으로 쉬운 한국어 개발일지를 작성해줘.
       tag: development-log
     secrets:
       API_KEY: ${{ secrets.API_KEY }}
 ```
 
-`tag`가 `development-log`이면 Job 작업 공간의 루트에 `${target-date}-development-log.md` 파일이 생성됩니다. 생성 결과는 항상 `generated-content` Artifact로 제공되며, 다음 Job에서 필요한 대상 디렉터리로 다운로드해야 합니다.
+`tag`가 `development-log`이면 커밋이 있는 날짜마다 `${date}-development-log.md` 파일이 생성됩니다. 모든 파일은 하나의 `generated-content` Artifact에 들어갑니다.
 
 ```yaml
 - uses: actions/download-artifact@v4
@@ -74,9 +77,11 @@ jobs:
 
 ## 3. 사용 Action
 
+- `calculate-date-range`
 - `collect-git-commits`
 - `prepare-content`
 - `validate-content-size`
 - `request-content`
 - `save-content`
 - `actions/upload-artifact`
+- `actions/download-artifact`

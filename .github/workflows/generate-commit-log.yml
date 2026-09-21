@@ -15,9 +15,15 @@ on:
       timezone:
         required: true
         type: string
-      target-date:
-        description: Date to generate the commit log for in YYYY-MM-DD format
-        required: true
+      start-date:
+        description: Start date in YYYY-MM-DD format. Defaults to yesterday when empty.
+        required: false
+        default: ''
+        type: string
+      end-date:
+        description: Optional end date in YYYY-MM-DD format. Empty means start-date only.
+        required: false
+        default: ''
         type: string
       authors:
         description: Optional comma-separated commit author names or email filters
@@ -49,19 +55,119 @@ on:
         required: true
     outputs:
       has-content:
-        value: ${{ jobs.generate.outputs.has-content }}
-      file-name:
-        value: ${{ jobs.generate.outputs.file-name }}
+        value: ${{ jobs.package.outputs.has-content }}
+      file-names:
+        value: ${{ jobs.package.outputs.file-names }}
 
 permissions:
   contents: read
 
 jobs:
-  generate:
+  prepare:
     runs-on: ${{ inputs.runner }}
     outputs:
-      has-content: ${{ steps.collect.outputs.has-content }}
-      file-name: ./${{ steps.time-range.outputs.date }}-${{ inputs.tag }}.md
+      dates: ${{ steps.dates.outputs.dates }}
+    steps:
+      - id: dates
+        name: Validate dates
+        env:
+          START_DATE: ${{ inputs.start-date }}
+          END_DATE: ${{ inputs.end-date }}
+          TIMEZONE: ${{ inputs.timezone }}
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+
+          const startInput = process.env.START_DATE.trim();
+          const endInput = process.env.END_DATE.trim();
+          const timezone = process.env.TIMEZONE.trim();
+          const maxDays = 31;
+
+          function parseDate(value, name) {
+            if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+              throw new Error(`${name} must use YYYY-MM-DD format.`);
+            }
+
+            const [year, month, day] = value.split('-').map(Number);
+            const timestamp = Date.UTC(year, month - 1, day);
+            const date = new Date(timestamp);
+            if (
+              date.getUTCFullYear() !== year ||
+              date.getUTCMonth() !== month - 1 ||
+              date.getUTCDate() !== day
+            ) {
+              throw new Error(`${name} is not a valid calendar date.`);
+            }
+
+            return timestamp;
+          }
+
+          function formatDate(timestamp) {
+            return new Date(timestamp).toISOString().slice(0, 10);
+          }
+
+          function yesterdayInTimezone() {
+            let parts;
+            try {
+              parts = new Intl.DateTimeFormat('en-CA', {
+                timeZone: timezone,
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+              }).formatToParts(new Date());
+            } catch {
+              throw new Error(`Invalid IANA timezone: ${timezone}`);
+            }
+
+            const values = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+            const today = Date.UTC(Number(values.year), Number(values.month) - 1, Number(values.day));
+            return today - 24 * 60 * 60 * 1000;
+          }
+
+          try {
+            let startTimestamp;
+            let endTimestamp;
+
+            if (!startInput && !endInput) {
+              startTimestamp = yesterdayInTimezone();
+              endTimestamp = startTimestamp;
+            } else if (!startInput && endInput) {
+              throw new Error('end-date cannot be used without start-date.');
+            } else {
+              startTimestamp = parseDate(startInput, 'start-date');
+              endTimestamp = endInput ? parseDate(endInput, 'end-date') : startTimestamp;
+            }
+
+            if (startTimestamp > endTimestamp) {
+              throw new Error('start-date must not be later than end-date.');
+            }
+
+            const dayCount = Math.floor((endTimestamp - startTimestamp) / (24 * 60 * 60 * 1000)) + 1;
+            if (dayCount > maxDays) {
+              throw new Error(`The date range cannot be longer than ${maxDays} days.`);
+            }
+
+            const dates = [];
+            for (let timestamp = startTimestamp; timestamp <= endTimestamp; timestamp += 24 * 60 * 60 * 1000) {
+              dates.push(formatDate(timestamp));
+            }
+
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, `dates=${JSON.stringify(dates)}\n`);
+            console.log(`Processing ${dates.length} day(s): ${dates.join(', ')}`);
+          } catch (error) {
+            console.error(error.message);
+            process.exit(1);
+          }
+          NODE
+
+  generate:
+    needs: prepare
+    runs-on: ${{ inputs.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        date: ${{ fromJSON(needs.prepare.outputs.dates) }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -72,7 +178,7 @@ jobs:
         uses: Sunnymoon724/kozae-forge/actions/calculate-date-range@main
         with:
           timezone: ${{ inputs.timezone }}
-          target-date: ${{ inputs.target-date }}
+          target-date: ${{ matrix.date }}
 
       - id: collect
         uses: Sunnymoon724/kozae-forge/actions/collect-git-commits@main
@@ -105,16 +211,59 @@ jobs:
           content: ${{ steps.request.outputs.content }}
           api-key: ${{ secrets.API_KEY }}
 
-      - id: generate
-        if: steps.collect.outputs.has-content == 'true'
+      - if: steps.collect.outputs.has-content == 'true'
         uses: Sunnymoon724/kozae-forge/actions/save-content@main
         with:
-          file-path: ./${{ steps.time-range.outputs.date }}-${{ inputs.tag }}.md
+          file-path: ./${{ matrix.date }}-${{ inputs.tag }}.md
           content: ${{ steps.generated.outputs.content }}
 
-      - name: Upload generated content
+      - name: Upload generated content for this date
         if: steps.collect.outputs.has-content == 'true'
         uses: actions/upload-artifact@v4
         with:
+          name: generated-content-${{ matrix.date }}
+          path: ./${{ matrix.date }}-${{ inputs.tag }}.md
+
+  package:
+    needs: generate
+    runs-on: ${{ inputs.runner }}
+    outputs:
+      has-content: ${{ steps.package.outputs.has-content }}
+      file-names: ${{ steps.package.outputs.file-names }}
+    steps:
+      - name: Download generated content
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          pattern: generated-content-*
+          merge-multiple: true
+
+      - id: package
+        name: Check generated content
+        env:
+          TAG: ${{ inputs.tag }}
+        shell: bash
+        run: |
+          find . -maxdepth 1 -type f -name "*-${TAG}.md" -print | sort > generated-files.txt
+          if [ -s generated-files.txt ]; then
+            node <<'NODE'
+            const fs = require('fs');
+            const files = fs.readFileSync('generated-files.txt', 'utf8')
+              .split('\n')
+              .map((file) => file.trim())
+              .filter(Boolean)
+              .map((file) => file.replace(/^\.\//, ''));
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, `has-content=true\nfile-names=${JSON.stringify(files)}\n`);
+            NODE
+          else
+            echo 'has-content=false' >> "$GITHUB_OUTPUT"
+            echo 'file-names=[]' >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Upload generated content
+        if: steps.package.outputs.has-content == 'true'
+        uses: actions/upload-artifact@v4
+        with:
           name: generated-content
-          path: ./${{ steps.time-range.outputs.date }}-${{ inputs.tag }}.md
+          path: '*.md'
+          if-no-files-found: error

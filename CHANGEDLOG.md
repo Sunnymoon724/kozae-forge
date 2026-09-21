@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.9
+
+- Extended `generate-commit-log` to process one date or a date range and combine generated files into one artifact.
+
 ## 0.4.8
 
 - Fixed input normalization order in 20 Actions so hyphenated inputs are available before each Action reads them.
