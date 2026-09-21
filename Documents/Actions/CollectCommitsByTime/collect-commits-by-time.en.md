@@ -1,4 +1,4 @@
-# collect-git-commits
+# collect-commits-by-time
 
 Collects Git commits in a selected time range.
 
@@ -22,7 +22,7 @@ Collects Git commits in a selected time range.
 
 ```yaml
 - id: commits
-  uses: Sunnymoon724/kozae-forge/actions/collect-git-commits@main
+  uses: Sunnymoon724/kozae-forge/actions/collect-commits-by-time@main
   with:
     start-time: 2026-09-18 00:00
     end-time: 2026-09-19 00:00

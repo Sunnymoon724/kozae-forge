@@ -1,0 +1,25 @@
+name: Collect commits by SHA
+description: Collect formatted commit messages for a SHA range
+inputs:
+  before-sha:
+    description: Commit SHA immediately before the range; use the push event before value when available
+    required: false
+    default: ''
+  after-sha:
+    description: Final commit SHA in the range; defaults to GITHUB_SHA
+    required: false
+    default: ''
+outputs:
+  base-sha:
+    description: Resolved base commit SHA, when one exists
+  head-sha:
+    description: Resolved final commit SHA
+  commits:
+    description: Formatted commit messages with range metadata
+  has-commits:
+    description: Whether the range contains commits
+  source-url:
+    description: GitHub URL for the compared range or initial commit
+runs:
+  using: node24
+  main: index.js

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.10
+
+- Added reusable review Actions for Git diffs, SHA-range commits, branch configuration checks, and open-issue collection.
+- Renamed Git commit collection Actions to `collect-commits-by-time` and `collect-commits-by-sha`.
+- Removed the redundant repository input from `collect-commits-by-sha`; source URLs use the running repository.
+
 ## 0.4.9
 
 - Extended `generate-commit-log` to process one date or a date range and combine generated files into one artifact.

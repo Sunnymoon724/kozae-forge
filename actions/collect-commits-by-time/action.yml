@@ -1,5 +1,5 @@
-name: Collect Git commits
-description: Collect formatted Git commits in a time range
+name: Collect commits by time
+description: Collect formatted commits in a time range
 inputs:
   start-time:
     description: Inclusive range start in YYYY-MM-DD HH:mm format

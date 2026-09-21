@@ -1,0 +1,35 @@
+name: Collect Git diff
+description: Collect the Git diff for a commit range
+inputs:
+  before-sha:
+    description: Commit SHA immediately before the range; use the push event before value when available
+    required: false
+    default: ''
+  after-sha:
+    description: Final commit SHA in the range; defaults to GITHUB_SHA
+    required: false
+    default: ''
+  repository:
+    description: GitHub owner and repository used to build the source URL; defaults to GITHUB_REPOSITORY
+    required: false
+    default: ''
+  max-diff-bytes:
+    description: Maximum UTF-8 byte length to return before marking the diff as truncated
+    required: false
+    default: '90000'
+outputs:
+  base-sha:
+    description: Resolved base commit SHA, when one exists
+  head-sha:
+    description: Resolved final commit SHA
+  diff:
+    description: Collected diff with range metadata
+  has-diff:
+    description: Whether the range contains a diff
+  source-url:
+    description: GitHub URL for the compared range or initial commit
+  truncated:
+    description: Whether the returned diff was truncated to the configured byte limit
+runs:
+  using: node24
+  main: index.js

@@ -181,7 +181,7 @@ jobs:
           target-date: ${{ matrix.date }}
 
       - id: collect
-        uses: Sunnymoon724/kozae-forge/actions/collect-git-commits@main
+        uses: Sunnymoon724/kozae-forge/actions/collect-commits-by-time@main
         with:
           start-time: ${{ steps.time-range.outputs.start-time }}
           end-time: ${{ steps.time-range.outputs.end-time }}

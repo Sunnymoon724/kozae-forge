@@ -1,0 +1,19 @@
+name: Check review branch
+description: Check whether the current branch is enabled in a review configuration file
+inputs:
+  config-path:
+    description: Repository-relative path to the review configuration JSON file
+    required: false
+    default: .github/review-config.json
+  branch:
+    description: Branch to check; defaults to GITHUB_REF_NAME
+    required: false
+    default: ''
+outputs:
+  branch:
+    description: Branch that was checked
+  enabled:
+    description: Whether review is enabled for the branch
+runs:
+  using: node24
+  main: index.js

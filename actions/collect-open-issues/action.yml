@@ -1,0 +1,18 @@
+name: Collect open issues
+description: Collect open issues and their comments from the current GitHub repository
+inputs:
+  token:
+    description: GitHub token with permission to read repository issues
+    required: true
+  max-issues:
+    description: Maximum number of open issues to collect
+    required: false
+    default: '100'
+outputs:
+  issues:
+    description: JSON array containing open issues and comments
+  has-issues:
+    description: Whether at least one open issue was found
+runs:
+  using: node24
+  main: index.js
