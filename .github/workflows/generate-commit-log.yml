@@ -74,9 +74,8 @@ jobs:
           START_DATE: ${{ inputs.start-date }}
           END_DATE: ${{ inputs.end-date }}
           TIMEZONE: ${{ inputs.timezone }}
-        shell: bash
+        shell: node {0}
         run: |
-          node <<'NODE'
           const fs = require('fs');
 
           const startInput = process.env.START_DATE.trim();
@@ -159,7 +158,6 @@ jobs:
             console.error(error.message);
             process.exit(1);
           }
-          NODE
 
   generate:
     needs: prepare
@@ -242,23 +240,19 @@ jobs:
         name: Check generated content
         env:
           TAG: ${{ inputs.tag }}
-        shell: bash
+        shell: node {0}
         run: |
-          find . -maxdepth 1 -type f -name "*-${TAG}.md" -print | sort > generated-files.txt
-          if [ -s generated-files.txt ]; then
-            node <<'NODE'
-            const fs = require('fs');
-            const files = fs.readFileSync('generated-files.txt', 'utf8')
-              .split('\n')
-              .map((file) => file.trim())
-              .filter(Boolean)
-              .map((file) => file.replace(/^\.\//, ''));
+          const fs = require('fs');
+          const files = fs.readdirSync('.', { withFileTypes: true })
+            .filter((entry) => entry.isFile() && entry.name.endsWith(`-${process.env.TAG}.md`))
+            .map((entry) => entry.name)
+            .sort();
+
+          if (files.length > 0) {
             fs.appendFileSync(process.env.GITHUB_OUTPUT, `has-content=true\nfile-names=${JSON.stringify(files)}\n`);
-            NODE
-          else
-            echo 'has-content=false' >> "$GITHUB_OUTPUT"
-            echo 'file-names=[]' >> "$GITHUB_OUTPUT"
-          fi
+          } else {
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, 'has-content=false\nfile-names=[]\n');
+          }
 
       - name: Upload generated content
         if: steps.package.outputs.has-content == 'true'
