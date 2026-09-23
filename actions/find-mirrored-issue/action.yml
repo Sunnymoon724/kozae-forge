@@ -5,5 +5,5 @@ inputs:
   destination-repository: {description: Destination repository in owner/name format, required: true}
   source-issue-number: {description: Source issue number, required: true}
 outputs:
-  issue-number: {description: Matching destination issue number, if found}
+  issue-number: {description: 'Matching destination issue number, if found'}
 runs: {using: node24, main: index.js}

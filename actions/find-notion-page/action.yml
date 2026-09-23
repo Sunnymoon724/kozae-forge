@@ -5,5 +5,5 @@ inputs:
   parent-page-id: {description: Parent Notion page ID, required: true}
   notion-token: {description: Notion integration token, required: true}
 outputs:
-  page-id: {description: Matching Notion page ID, if found}
+  page-id: {description: 'Matching Notion page ID, if found'}
 runs: {using: node24, main: index.js}

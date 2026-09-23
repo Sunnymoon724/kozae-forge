@@ -4,6 +4,6 @@ inputs:
   mapping-file: {description: Path to a JSON file containing Chronicle source mappings, required: true}
   source-files: {description: Newline-delimited Markdown source files to map, required: true}
 outputs:
-  matrix: {description: JSON matrix with source, target, and template entries}
+  matrix: {description: 'JSON matrix with source, target, and template entries'}
   has-sources: {description: Whether at least one source file was mapped}
 runs: {using: node24, main: index.js}

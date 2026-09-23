@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.4.11
+
+- Fixed the `find-mirrored-issue` output description YAML so the Action can load correctly.
+- Quoted comma-containing flow-style YAML descriptions so all reusable Actions load correctly.
+
 ## 0.4.10
 
 - Added reusable review Actions for Git diffs, SHA-range commits, branch configuration checks, and open-issue collection.

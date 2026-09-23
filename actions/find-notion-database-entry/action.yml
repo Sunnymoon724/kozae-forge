@@ -6,5 +6,5 @@ inputs:
   title: {description: Entry title, required: true}
   notion-token: {description: Notion integration token, required: true}
 outputs:
-  page-id: {description: Matching database page ID, if found}
+  page-id: {description: 'Matching database page ID, if found'}
 runs: {using: node24, main: index.js}
