@@ -16,8 +16,16 @@ async function main() {
   }
 
   console.log(`Deleting mirrored issue: source #${p.INPUT_SOURCE_ISSUE_NUMBER} -> destination #${p.INPUT_ISSUE_NUMBER}`);
-  const response = await fetch(url, {method: 'DELETE', headers});
-  if (!response.ok) throw new Error(await response.text());
+  const response = await fetch('https://api.github.com/graphql', {
+    method: 'POST',
+    headers: {...headers, 'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      query: `mutation DeleteIssue($input: DeleteIssueInput!) { deleteIssue(input: $input) { repository { nameWithOwner } } }`,
+      variables: {input: {issueId: issue.node_id}},
+    }),
+  });
+  const result = await response.json();
+  if (!response.ok || result.errors?.length) throw new Error(JSON.stringify(result));
 }
 
 main().catch((error) => { console.error(error); process.exit(1); });
