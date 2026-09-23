@@ -10,6 +10,7 @@
 | `destination-repository` | 예 | - | 대상 저장소 |
 | `issue-number` | 예 | - | 대상 이슈 번호 |
 | `issue` | 예 | - | 원본 이슈 JSON 객체 |
+| `state` | 아니오 | 빈 값 | 대상 이슈에 강제로 적용할 상태 |
 
 ## 입력 예시
 

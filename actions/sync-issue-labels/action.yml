@@ -6,4 +6,5 @@ inputs:
   issue-number: {description: Destination issue number, required: true}
   issue: {description: Source issue JSON object, required: true}
   excluded-label: {description: Source label excluded from destination labels, required: true}
+  additional-labels: {description: Optional comma-separated labels to add, required: false, default: ''}
 runs: {using: node24, main: index.js}

@@ -9,6 +9,8 @@
 | `token` | 예 | - | 원본 이슈 조회 권한이 있는 Token |
 | `source-repository` | 예 | - | `owner/name` 형식의 원본 저장소 |
 | `visibility-label` | 예 | - | 이슈를 선택하는 라벨 |
+| `include-unlabeled` | 아니오 | `false` | 공개 라벨이 없는 이슈도 포함할지 여부 |
+| `issue-number` | 아니오 | 빈 값 | 번호로 이슈 하나만 수집 |
 
 ## 출력
 

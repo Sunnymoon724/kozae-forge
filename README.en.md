@@ -53,6 +53,8 @@ Reusable GitHub Actions and Workflows for KoZae projects.
     - [Collect issues](Documents/Actions/CollectIssues/collect-issues.en.md)
     - [Collect open issues](Documents/Actions/CollectOpenIssues/collect-open-issues.en.md)
     - [Find mirrored issue](Documents/Actions/FindMirroredIssue/find-mirrored-issue.en.md)
+    - [Collect mirrored issues](Documents/Actions/CollectMirroredIssues/collect-mirrored-issues.en.md)
+    - [Delete mirrored issue](Documents/Actions/DeleteMirroredIssue/delete-mirrored-issue.en.md)
     - [Create issue](Documents/Actions/CreateIssue/create-issue.en.md)
     - [Update issue](Documents/Actions/UpdateIssue/update-issue.en.md)
     - [Synchronize issue labels](Documents/Actions/SyncIssueLabels/sync-issue-labels.en.md)

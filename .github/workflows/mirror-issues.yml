@@ -15,6 +15,16 @@ on:
         required: false
         default: mirror:public
         type: string
+      missing-label:
+        description: Label added when an existing mirror loses its visibility label
+        required: false
+        default: mirror:missing
+        type: string
+      source-issue-number:
+        description: Optional source issue number for a single issue synchronization
+        required: false
+        default: ''
+        type: string
       sync-comments:
         required: false
         default: false
@@ -35,7 +45,7 @@ permissions:
   issues: read
 
 jobs:
-  collect:
+  collect-source:
     runs-on: ${{ inputs.runner }}
     outputs:
       issues: ${{ steps.collect.outputs.issues }}
@@ -46,15 +56,29 @@ jobs:
           token: ${{ github.token }}
           source-repository: ${{ github.repository }}
           visibility-label: ${{ inputs.visibility-label }}
+          include-unlabeled: ${{ (github.event_name == 'workflow_dispatch' || github.event_name == 'schedule') && inputs.source-issue-number == '' }}
+          issue-number: ${{ inputs.source-issue-number || github.event.issue.number || '' }}
+
+  collect-mirrors:
+    if: ${{ (github.event_name == 'workflow_dispatch' || github.event_name == 'schedule') && inputs.source-issue-number == '' }}
+    runs-on: ${{ inputs.runner }}
+    outputs:
+      issues: ${{ steps.collect.outputs.issues }}
+    steps:
+      - id: collect
+        uses: Sunnymoon724/kozae-forge/actions/collect-mirrored-issues@main
+        with:
+          token: ${{ secrets.DESTINATION_REPO_TOKEN }}
+          destination-repository: ${{ inputs.destination-repository }}
 
   mirror:
-    needs: collect
-    if: ${{ needs.collect.outputs.issues != '[]' }}
+    needs: collect-source
+    if: ${{ needs.collect-source.outputs.issues != '[]' }}
     runs-on: ${{ inputs.runner }}
     strategy:
       fail-fast: false
       matrix:
-        issue: ${{ fromJSON(needs.collect.outputs.issues) }}
+        issue: ${{ fromJSON(needs.collect-source.outputs.issues) }}
     steps:
       - id: find
         uses: Sunnymoon724/kozae-forge/actions/find-mirrored-issue@main
@@ -64,14 +88,14 @@ jobs:
           source-issue-number: ${{ matrix.issue.number }}
 
       - id: create
-        if: steps.find.outputs.issue-number == ''
+        if: matrix.issue.mirrorPublic == true && steps.find.outputs.issue-number == ''
         uses: Sunnymoon724/kozae-forge/actions/create-issue@main
         with:
           token: ${{ secrets.DESTINATION_REPO_TOKEN }}
           destination-repository: ${{ inputs.destination-repository }}
           issue: ${{ toJSON(matrix.issue) }}
 
-      - if: steps.find.outputs.issue-number != ''
+      - if: matrix.issue.mirrorPublic == true && steps.find.outputs.issue-number != ''
         uses: Sunnymoon724/kozae-forge/actions/update-issue@main
         with:
           token: ${{ secrets.DESTINATION_REPO_TOKEN }}
@@ -79,7 +103,8 @@ jobs:
           issue-number: ${{ steps.find.outputs.issue-number }}
           issue: ${{ toJSON(matrix.issue) }}
 
-      - uses: Sunnymoon724/kozae-forge/actions/sync-issue-labels@main
+      - if: matrix.issue.mirrorPublic == true && (steps.find.outputs.issue-number != '' || steps.create.outputs.issue-number != '')
+        uses: Sunnymoon724/kozae-forge/actions/sync-issue-labels@main
         with:
           token: ${{ secrets.DESTINATION_REPO_TOKEN }}
           destination-repository: ${{ inputs.destination-repository }}
@@ -87,9 +112,65 @@ jobs:
           issue: ${{ toJSON(matrix.issue) }}
           excluded-label: ${{ inputs.visibility-label }}
 
-      - uses: Sunnymoon724/kozae-forge/actions/sync-issue-state@main
+      - if: matrix.issue.mirrorPublic == true && (steps.find.outputs.issue-number != '' || steps.create.outputs.issue-number != '')
+        uses: Sunnymoon724/kozae-forge/actions/sync-issue-state@main
         with:
           token: ${{ secrets.DESTINATION_REPO_TOKEN }}
           destination-repository: ${{ inputs.destination-repository }}
           issue-number: ${{ steps.find.outputs.issue-number || steps.create.outputs.issue-number }}
           issue: ${{ toJSON(matrix.issue) }}
+
+      - if: matrix.issue.mirrorPublic != true && steps.find.outputs.issue-number != ''
+        uses: Sunnymoon724/kozae-forge/actions/sync-issue-labels@main
+        with:
+          token: ${{ secrets.DESTINATION_REPO_TOKEN }}
+          destination-repository: ${{ inputs.destination-repository }}
+          issue-number: ${{ steps.find.outputs.issue-number }}
+          issue: ${{ toJSON(matrix.issue) }}
+          excluded-label: ${{ inputs.visibility-label }}
+          additional-labels: ${{ inputs.missing-label }}
+
+      - if: matrix.issue.mirrorPublic != true && steps.find.outputs.issue-number != ''
+        uses: Sunnymoon724/kozae-forge/actions/sync-issue-state@main
+        with:
+          token: ${{ secrets.DESTINATION_REPO_TOKEN }}
+          destination-repository: ${{ inputs.destination-repository }}
+          issue-number: ${{ steps.find.outputs.issue-number }}
+          issue: ${{ toJSON(matrix.issue) }}
+          state: closed
+
+  prepare-deletions:
+    needs: [collect-source, collect-mirrors]
+    if: ${{ (github.event_name == 'workflow_dispatch' || github.event_name == 'schedule') && inputs.source-issue-number == '' }}
+    runs-on: ${{ inputs.runner }}
+    outputs:
+      issues: ${{ steps.compare.outputs.issues }}
+    steps:
+      - id: compare
+        name: Find deleted source issues
+        env:
+          SOURCE_ISSUES: ${{ needs.collect-source.outputs.issues }}
+          MIRRORED_ISSUES: ${{ needs.collect-mirrors.outputs.issues }}
+        shell: node {0}
+        run: |
+          const fs = require('node:fs');
+          const sourceNumbers = new Set(JSON.parse(process.env.SOURCE_ISSUES).map((issue) => String(issue.number)));
+          const orphans = JSON.parse(process.env.MIRRORED_ISSUES).filter((mirror) => !sourceNumbers.has(String(mirror.sourceIssueNumber)));
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `issues<<EOF\n${JSON.stringify(orphans)}\nEOF\n`);
+          console.log(`Found ${orphans.length} mirrored issue(s) whose source was deleted.`);
+
+  delete-orphans:
+    needs: prepare-deletions
+    if: ${{ needs.prepare-deletions.outputs.issues != '[]' }}
+    runs-on: ${{ inputs.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        mirror: ${{ fromJSON(needs.prepare-deletions.outputs.issues) }}
+    steps:
+      - uses: Sunnymoon724/kozae-forge/actions/delete-mirrored-issue@main
+        with:
+          token: ${{ secrets.DESTINATION_REPO_TOKEN }}
+          destination-repository: ${{ inputs.destination-repository }}
+          issue-number: ${{ matrix.mirror.destinationIssueNumber }}
+          source-issue-number: ${{ matrix.mirror.sourceIssueNumber }}

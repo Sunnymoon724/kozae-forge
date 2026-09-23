@@ -11,6 +11,7 @@ Synchronizes labels to one destination issue.
 | `issue-number` | Yes | - | Destination issue number |
 | `issue` | Yes | - | Source issue JSON object |
 | `excluded-label` | Yes | - | Label not copied |
+| `additional-labels` | No | Empty | Comma-separated labels to add |
 
 ## Input example
 

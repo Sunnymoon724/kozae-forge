@@ -1,9 +1,11 @@
 name: Collect issues
-description: Collect source repository issues selected by a label
+description: Collect source repository issues for mirroring
 inputs:
   token: {description: GitHub token with source repository issue read access, required: true}
   source-repository: {description: Source repository in owner/name format, required: true}
   visibility-label: {description: Label that selects issues for mirroring, required: true}
+  include-unlabeled: {description: Include issues without the visibility label, required: false, default: 'false'}
+  issue-number: {description: Optional single source issue number, required: false, default: ''}
 outputs:
   issues: {description: JSON array of selected issues}
 runs: {using: node24, main: index.js}

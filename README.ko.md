@@ -53,6 +53,8 @@ KoZae 프로젝트에서 재사용할 수 있는 GitHub Actions와 Workflow 모�
     - [이슈 수집](Documents/Actions/CollectIssues/collect-issues.ko.md)
     - [열린 이슈 수집](Documents/Actions/CollectOpenIssues/collect-open-issues.ko.md)
     - [미러링 이슈 찾기](Documents/Actions/FindMirroredIssue/find-mirrored-issue.ko.md)
+    - [미러 이슈 수집](Documents/Actions/CollectMirroredIssues/collect-mirrored-issues.ko.md)
+    - [미러 이슈 삭제](Documents/Actions/DeleteMirroredIssue/delete-mirrored-issue.ko.md)
     - [이슈 생성](Documents/Actions/CreateIssue/create-issue.ko.md)
     - [이슈 갱신](Documents/Actions/UpdateIssue/update-issue.ko.md)
     - [이슈 라벨 동기화](Documents/Actions/SyncIssueLabels/sync-issue-labels.ko.md)

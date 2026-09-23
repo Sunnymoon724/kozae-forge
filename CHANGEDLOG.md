@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.12
+
+- Added single-issue mirroring, missing-label handling, full mirror reconciliation, and safe deletion of mirrors whose source issues were deleted.
+
 ## 0.4.11
 
 - Fixed the `find-mirrored-issue` output description YAML so the Action can load correctly.

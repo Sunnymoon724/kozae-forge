@@ -10,6 +10,7 @@ Synchronizes the state of one destination issue.
 | `destination-repository` | Yes | - | Destination repository |
 | `issue-number` | Yes | - | Destination issue number |
 | `issue` | Yes | - | Source issue JSON object |
+| `state` | No | Empty | Optional forced destination state |
 
 ## Input example
 

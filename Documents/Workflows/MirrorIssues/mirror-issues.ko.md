@@ -1,10 +1,12 @@
 # 이슈 미러링
 
-Private 원본 저장소에서 `mirror:public` 라벨이 붙은 이슈를 Public 대상 저장소로 동기화합니다.
+Private 원본 저장소에서 `mirror:public` 라벨이 붙은 이슈를 Public 대상 저장소로 동기화합니다. 단일 이슈 이벤트와 전체 대조를 모두 지원합니다.
 
 ## 1. 처리 방법
 
-원본 이슈를 조회하고 공개 라벨이 있는 이슈만 선택합니다. 내부 원본 이슈 식별자로 대상 이슈를 생성하거나 갱신합니다. 공개 제어 라벨을 제외한 제목·본문·상태·라벨을 동기화하며 첨부 파일은 복사하지 않습니다.
+이슈 이벤트가 발생하면 해당 이슈 하나만 처리합니다. `mirror:public`이 있을 때만 대상 이슈를 만들거나 수정합니다. 기존 미러에서 이 라벨이 사라지면 대상 이슈는 유지하고 닫은 뒤 `mirror:missing`을 추가합니다.
+
+`workflow_dispatch`와 `schedule`에서는 원본 이슈 전체와 `kozae-forge-mirror` 표시가 있는 대상 이슈 전체를 비교합니다. 원본 이슈가 실제로 삭제된 경우에만 대상 미러를 삭제합니다. 원본 이슈는 남아 있지만 `mirror:public`만 사라진 경우에는 대상 이슈를 유지하고 `closed + mirror:missing`으로 처리합니다.
 
 ## 2. 사용 방법
 
@@ -36,6 +38,8 @@ secrets:
 | `runner` | 아니오 | `ubuntu-latest` | Workflow Job에 사용할 Runner 레이블 |
 | `destination-repository` | 예 | - | `OWNER/REPOSITORY` 형식의 대상 저장소 |
 | `visibility-label` | 아니오 | `mirror:public` | 미러링 대상을 선택하는 원본 라벨 |
+| `missing-label` | 아니오 | `mirror:missing` | 기존 미러에서 공개 라벨이 사라졌을 때 추가할 라벨 |
+| `source-issue-number` | 아니오 | 빈 값 | 단일 이슈 동기화에 사용할 원본 이슈 번호 |
 | `sync-comments` | 아니오 | `false` | 댓글 동기화용 예약 옵션 |
 | `sync-milestones` | 아니오 | `false` | 마일스톤 동기화용 예약 옵션 |
 | `sync-assignees` | 아니오 | `false` | 담당자 동기화용 예약 옵션 |
@@ -51,6 +55,8 @@ on:
   issues:
     types: [opened, edited, labeled, unlabeled, closed, reopened]
   workflow_dispatch:
+  schedule:
+    - cron: '17 * * * *'
 
 jobs:
   mirror:
@@ -59,6 +65,8 @@ jobs:
       runner: self-hosted
       destination-repository: OWNER/PUBLIC-REPOSITORY
       visibility-label: mirror:public
+      missing-label: mirror:missing
+      source-issue-number: ${{ github.event.issue.number }}
       sync-comments: false
       sync-milestones: false
       sync-assignees: false
@@ -74,3 +82,5 @@ jobs:
 - `update-issue`
 - `sync-issue-labels`
 - `sync-issue-state`
+- `collect-mirrored-issues`
+- `delete-mirrored-issue`

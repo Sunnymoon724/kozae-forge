@@ -5,4 +5,5 @@ inputs:
   destination-repository: {description: Destination repository in owner/name format, required: true}
   issue-number: {description: Destination issue number, required: true}
   issue: {description: Source issue JSON object, required: true}
+  state: {description: Optional forced destination state, required: false, default: ''}
 runs: {using: node24, main: index.js}

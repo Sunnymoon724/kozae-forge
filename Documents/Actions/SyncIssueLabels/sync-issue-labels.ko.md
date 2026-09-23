@@ -11,6 +11,7 @@
 | `issue-number` | 예 | - | 대상 이슈 번호 |
 | `issue` | 예 | - | 원본 이슈 JSON 객체 |
 | `excluded-label` | 예 | - | 복사하지 않을 라벨 |
+| `additional-labels` | 아니오 | 빈 값 | 추가할 라벨을 쉼표로 구분한 값 |
 
 ## 입력 예시
 

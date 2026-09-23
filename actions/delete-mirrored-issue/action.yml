@@ -1,0 +1,8 @@
+name: Delete mirrored issue
+description: Delete a destination issue after verifying its KoZae Forge mirror marker
+inputs:
+  token: {description: GitHub token with destination repository issue delete access, required: true}
+  destination-repository: {description: Destination repository in owner/name format, required: true}
+  issue-number: {description: Destination issue number, required: true}
+  source-issue-number: {description: Expected source issue number in the mirror marker, required: true}
+runs: {using: node24, main: index.js}

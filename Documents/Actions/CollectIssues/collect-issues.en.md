@@ -9,6 +9,8 @@ A GitHub Action that collects issues selected by a label.
 | `token` | Yes | - | GitHub token with source issue read access |
 | `source-repository` | Yes | - | Source repository in `owner/name` format |
 | `visibility-label` | Yes | - | Label that selects issues |
+| `include-unlabeled` | No | `false` | Include issues without the visibility label |
+| `issue-number` | No | Empty | Collect one issue by number |
 
 ## Outputs
 

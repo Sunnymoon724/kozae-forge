@@ -1,0 +1,8 @@
+name: Collect mirrored issues
+description: Collect destination issues marked as KoZae Forge mirrors
+inputs:
+  token: {description: GitHub token with destination repository issue read access, required: true}
+  destination-repository: {description: Destination repository in owner/name format, required: true}
+outputs:
+  issues: {description: JSON array of mirrored destination issues}
+runs: {using: node24, main: index.js}
