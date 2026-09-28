@@ -8,6 +8,7 @@
 2. 제목으로 활성 항목을 찾습니다.
 3. 항목이 없으면 새로 생성합니다.
 4. 항목이 있으면 속성을 갱신하고 블록을 비운 뒤 콘텐츠 파일을 추가합니다.
+5. `image-files`가 있으면 PNG/GIF를 업로드하고 이미지 블록을 함께 추가합니다.
 
 ## 2. 사용 방법
 
@@ -38,6 +39,7 @@ NOTION_TOKEN
 | `group-value` | 예 | - | Select 속성 값 |
 | `date-property` | 아니오 | 빈 값 | 날짜 속성 이름 |
 | `date` | 아니오 | 빈 값 | 날짜 값 |
+| `image-files` | 아니오 | 빈 값 | PNG/GIF 파일 경로를 줄바꿈으로 구분한 목록 |
 
 ### Workflow 설정
 
@@ -55,6 +57,9 @@ jobs:
       group-value: Engineering
       date-property: Published
       date: 2026-09-15
+      image-files: |
+        output/chart.png
+        output/preview.gif
     secrets:
       notion-token: ${{ secrets.NOTION_TOKEN }}
 ```
@@ -67,3 +72,4 @@ jobs:
 - `update-notion-database-entry-properties`
 - `clear-notion-page`
 - `append-notion-page-content`
+- `upload-notion-file`

@@ -8,6 +8,7 @@ A reusable GitHub Actions Workflow that creates a Notion database entry when abs
 2. Find an active entry by its title.
 3. Create the entry when it is absent.
 4. Otherwise, update its properties, clear its blocks, and append the content file.
+5. When `image-files` is provided, upload the PNG/GIF files and append image blocks as well.
 
 ## 2. Usage
 
@@ -38,6 +39,7 @@ NOTION_TOKEN
 | `group-value` | Yes | - | Select property value |
 | `date-property` | No | Empty | Date property name |
 | `date` | No | Empty | Date value |
+| `image-files` | No | Empty | Newline-delimited PNG/GIF file paths |
 
 ### Workflow configuration
 
@@ -55,6 +57,9 @@ jobs:
       group-value: Engineering
       date-property: Published
       date: 2026-09-15
+      image-files: |
+        output/chart.png
+        output/preview.gif
     secrets:
       notion-token: ${{ secrets.NOTION_TOKEN }}
 ```
@@ -67,3 +72,4 @@ jobs:
 - `update-notion-database-entry-properties`
 - `clear-notion-page`
 - `append-notion-page-content`
+- `upload-notion-file`

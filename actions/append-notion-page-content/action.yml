@@ -1,7 +1,8 @@
 name: Append Notion page content
-description: Append content from a file to an existing Notion page
+description: Append text and optional image blocks to an existing Notion page
 inputs:
   content-file: {description: File containing the content to append, required: true}
   page-id: {description: Existing Notion page ID, required: true}
   notion-token: {description: Notion integration token, required: true}
+  image-file-uploads: {description: Optional JSON array of Notion file upload IDs, required: false, default: '[]'}
 runs: {using: node24, main: index.js}

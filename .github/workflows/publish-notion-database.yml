@@ -42,6 +42,11 @@ on:
         required: false
         default: ''
         type: string
+      image-files:
+        description: Optional newline-delimited PNG or GIF paths
+        required: false
+        default: ''
+        type: string
     secrets:
       notion-token:
         description: Notion integration token
@@ -65,6 +70,13 @@ jobs:
           source-url: ${{ inputs.source-url }}
           notion-token: ${{ secrets.notion-token }}
 
+      - id: upload-images
+        if: inputs.image-files != ''
+        uses: Sunnymoon724/kozae-forge/actions/upload-notion-file@main
+        with:
+          file-paths: ${{ inputs.image-files }}
+          notion-token: ${{ secrets.notion-token }}
+
       - id: find
         uses: Sunnymoon724/kozae-forge/actions/find-notion-database-entry@main
         with:
@@ -85,6 +97,7 @@ jobs:
           date-property: ${{ inputs.date-property }}
           date: ${{ inputs.date }}
           content-file: ${{ inputs.content-file }}
+          image-file-uploads: ${{ steps.upload-images.outputs.file-upload-ids || '[]' }}
           notion-token: ${{ secrets.notion-token }}
 
       - if: steps.find.outputs.page-id != ''
@@ -108,4 +121,5 @@ jobs:
         with:
           content-file: ${{ inputs.content-file }}
           page-id: ${{ steps.find.outputs.page-id }}
+          image-file-uploads: ${{ steps.upload-images.outputs.file-upload-ids || '[]' }}
           notion-token: ${{ secrets.notion-token }}

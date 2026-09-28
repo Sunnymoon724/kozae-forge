@@ -14,6 +14,7 @@ Creates one Notion database entry with its initial properties and content.
 | `date-property` | No | Empty | Date property name |
 | `date` | No | Empty | Date value |
 | `content-file` | Yes | - | Content file |
+| `image-file-uploads` | No | `[]` | JSON array of Notion file upload IDs |
 | `notion-token` | Yes | - | Notion integration token |
 
 ## Outputs

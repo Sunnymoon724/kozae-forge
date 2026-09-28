@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.13
+
+- Added Notion PNG/GIF uploads and image blocks for database entries.
+
 ## 0.4.12
 
 - Added single-issue mirroring, missing-label handling, full mirror reconciliation, and safe deletion of mirrors whose source issues were deleted.

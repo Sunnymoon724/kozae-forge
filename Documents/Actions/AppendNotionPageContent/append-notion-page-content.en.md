@@ -1,6 +1,6 @@
 # append-notion-page-content
 
-Appends one content file to an existing Notion page.
+Appends one content file and optional image blocks to an existing Notion page.
 
 ## Inputs
 
@@ -9,6 +9,7 @@ Appends one content file to an existing Notion page.
 | `content-file` | Yes | - | Content file path |
 | `page-id` | Yes | - | Existing Notion page ID |
 | `notion-token` | Yes | - | Notion integration token |
+| `image-file-uploads` | No | `[]` | JSON array of Notion file upload IDs |
 
 ## Input example
 

@@ -41,6 +41,7 @@ Reusable GitHub Actions and Workflows for KoZae projects.
     - [Map document targets](Documents/Actions/MapDocumentTargets/map-document-targets.en.md)
   - Notion
     - [Append Notion page content](Documents/Actions/AppendNotionPageContent/append-notion-page-content.en.md)
+    - [Upload Notion file](Documents/Actions/UploadNotionFile/upload-notion-file.en.md)
     - [Clear Notion page](Documents/Actions/ClearNotionPage/clear-notion-page.en.md)
     - [Update Notion database entry properties](Documents/Actions/UpdateNotionDatabaseEntryProperties/update-notion-database-entry-properties.en.md)
     - [Create Notion page](Documents/Actions/CreateNotionPage/create-notion-page.en.md)

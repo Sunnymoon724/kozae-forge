@@ -1,0 +1,17 @@
+name: Upload Notion file
+description: Upload one or more PNG or GIF files to Notion
+inputs:
+  file-paths:
+    description: Newline-delimited PNG or GIF file paths
+    required: true
+  notion-token:
+    description: Notion integration token
+    required: true
+outputs:
+  file-upload-id:
+    description: First uploaded Notion file upload ID
+  file-upload-ids:
+    description: JSON array of uploaded Notion file upload IDs
+runs:
+  using: node24
+  main: index.js
