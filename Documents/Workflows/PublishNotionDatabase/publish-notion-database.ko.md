@@ -5,9 +5,10 @@
 ## 1. 처리 과정
 
 1. 호출 저장소를 checkout하고 데이터베이스 URL에서 데이터 소스를 찾습니다.
-2. 제목으로 활성 항목을 찾습니다.
+2. 제목으로 활성 항목을 찾고, 제목 속성 이름이 생략되면 데이터 소스에서 자동으로 찾습니다.
 3. 항목이 없으면 새로 생성합니다.
-4. 항목이 있으면 속성을 갱신하고 블록을 비운 뒤 콘텐츠 파일을 추가합니다.
+4. 항목이 있으면 속성을 갱신하고 블록을 비운 뒤 콘텐츠를 추가합니다.
+5. `content-format`이 `markdown`이면 제목, 목록, 체크박스, 구분선, 링크를 Notion 블록으로 변환합니다.
 5. `image-files`가 있으면 PNG/GIF를 업로드하고 이미지 블록을 함께 추가합니다.
 
 ## 2. 사용 방법
@@ -31,12 +32,17 @@ NOTION_TOKEN
 | 입력값 | 필수 | 기본값 | 설명 |
 |---|---:|---|---|
 | `runner` | 아니오 | `ubuntu-latest` | 게시 Job에 사용할 Runner 레이블 |
-| `content-file` | 예 | - | 저장소 기준 콘텐츠 파일 경로 |
+| `runner-labels` | 아니오 | 빈 값 | Runner 레이블 JSON 배열. 예: `["self-hosted", "Windows", "X64"]` |
+| `content-file` | 조건부 | 빈 값 | 저장소 기준 콘텐츠 파일 경로. `content` 중 하나 사용 |
+| `content` | 조건부 | 빈 값 | 직접 전달할 콘텐츠. `content-file` 중 하나 사용 |
+| `content-format` | 아니오 | `plain` | `markdown`이면 제목, 목록, 체크박스, 구분선, 링크를 Notion 블록으로 변환 |
 | `source-url` | 예 | - | Notion 데이터베이스 URL |
-| `title-property` | 예 | - | 데이터베이스 제목 속성 이름 |
+| `title-property` | 아니오 | 빈 값 | 생략하면 데이터 소스에서 제목 속성을 찾음 |
 | `title` | 예 | - | 항목 제목 |
-| `group-property` | 예 | - | Select 속성 이름 |
-| `group-value` | 예 | - | Select 속성 값 |
+| `group-property` | 아니오 | 빈 값 | Select 속성 이름 |
+| `group-value` | 아니오 | 빈 값 | Select 속성 값 |
+| `status-property` | 아니오 | 빈 값 | Notion Status 속성 이름 |
+| `status-value` | 아니오 | 빈 값 | Notion Status 값 |
 | `date-property` | 아니오 | 빈 값 | 날짜 속성 이름 |
 | `date` | 아니오 | 빈 값 | 날짜 값 |
 | `image-files` | 아니오 | 빈 값 | PNG/GIF 파일 경로를 줄바꿈으로 구분한 목록 |
@@ -48,13 +54,15 @@ jobs:
   publish:
     uses: Sunnymoon724/kozae-forge/.github/workflows/publish-notion-database.yml@main
     with:
-      runner: self-hosted
-      content-file: output/article.md
+      runner-labels: '["self-hosted", "Windows", "X64"]'
+      content-format: markdown
+      content: |
+        ## Weekly update
+        - [ ] Review the release
       source-url: ${{ vars.NOTION_DATABASE_URL }}
-      title-property: Name
       title: Weekly update
-      group-property: Category
-      group-value: Engineering
+      status-property: Status
+      status-value: In progress
       date-property: Published
       date: 2026-09-15
       image-files: |

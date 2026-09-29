@@ -9,11 +9,14 @@
 | `data-source-id` | 예 | - | Notion 데이터 소스 ID |
 | `title-property` | 예 | - | 제목 속성 이름 |
 | `title` | 예 | - | 항목 제목 |
-| `group-property` | 예 | - | Select 속성 이름 |
-| `group-value` | 예 | - | Select 속성 값 |
+| `group-property` | 아니오 | 빈 값 | 선택적 Select 속성 이름 |
+| `group-value` | 아니오 | 빈 값 | 선택적 Select 속성 값 |
+| `status-property` | 아니오 | 빈 값 | 선택적 Notion Status 속성 이름 |
+| `status-value` | 아니오 | 빈 값 | 선택적 Notion Status 값 |
 | `date-property` | 아니오 | 빈 값 | 날짜 속성 이름 |
 | `date` | 아니오 | 빈 값 | 날짜 값 |
 | `content-file` | 예 | - | 콘텐츠 파일 |
+| `content-format` | 아니오 | `plain` | `markdown`이면 구조화된 Notion 블록을 생성 |
 | `image-file-uploads` | 아니오 | `[]` | Notion 파일 업로드 ID의 JSON 배열 |
 | `notion-token` | 예 | - | Notion 통합 토큰 |
 
@@ -34,6 +37,9 @@
     title: 주간 업데이트
     group-property: Category
     group-value: Engineering
+    status-property: 상태
+    status-value: 진행 중
+    content-format: markdown
     content-file: output/article.md
     notion-token: ${{ secrets.NOTION_TOKEN }}
 ```

@@ -11,7 +11,7 @@ Reusable GitHub Actions and Workflows for KoZae projects.
     - [Generate commit log](Documents/Workflows/GenerateCommitLog/generate-commit-log.en.md)
     - [Refine documents](Documents/Workflows/RefineDocuments/refine-documents.en.md)
     - [Publish Notion page](Documents/Workflows/PublishNotionPage/publish-notion-page.en.md)
-    - [Publish Notion database entry](Documents/Workflows/PublishNotionDatabase/publish-notion-database.en.md)
+    - [Publish Notion database entry](Documents/Workflows/PublishNotionDatabase/publish-notion-database.en.md) (upsert, Status properties, Markdown blocks)
   - Repository and issue automation
     - [Repository mirroring](Documents/Workflows/MirrorRepository/mirror-repository.en.md)
     - [Issue mirroring](Documents/Workflows/MirrorIssues/mirror-issues.en.md)
@@ -40,7 +40,7 @@ Reusable GitHub Actions and Workflows for KoZae projects.
     - [Collect document sources](Documents/Actions/CollectDocumentSources/collect-document-sources.en.md)
     - [Map document targets](Documents/Actions/MapDocumentTargets/map-document-targets.en.md)
   - Notion
-    - [Append Notion page content](Documents/Actions/AppendNotionPageContent/append-notion-page-content.en.md)
+    - [Append Notion page content](Documents/Actions/AppendNotionPageContent/append-notion-page-content.en.md) (plain text or Markdown blocks)
     - [Upload Notion file](Documents/Actions/UploadNotionFile/upload-notion-file.en.md)
     - [Clear Notion page](Documents/Actions/ClearNotionPage/clear-notion-page.en.md)
     - [Update Notion database entry properties](Documents/Actions/UpdateNotionDatabaseEntryProperties/update-notion-database-entry-properties.en.md)

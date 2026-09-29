@@ -5,9 +5,10 @@ A reusable GitHub Actions Workflow that creates a Notion database entry when abs
 ## 1. Process
 
 1. Check out the calling repository and resolve the data source from the database URL.
-2. Find an active entry by its title.
+2. Find an active entry by its title, inferring the title property when omitted.
 3. Create the entry when it is absent.
-4. Otherwise, update its properties, clear its blocks, and append the content file.
+4. Otherwise, update its properties, clear its blocks, and append the content.
+5. When `content-format` is `markdown`, convert headings, lists, checkboxes, dividers, and links into Notion blocks.
 5. When `image-files` is provided, upload the PNG/GIF files and append image blocks as well.
 
 ## 2. Usage
@@ -31,12 +32,17 @@ NOTION_TOKEN
 | Input | Required | Default | Description |
 |---|---:|---|---|
 | `runner` | No | `ubuntu-latest` | Runner label used for the publish job |
-| `content-file` | Yes | - | Repository-relative content file path |
+| `runner-labels` | No | Empty | JSON array of runner labels, for example `["self-hosted", "Windows", "X64"]` |
+| `content-file` | Conditional | Empty | Repository-relative content file path; use this or `content` |
+| `content` | Conditional | Empty | Inline content; use this or `content-file` |
+| `content-format` | No | `plain` | Use `markdown` to create headings, lists, checkboxes, dividers, and links as Notion blocks |
 | `source-url` | Yes | - | Notion database URL |
-| `title-property` | Yes | - | Database title property name |
+| `title-property` | No | Empty | Database title property name; inferred from the data source when omitted |
 | `title` | Yes | - | Entry title |
-| `group-property` | Yes | - | Select property name |
-| `group-value` | Yes | - | Select property value |
+| `group-property` | No | Empty | Select property name |
+| `group-value` | No | Empty | Select property value |
+| `status-property` | No | Empty | Notion Status property name |
+| `status-value` | No | Empty | Notion Status value |
 | `date-property` | No | Empty | Date property name |
 | `date` | No | Empty | Date value |
 | `image-files` | No | Empty | Newline-delimited PNG/GIF file paths |
@@ -48,13 +54,15 @@ jobs:
   publish:
     uses: Sunnymoon724/kozae-forge/.github/workflows/publish-notion-database.yml@main
     with:
-      runner: self-hosted
-      content-file: output/article.md
+      runner-labels: '["self-hosted", "Windows", "X64"]'
+      content-format: markdown
+      content: |
+        ## Weekly update
+        - [ ] Review the release
       source-url: ${{ vars.NOTION_DATABASE_URL }}
-      title-property: Name
       title: Weekly update
-      group-property: Category
-      group-value: Engineering
+      status-property: Status
+      status-value: In progress
       date-property: Published
       date: 2026-09-15
       image-files: |

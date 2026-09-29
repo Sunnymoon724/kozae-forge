@@ -8,29 +8,58 @@ on:
         required: false
         default: ubuntu-latest
         type: string
+      runner-labels:
+        description: 'Optional JSON array of runner labels, for example ["self-hosted", "Windows", "X64"]'
+        required: false
+        default: ''
+        type: string
       content-file:
-        description: Repository-relative path of the content file
-        required: true
+        description: Repository-relative content file path; use either this or content
+        required: false
+        default: ''
+        type: string
+      content:
+        description: Inline content to publish; use either this or content-file
+        required: false
+        default: ''
+        type: string
+      content-format:
+        description: Content format, plain or markdown
+        required: false
+        default: plain
         type: string
       source-url:
         description: Notion database URL
         required: true
         type: string
       title-property:
-        description: Notion database title property name
-        required: true
+        description: Optional database title property name; inferred when omitted
+        required: false
+        default: ''
         type: string
       title:
         description: Entry title used to find or create the entry
         required: true
         type: string
       group-property:
-        description: Select property used for grouping entries
-        required: true
+        description: Optional Select property used for grouping entries
+        required: false
+        default: ''
         type: string
       group-value:
-        description: Select property value used for grouping entries
-        required: true
+        description: Optional Select property value used for grouping entries
+        required: false
+        default: ''
+        type: string
+      status-property:
+        description: Optional Status property name
+        required: false
+        default: ''
+        type: string
+      status-value:
+        description: Optional Status property value
+        required: false
+        default: ''
         type: string
       date-property:
         description: Optional date property name
@@ -58,11 +87,23 @@ on:
 
 jobs:
   publish:
-    runs-on: ${{ inputs.runner }}
+    runs-on: ${{ inputs.runner-labels != '' && fromJSON(inputs.runner-labels) || inputs.runner }}
     outputs:
       page-id: ${{ steps.find.outputs.page-id || steps.create.outputs.page-id }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: Validate content inputs
+        if: (inputs.content == '') == (inputs.content-file == '')
+        shell: node {0}
+        run: throw new Error('Provide exactly one of content or content-file.')
+
+      - name: Save inline content
+        if: inputs.content != ''
+        uses: Sunnymoon724/kozae-forge/actions/save-content@main
+        with:
+          file-path: .generated-content/notion-entry.md
+          content: ${{ inputs.content }}
 
       - id: data-source
         uses: Sunnymoon724/kozae-forge/actions/resolve-notion-data-source@main
@@ -90,13 +131,16 @@ jobs:
         uses: Sunnymoon724/kozae-forge/actions/create-notion-database-entry@main
         with:
           data-source-id: ${{ steps.data-source.outputs.data-source-id }}
-          title-property: ${{ inputs.title-property }}
+          title-property: ${{ steps.find.outputs.title-property }}
           title: ${{ inputs.title }}
           group-property: ${{ inputs.group-property }}
           group-value: ${{ inputs.group-value }}
+          status-property: ${{ inputs.status-property }}
+          status-value: ${{ inputs.status-value }}
           date-property: ${{ inputs.date-property }}
           date: ${{ inputs.date }}
-          content-file: ${{ inputs.content-file }}
+          content-file: ${{ inputs.content != '' && '.generated-content/notion-entry.md' || inputs.content-file }}
+          content-format: ${{ inputs.content-format }}
           image-file-uploads: ${{ steps.upload-images.outputs.file-upload-ids || '[]' }}
           notion-token: ${{ secrets.notion-token }}
 
@@ -106,6 +150,8 @@ jobs:
           page-id: ${{ steps.find.outputs.page-id }}
           group-property: ${{ inputs.group-property }}
           group-value: ${{ inputs.group-value }}
+          status-property: ${{ inputs.status-property }}
+          status-value: ${{ inputs.status-value }}
           date-property: ${{ inputs.date-property }}
           date: ${{ inputs.date }}
           notion-token: ${{ secrets.notion-token }}
@@ -119,7 +165,8 @@ jobs:
       - if: steps.find.outputs.page-id != ''
         uses: Sunnymoon724/kozae-forge/actions/append-notion-page-content@main
         with:
-          content-file: ${{ inputs.content-file }}
+          content-file: ${{ inputs.content != '' && '.generated-content/notion-entry.md' || inputs.content-file }}
+          content-format: ${{ inputs.content-format }}
           page-id: ${{ steps.find.outputs.page-id }}
           image-file-uploads: ${{ steps.upload-images.outputs.file-upload-ids || '[]' }}
           notion-token: ${{ secrets.notion-token }}

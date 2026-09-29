@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.4.15
+
+- Extended Notion database publishing with inferred title properties, Status fields, inline content, and Markdown block conversion.
+- Kept existing plain-text publishing behavior as the default.
+
 ## 0.4.14
 
 - Added the `issue-only` option for filtering pull request comments from `issue_comment` workflows.

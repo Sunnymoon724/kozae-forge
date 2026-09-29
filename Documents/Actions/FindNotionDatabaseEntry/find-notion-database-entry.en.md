@@ -7,7 +7,7 @@ Finds one active Notion database entry by title.
 | Input | Required | Default | Description |
 |---|---:|---|---|
 | `data-source-id` | Yes | - | Notion data source ID |
-| `title-property` | Yes | - | Title property name |
+| `title-property` | No | Empty | Title property name; inferred from the data source when omitted |
 | `title` | Yes | - | Entry title |
 | `notion-token` | Yes | - | Notion integration token |
 
@@ -16,6 +16,7 @@ Finds one active Notion database entry by title.
 | Output | Default | Description |
 |---|---|---|
 | `page-id` | Empty | Matching page ID |
+| `title-property` | - | Resolved title property name |
 
 ## Input example
 

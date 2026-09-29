@@ -1,9 +1,11 @@
 name: Update Notion database entry properties
-description: Update grouping and date properties of an existing Notion database entry
+description: Update Select, Status, and optional date properties of an existing entry
 inputs:
   page-id: {description: Existing Notion database page ID, required: true}
-  group-property: {description: Select property used for grouping database entries, required: true}
-  group-value: {description: Select value used for grouping database entries, required: true}
+  group-property: {description: Optional Select property name, required: false, default: ''}
+  group-value: {description: Optional Select property value, required: false, default: ''}
+  status-property: {description: Optional Status property name, required: false, default: ''}
+  status-value: {description: Optional Status property value, required: false, default: ''}
   date-property: {description: Optional date property name, required: false, default: ''}
   date: {description: Optional date in YYYY-MM-DD format, required: false, default: ''}
   notion-token: {description: Notion integration token, required: true}

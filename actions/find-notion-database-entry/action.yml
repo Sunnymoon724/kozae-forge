@@ -2,9 +2,10 @@ name: Find Notion database entry
 description: Find an active Notion database entry by title
 inputs:
   data-source-id: {description: Notion data source ID, required: true}
-  title-property: {description: Database title property name, required: true}
+  title-property: {description: Optional title property name; inferred when omitted, required: false, default: ''}
   title: {description: Entry title, required: true}
   notion-token: {description: Notion integration token, required: true}
 outputs:
-  page-id: {description: 'Matching database page ID, if found'}
+  page-id: {description: Matching database page ID, if found}
+  title-property: {description: Resolved title property name}
 runs: {using: node24, main: index.js}

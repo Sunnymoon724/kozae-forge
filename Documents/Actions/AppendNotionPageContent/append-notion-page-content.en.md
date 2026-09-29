@@ -1,12 +1,13 @@
 # append-notion-page-content
 
-Appends one content file and optional image blocks to an existing Notion page.
+Appends plain text or structured Markdown blocks and optional image blocks to an existing Notion page.
 
 ## Inputs
 
 | Input | Required | Default | Description |
 |---|---:|---|---|
 | `content-file` | Yes | - | Content file path |
+| `content-format` | No | `plain` | Use `markdown` to create headings, lists, checkboxes, dividers, and links as Notion blocks |
 | `page-id` | Yes | - | Existing Notion page ID |
 | `notion-token` | Yes | - | Notion integration token |
 | `image-file-uploads` | No | `[]` | JSON array of Notion file upload IDs |

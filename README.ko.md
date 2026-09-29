@@ -11,7 +11,7 @@ KoZae 프로젝트에서 재사용할 수 있는 GitHub Actions와 Workflow 모�
     - [커밋 로그 생성](Documents/Workflows/GenerateCommitLog/generate-commit-log.ko.md)
     - [문서 정제](Documents/Workflows/RefineDocuments/refine-documents.ko.md)
     - [Notion 페이지 게시](Documents/Workflows/PublishNotionPage/publish-notion-page.ko.md)
-    - [Notion 데이터베이스 항목 게시](Documents/Workflows/PublishNotionDatabase/publish-notion-database.ko.md)
+    - [Notion 데이터베이스 항목 게시](Documents/Workflows/PublishNotionDatabase/publish-notion-database.ko.md) (생성·갱신, Status 속성, Markdown 블록)
   - 저장소·이슈 자동화
     - [저장소 미러링](Documents/Workflows/MirrorRepository/mirror-repository.ko.md)
     - [이슈 미러링](Documents/Workflows/MirrorIssues/mirror-issues.ko.md)
@@ -40,7 +40,7 @@ KoZae 프로젝트에서 재사용할 수 있는 GitHub Actions와 Workflow 모�
     - [문서 원본 수집](Documents/Actions/CollectDocumentSources/collect-document-sources.ko.md)
     - [문서 대상 매핑](Documents/Actions/MapDocumentTargets/map-document-targets.ko.md)
   - Notion
-    - [Notion 페이지 콘텐츠 추가](Documents/Actions/AppendNotionPageContent/append-notion-page-content.ko.md)
+    - [Notion 페이지 콘텐츠 추가](Documents/Actions/AppendNotionPageContent/append-notion-page-content.ko.md) (일반 텍스트 또는 Markdown 블록)
     - [Notion 파일 업로드](Documents/Actions/UploadNotionFile/upload-notion-file.ko.md)
     - [Notion 페이지 비우기](Documents/Actions/ClearNotionPage/clear-notion-page.ko.md)
     - [Notion 데이터베이스 항목 속성 갱신](Documents/Actions/UpdateNotionDatabaseEntryProperties/update-notion-database-entry-properties.ko.md)

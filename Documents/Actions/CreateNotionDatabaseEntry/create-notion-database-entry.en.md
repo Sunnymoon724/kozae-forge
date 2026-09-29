@@ -9,11 +9,14 @@ Creates one Notion database entry with its initial properties and content.
 | `data-source-id` | Yes | - | Notion data source ID |
 | `title-property` | Yes | - | Title property name |
 | `title` | Yes | - | Entry title |
-| `group-property` | Yes | - | Select property name |
-| `group-value` | Yes | - | Select property value |
+| `group-property` | No | Empty | Optional Select property name |
+| `group-value` | No | Empty | Optional Select property value |
+| `status-property` | No | Empty | Optional Notion Status property name |
+| `status-value` | No | Empty | Optional Notion Status value |
 | `date-property` | No | Empty | Date property name |
 | `date` | No | Empty | Date value |
 | `content-file` | Yes | - | Content file |
+| `content-format` | No | `plain` | Use `markdown` to create structured Notion blocks |
 | `image-file-uploads` | No | `[]` | JSON array of Notion file upload IDs |
 | `notion-token` | Yes | - | Notion integration token |
 
@@ -34,6 +37,9 @@ Creates one Notion database entry with its initial properties and content.
     title: Weekly update
     group-property: Category
     group-value: Engineering
+    status-property: Status
+    status-value: In progress
+    content-format: markdown
     content-file: output/article.md
     notion-token: ${{ secrets.NOTION_TOKEN }}
 ```
