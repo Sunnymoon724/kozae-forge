@@ -9,4 +9,4 @@ KoZae Forge 원본 이슈 표시가 있는 대상 저장소 이슈를 수집합�
 | `token` | 예 | - | 대상 저장소 Token |
 | `destination-repository` | 예 | - | `OWNER/REPOSITORY` 형식의 대상 저장소 |
 
-`issues` 출력에는 원본 이슈 번호와 대상 이슈 번호가 JSON으로 들어갑니다.
+`issues` 출력에는 원본 이슈 번호, 대상 이슈 번호, 대상 이슈 제목이 JSON으로 들어갑니다.

@@ -17,7 +17,11 @@ async function main() {
     for (const issue of await response.json()) {
       if (issue.pull_request) continue;
       const match = (issue.body || '').match(markerPattern);
-      if (match) issues.push({sourceIssueNumber: Number(match[1]), destinationIssueNumber: issue.number});
+      if (match) issues.push({
+        sourceIssueNumber: Number(match[1]),
+        destinationIssueNumber: issue.number,
+        title: issue.title,
+      });
     }
     url = response.headers.get('link')?.match(/<([^>]+)>; rel="next"/)?.[1];
   }

@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.4.18
+
+- Made mirrored issue collection include the destination issue title so Notion entries can be found without a missing source-issue property.
+- Updated the Project Durian mirror workflow to use the existing Notion title property.
+
 ## 0.4.17
 
 - Changed the mirrored issue link label in Notion entries to [이슈 링크].
