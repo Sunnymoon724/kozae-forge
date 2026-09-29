@@ -13,6 +13,11 @@ on:
         required: false
         default: ''
         type: string
+      checkout-ref:
+        description: Optional repository ref to check out
+        required: false
+        default: ''
+        type: string
       content-file:
         description: Repository-relative content file path; use either this or content
         required: false
@@ -92,6 +97,8 @@ jobs:
       page-id: ${{ steps.find.outputs.page-id || steps.create.outputs.page-id }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.checkout-ref || github.ref }}
 
       - name: Validate content inputs
         if: (inputs.content == '') == (inputs.content-file == '')
