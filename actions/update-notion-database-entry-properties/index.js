@@ -7,7 +7,9 @@ async function main() {
   if (Boolean(p.INPUT_GROUP_PROPERTY) !== Boolean(p.INPUT_GROUP_VALUE)) throw new Error('group-property and group-value must be provided together');
   if (Boolean(p.INPUT_STATUS_PROPERTY) !== Boolean(p.INPUT_STATUS_VALUE)) throw new Error('status-property and status-value must be provided together');
   if (Boolean(p.INPUT_DATE_PROPERTY) !== Boolean(p.INPUT_DATE)) throw new Error('date-property and date must be provided together');
+  if (Boolean(p.INPUT_TITLE_PROPERTY) !== Boolean(p.INPUT_TITLE)) throw new Error('title-property and title must be provided together');
   const properties = {};
+  if (p.INPUT_TITLE_PROPERTY) properties[p.INPUT_TITLE_PROPERTY] = {title: [{type: 'text', text: {content: p.INPUT_TITLE}}]};
   if (p.INPUT_GROUP_PROPERTY) properties[p.INPUT_GROUP_PROPERTY] = {select: {name: p.INPUT_GROUP_VALUE}};
   if (p.INPUT_STATUS_PROPERTY) properties[p.INPUT_STATUS_PROPERTY] = {status: {name: p.INPUT_STATUS_VALUE}};
   if (p.INPUT_DATE_PROPERTY) properties[p.INPUT_DATE_PROPERTY] = {date: {start: p.INPUT_DATE}};

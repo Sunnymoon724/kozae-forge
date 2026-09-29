@@ -1,0 +1,6 @@
+name: Archive Notion database entry
+description: Archive an existing Notion database page
+inputs:
+  page-id: {description: Notion page ID, required: true}
+  notion-token: {description: Notion integration token, required: true}
+runs: {using: node24, main: index.js}

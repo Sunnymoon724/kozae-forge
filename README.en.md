@@ -49,12 +49,12 @@ Reusable GitHub Actions and Workflows for KoZae projects.
     - [Find Notion database entry](Documents/Actions/FindNotionDatabaseEntry/find-notion-database-entry.en.md)
     - [Find Notion page](Documents/Actions/FindNotionPage/find-notion-page.en.md)
     - [Create Notion database entry](Documents/Actions/CreateNotionDatabaseEntry/create-notion-database-entry.en.md)
+    - [Archive Notion database entry](Documents/Actions/ArchiveNotionDatabaseEntry/archive-notion-database-entry.en.md)
   - Issues
     - [Check review branch](Documents/Actions/CheckReviewBranch/check-review-branch.en.md)
     - [Collect issues](Documents/Actions/CollectIssues/collect-issues.en.md)
     - [Collect open issues](Documents/Actions/CollectOpenIssues/collect-open-issues.en.md)
     - [Find mirrored issue](Documents/Actions/FindMirroredIssue/find-mirrored-issue.en.md)
-    - [Sync public issue to Notion](Documents/Actions/SyncPublicIssueToNotion/sync-public-issue-to-notion.en.md)
     - [Collect mirrored issues](Documents/Actions/CollectMirroredIssues/collect-mirrored-issues.en.md)
     - [Delete mirrored issue](Documents/Actions/DeleteMirroredIssue/delete-mirrored-issue.en.md)
     - [Create issue](Documents/Actions/CreateIssue/create-issue.en.md)

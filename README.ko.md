@@ -49,12 +49,12 @@ KoZae 프로젝트에서 재사용할 수 있는 GitHub Actions와 Workflow 모�
     - [Notion 데이터베이스 항목 찾기](Documents/Actions/FindNotionDatabaseEntry/find-notion-database-entry.ko.md)
     - [Notion 페이지 찾기](Documents/Actions/FindNotionPage/find-notion-page.ko.md)
     - [Notion 데이터베이스 항목 생성](Documents/Actions/CreateNotionDatabaseEntry/create-notion-database-entry.ko.md)
+    - [Notion 데이터베이스 항목 보관](Documents/Actions/ArchiveNotionDatabaseEntry/archive-notion-database-entry.ko.md)
   - 이슈
     - [검토 브랜치 확인](Documents/Actions/CheckReviewBranch/check-review-branch.ko.md)
     - [이슈 수집](Documents/Actions/CollectIssues/collect-issues.ko.md)
     - [열린 이슈 수집](Documents/Actions/CollectOpenIssues/collect-open-issues.ko.md)
     - [미러링 이슈 찾기](Documents/Actions/FindMirroredIssue/find-mirrored-issue.ko.md)
-    - [공개 이슈를 Notion에 동기화](Documents/Actions/SyncPublicIssueToNotion/sync-public-issue-to-notion.ko.md)
     - [미러 이슈 수집](Documents/Actions/CollectMirroredIssues/collect-mirrored-issues.ko.md)
     - [미러 이슈 삭제](Documents/Actions/DeleteMirroredIssue/delete-mirrored-issue.ko.md)
     - [이슈 생성](Documents/Actions/CreateIssue/create-issue.ko.md)

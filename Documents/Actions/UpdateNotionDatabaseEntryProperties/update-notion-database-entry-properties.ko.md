@@ -7,6 +7,8 @@
 | 입력값 | 필수 | 기본값 | 설명 |
 |---|---:|---|---|
 | `page-id` | 예 | - | 기존 데이터베이스 페이지 ID |
+| `title-property` | 아니오 | 빈 값 | 제목 속성 이름 |
+| `title` | 아니오 | 빈 값 | 새 제목 |
 | `group-property` | 아니오 | 빈 값 | 선택적 Select 속성 이름 |
 | `group-value` | 아니오 | 빈 값 | 선택적 Select 속성 값 |
 | `status-property` | 아니오 | 빈 값 | 선택적 Status 속성 이름 |

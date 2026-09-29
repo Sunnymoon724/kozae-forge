@@ -2,6 +2,8 @@ name: Update Notion database entry properties
 description: Update Select, Status, and optional date properties of an existing entry
 inputs:
   page-id: {description: Existing Notion database page ID, required: true}
+  title-property: {description: Optional title property name, required: false, default: ''}
+  title: {description: Optional title value, required: false, default: ''}
   group-property: {description: Optional Select property name, required: false, default: ''}
   group-value: {description: Optional Select property value, required: false, default: ''}
   status-property: {description: Optional Status property name, required: false, default: ''}

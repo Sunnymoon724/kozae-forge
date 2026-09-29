@@ -1,6 +1,6 @@
 # find-notion-database-entry
 
-제목으로 활성 Notion 데이터베이스 항목 하나를 찾습니다.
+원본 이슈 번호 또는 제목으로 활성 Notion 데이터베이스 항목 하나를 찾습니다.
 
 ## 입력값
 
@@ -9,6 +9,8 @@
 | `data-source-id` | 예 | - | Notion 데이터 소스 ID |
 | `title-property` | 아니오 | 빈 값 | 생략하면 데이터 소스에서 제목 속성을 찾음 |
 | `title` | 예 | - | 항목 제목 |
+| `source-issue-property` | 아니오 | 빈 값 | 원본 이슈 번호를 저장한 숫자 속성 |
+| `source-issue-number` | 아니오 | 빈 값 | 원본 이슈 번호 |
 | `notion-token` | 예 | - | Notion 통합 토큰 |
 
 ## 출력값

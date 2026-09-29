@@ -4,6 +4,8 @@ inputs:
   data-source-id: {description: Notion data source ID, required: true}
   title-property: {description: Database title property name, required: true}
   title: {description: Entry title, required: true}
+  source-issue-property: {description: Optional number property containing the stable source issue number, required: false, default: ''}
+  source-issue-number: {description: Optional source issue number, required: false, default: ''}
   group-property: {description: Optional Select property name, required: false, default: ''}
   group-value: {description: Optional Select property value, required: false, default: ''}
   status-property: {description: Optional Status property name, required: false, default: ''}

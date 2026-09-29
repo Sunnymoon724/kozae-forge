@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.4.17
+
+- Changed the mirrored issue link label in Notion entries to [이슈 링크].
+- Added stable source issue number lookup for Notion entries.
+- Added Notion entry archiving for removed or deleted mirrored issues.
+- Removed the issue-specific Notion publishing wrapper; workflows now compose the existing Notion actions directly.
+
 ## 0.4.16
 
 - Added a composite action to sync mirrored public issues to Notion.

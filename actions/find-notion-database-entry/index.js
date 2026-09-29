@@ -14,9 +14,13 @@ async function main() {
     titleProperty = Object.entries(schema.properties || {}).find(([, property]) => property.type === 'title')?.[0];
     if (!titleProperty) throw new Error('Notion data source does not have a title property.');
   }
+  const filter = p.INPUT_SOURCE_ISSUE_PROPERTY && p.INPUT_SOURCE_ISSUE_NUMBER
+    ? {property: p.INPUT_SOURCE_ISSUE_PROPERTY, number: {equals: Number(p.INPUT_SOURCE_ISSUE_NUMBER)}}
+    : {property: titleProperty, title: {equals: p.INPUT_TITLE}};
+  if (!p.INPUT_SOURCE_ISSUE_PROPERTY && !p.INPUT_TITLE) throw new Error('Provide title or source-issue-property with source-issue-number.');
   const response = await fetch(`https://api.notion.com/v1/data_sources/${p.INPUT_DATA_SOURCE_ID}/query`, {
     method: 'POST', headers,
-    body: JSON.stringify({page_size: 100, filter: {property: titleProperty, title: {equals: p.INPUT_TITLE}}}),
+    body: JSON.stringify({page_size: 100, filter}),
   });
   if (!response.ok) throw new Error(await response.text());
   const data = await response.json();

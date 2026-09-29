@@ -1,6 +1,6 @@
 # find-notion-database-entry
 
-Finds one active Notion database entry by title.
+Finds one active Notion database entry by stable source issue number or title.
 
 ## Inputs
 
@@ -9,6 +9,8 @@ Finds one active Notion database entry by title.
 | `data-source-id` | Yes | - | Notion data source ID |
 | `title-property` | No | Empty | Title property name; inferred from the data source when omitted |
 | `title` | Yes | - | Entry title |
+| `source-issue-property` | No | Empty | Number property used for stable source issue lookup |
+| `source-issue-number` | No | Empty | Source issue number |
 | `notion-token` | Yes | - | Notion integration token |
 
 ## Outputs

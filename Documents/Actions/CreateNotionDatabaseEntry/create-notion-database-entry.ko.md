@@ -9,6 +9,8 @@
 | `data-source-id` | 예 | - | Notion 데이터 소스 ID |
 | `title-property` | 예 | - | 제목 속성 이름 |
 | `title` | 예 | - | 항목 제목 |
+| `source-issue-property` | 아니오 | 빈 값 | 원본 이슈 번호를 저장할 숫자 속성 |
+| `source-issue-number` | 아니오 | 빈 값 | 원본 이슈 번호 |
 | `group-property` | 아니오 | 빈 값 | 선택적 Select 속성 이름 |
 | `group-value` | 아니오 | 빈 값 | 선택적 Select 속성 값 |
 | `status-property` | 아니오 | 빈 값 | 선택적 Notion Status 속성 이름 |

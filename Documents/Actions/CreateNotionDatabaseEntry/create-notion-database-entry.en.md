@@ -9,6 +9,8 @@ Creates one Notion database entry with its initial properties and content.
 | `data-source-id` | Yes | - | Notion data source ID |
 | `title-property` | Yes | - | Title property name |
 | `title` | Yes | - | Entry title |
+| `source-issue-property` | No | Empty | Number property storing the source issue number |
+| `source-issue-number` | No | Empty | Source issue number |
 | `group-property` | No | Empty | Optional Select property name |
 | `group-value` | No | Empty | Optional Select property value |
 | `status-property` | No | Empty | Optional Notion Status property name |

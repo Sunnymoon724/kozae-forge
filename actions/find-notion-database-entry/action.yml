@@ -3,7 +3,9 @@ description: Find an active Notion database entry by title
 inputs:
   data-source-id: {description: Notion data source ID, required: true}
   title-property: {description: Optional title property name; inferred when omitted, required: false, default: ''}
-  title: {description: Entry title, required: true}
+  title: {description: Entry title used when source-issue-number is not provided, required: false, default: ''}
+  source-issue-property: {description: Optional number property used as the stable source issue identity, required: false, default: ''}
+  source-issue-number: {description: Optional source issue number used for stable lookup, required: false, default: ''}
   notion-token: {description: Notion integration token, required: true}
 outputs:
   page-id: {description: Matching database page ID, if found}

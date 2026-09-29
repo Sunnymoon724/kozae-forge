@@ -7,6 +7,8 @@ Updates optional Select, Status, and date properties of an existing Notion datab
 | Input | Required | Default | Description |
 |---|---:|---|---|
 | `page-id` | Yes | - | Existing database page ID |
+| `title-property` | No | Empty | Title property name |
+| `title` | No | Empty | New title value |
 | `group-property` | No | Empty | Optional Select property name |
 | `group-value` | No | Empty | Optional Select property value |
 | `status-property` | No | Empty | Optional Status property name |
