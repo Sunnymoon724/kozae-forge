@@ -49,7 +49,9 @@ NOTION_TOKEN
 | `date-property` | 아니오 | 빈 값 | 날짜 속성 이름 |
 | `date` | 아니오 | 빈 값 | 날짜 값 |
 | `image-files` | 아니오 | 빈 값 | PNG/GIF 파일 경로를 줄바꿈으로 구분한 목록 |
-| `image-storage` | 아니오 | `notion` | 직접 업로드는 `notion`, Cloudflare R2 링크는 `r2` |
+| `image-storage` | 아니오 | `notion` | 직접 업로드는 `notion`, 배포된 사이트 링크는 `external` |
+| `image-public-base-url` | 아니오 | 빈 값 | `external` 사용 시 사이트 기본 주소 |
+| `image-public-path` | 아니오 | `/media` | `external` 사용 시 이미지 경로 |
 
 ### Workflow 설정
 

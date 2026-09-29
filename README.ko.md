@@ -42,7 +42,6 @@ KoZae 프로젝트에서 재사용할 수 있는 GitHub Actions와 Workflow 모�
   - Notion
     - [Notion 페이지 콘텐츠 추가](Documents/Actions/AppendNotionPageContent/append-notion-page-content.ko.md)
     - [Notion 파일 업로드](Documents/Actions/UploadNotionFile/upload-notion-file.ko.md)
-    - [R2 파일 업로드](Documents/Actions/UploadR2Files/upload-r2-files.ko.md)
     - [Notion 페이지 비우기](Documents/Actions/ClearNotionPage/clear-notion-page.ko.md)
     - [Notion 데이터베이스 항목 속성 갱신](Documents/Actions/UpdateNotionDatabaseEntryProperties/update-notion-database-entry-properties.ko.md)
     - [Notion 페이지 생성](Documents/Actions/CreateNotionPage/create-notion-page.ko.md)

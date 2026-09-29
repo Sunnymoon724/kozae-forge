@@ -88,34 +88,24 @@ on:
         default: ''
         type: string
       image-storage:
-        description: 'Image storage mode: notion or r2'
+        description: 'Image storage mode: notion or external'
         required: false
         default: notion
         type: string
-      r2-endpoint:
+      image-public-base-url:
+        description: Public site base URL used when image-storage is external
         required: false
         default: ''
         type: string
-      r2-bucket:
+      image-public-path:
+        description: Public path containing the images
         required: false
-        default: ''
-        type: string
-      r2-public-base-url:
-        required: false
-        default: ''
-        type: string
-      r2-key-prefix:
-        required: false
-        default: weekly-images
+        default: /media
         type: string
     secrets:
       notion-token:
         description: Notion integration token
         required: true
-      r2-access-key-id:
-        required: false
-      r2-secret-access-key:
-        required: false
     outputs:
       page-id:
         description: Created or updated Notion database page ID
@@ -157,31 +147,35 @@ jobs:
           file-paths: ${{ inputs.image-files }}
           notion-token: ${{ secrets.notion-token }}
 
-      - id: upload-r2-images
-        if: inputs.image-files != '' && inputs.image-storage == 'r2'
-        uses: Sunnymoon724/kozae-forge/actions/upload-r2-files@main
-        with:
-          file-paths: ${{ inputs.image-files }}
-          endpoint: ${{ inputs.r2-endpoint }}
-          bucket: ${{ inputs.r2-bucket }}
-          public-base-url: ${{ inputs.r2-public-base-url }}
-          access-key-id: ${{ secrets.r2-access-key-id }}
-          secret-access-key: ${{ secrets.r2-secret-access-key }}
-          key-prefix: ${{ inputs.r2-key-prefix }}
+      - name: Validate external image URL
+        if: inputs.image-storage == 'external' && inputs.image-files != ''
+        shell: node {0}
+        env:
+          IMAGE_PUBLIC_BASE_URL: ${{ inputs.image-public-base-url }}
+        run: |
+          if (!process.env.IMAGE_PUBLIC_BASE_URL) throw new Error('image-public-base-url is required when image-storage is external.');
+          new URL(process.env.IMAGE_PUBLIC_BASE_URL);
 
-      - name: Prepare content with R2 links
-        id: prepare-r2-content
-        if: inputs.image-storage == 'r2' && inputs.image-files != ''
+      - name: Prepare content with site image links
+        id: prepare-external-content
+        if: inputs.image-storage == 'external' && inputs.image-files != ''
         shell: node {0}
         env:
           SOURCE_FILE: ${{ inputs.content != '' && '.generated-content/notion-entry.md' || inputs.content-file }}
-          LINKS: ${{ steps.upload-r2-images.outputs.markdown-links }}
+          FILE_PATHS: ${{ inputs.image-files }}
+          IMAGE_PUBLIC_BASE_URL: ${{ inputs.image-public-base-url }}
+          IMAGE_PUBLIC_PATH: ${{ inputs.image-public-path }}
         run: |
           const fs = require('node:fs');
+          const path = require('node:path');
           fs.mkdirSync('.generated-content', {recursive: true});
           const target = '.generated-content/notion-entry-with-images.md';
           fs.copyFileSync(process.env.SOURCE_FILE, target);
-          fs.appendFileSync(target, `\n\n## Images\n${process.env.LINKS}\n`);
+          const base = process.env.IMAGE_PUBLIC_BASE_URL.replace(/\/+$/, '');
+          const imagePath = `/${process.env.IMAGE_PUBLIC_PATH.replace(/^\/+|\/+$/g, '')}`;
+          const links = process.env.FILE_PATHS.split(/\r?\n/).map((file) => file.trim()).filter(Boolean)
+            .map((file) => `[${path.basename(file)}](${base}${imagePath}/${encodeURIComponent(path.basename(file))})`);
+          fs.appendFileSync(target, `\n\n## Images\n${links.join('\n')}\n`);
           fs.appendFileSync(process.env.GITHUB_OUTPUT, `content-file=${target}\n`);
 
       - id: find
@@ -205,7 +199,7 @@ jobs:
           status-value: ${{ inputs.status-value }}
           date-property: ${{ inputs.date-property }}
           date: ${{ inputs.date }}
-          content-file: ${{ steps.prepare-r2-content.outputs.content-file || (inputs.content != '' && '.generated-content/notion-entry.md' || inputs.content-file) }}
+          content-file: ${{ steps.prepare-external-content.outputs.content-file || (inputs.content != '' && '.generated-content/notion-entry.md' || inputs.content-file) }}
           content-format: ${{ inputs.content-format }}
           image-file-uploads: ${{ steps.upload-images.outputs.file-upload-ids || '[]' }}
           notion-token: ${{ secrets.notion-token }}
@@ -231,7 +225,7 @@ jobs:
       - if: steps.find.outputs.page-id != ''
         uses: Sunnymoon724/kozae-forge/actions/append-notion-page-content@main
         with:
-          content-file: ${{ steps.prepare-r2-content.outputs.content-file || (inputs.content != '' && '.generated-content/notion-entry.md' || inputs.content-file) }}
+          content-file: ${{ steps.prepare-external-content.outputs.content-file || (inputs.content != '' && '.generated-content/notion-entry.md' || inputs.content-file) }}
           content-format: ${{ inputs.content-format }}
           page-id: ${{ steps.find.outputs.page-id }}
           image-file-uploads: ${{ steps.upload-images.outputs.file-upload-ids || '[]' }}

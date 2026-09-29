@@ -49,7 +49,9 @@ NOTION_TOKEN
 | `date-property` | No | Empty | Date property name |
 | `date` | No | Empty | Date value |
 | `image-files` | No | Empty | Newline-delimited PNG/GIF file paths |
-| `image-storage` | No | `notion` | Use `notion` for direct upload or `r2` for Cloudflare R2 links |
+| `image-storage` | No | `notion` | Use `notion` for direct upload or `external` for links from a deployed site |
+| `image-public-base-url` | No | Empty | Public site base URL when using `external` |
+| `image-public-path` | No | `/media` | Public image path when using `external` |
 
 ### Workflow configuration
 
