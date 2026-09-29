@@ -174,8 +174,8 @@ jobs:
           const base = process.env.IMAGE_PUBLIC_BASE_URL.replace(/\/+$/, '');
           const imagePath = `/${process.env.IMAGE_PUBLIC_PATH.replace(/^\/+|\/+$/g, '')}`;
           const links = process.env.FILE_PATHS.split(/\r?\n/).map((file) => file.trim()).filter(Boolean)
-            .map((file) => `[${path.basename(file)}](${base}${imagePath}/${encodeURIComponent(path.basename(file))})`);
-          fs.appendFileSync(target, `\n\n## Images\n${links.join('\n')}\n`);
+            .map((file) => `- [${path.basename(file)}](${base}${imagePath}/${encodeURIComponent(path.basename(file))})`);
+          fs.appendFileSync(target, `\n\n## 🖼️ 참고 이미지\n${links.join('\n')}\n`);
           fs.appendFileSync(process.env.GITHUB_OUTPUT, `content-file=${target}\n`);
 
       - id: find
