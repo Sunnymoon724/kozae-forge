@@ -1,6 +1,6 @@
 # upload-git-lfs-objects
 
-구성된 원격 저장소로 한 브랜치의 모든 Git LFS 객체를 업로드합니다. 먼저 `configure-lfs-remote`를 사용해야 합니다.
+구성된 원격 저장소로 한 브랜치의 Git LFS 객체를 업로드합니다. 먼저 `configure-lfs-remote`를 사용해야 합니다.
 
 Token은 `github.com`에 한정된 Git의 임시 인증 설정으로 전달하며, 대화형 자격 증명 입력은 비활성화됩니다. GitHub가 반환한 S3 업로드 URL에는 GitHub 인증 헤더를 보내지 않습니다.
 
@@ -12,6 +12,7 @@ Token은 `github.com`에 한정된 Git의 임시 인증 설정으로 전달하�
 | `repository-directory` | 예 | - | Git 저장소 디렉터리 |
 | `remote-name` | 아니오 | `public` | 구성된 원격 이름 |
 | `branch` | 아니오 | `main` | 업로드할 브랜치 |
+| `all` | 아니오 | `true` | 모든 LFS 객체를 업로드할지 여부. `false`이면 브랜치에서 사용하는 객체만 업로드합니다. |
 | `concurrent-transfers` | 아니오 | `5` | 동시에 업로드할 최대 LFS 객체 수 |
 | `max-retries` | 아니오 | `3` | LFS 객체별 최대 재시도 횟수 |
 
@@ -24,6 +25,7 @@ Token은 `github.com`에 한정된 Git의 임시 인증 설정으로 전달하�
     repository-directory: .
     remote-name: public
     branch: main
+    all: false
     concurrent-transfers: 5
     max-retries: 3
 ```

@@ -4,6 +4,7 @@ inputs:
   token: {description: GitHub token with destination repository issue read access, required: true}
   destination-repository: {description: Destination repository in owner/name format, required: true}
   source-issue-number: {description: Source issue number, required: true}
+  mirrors: {description: Optional JSON list of collected mirror mappings, required: false, default: ''}
 outputs:
   issue-number: {description: 'Matching destination issue number, if found'}
 runs: {using: node24, main: index.js}

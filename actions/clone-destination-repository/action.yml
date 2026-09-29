@@ -4,4 +4,5 @@ inputs:
   token: {description: GitHub token for the destination repository, required: true}
   repository: {description: Destination repository in owner/name format, required: true}
   destination-directory: {description: Directory where the repository is cloned, required: true}
+  depth: {description: Clone depth, required: false, default: '1'}
 runs: {using: node24, main: index.js}

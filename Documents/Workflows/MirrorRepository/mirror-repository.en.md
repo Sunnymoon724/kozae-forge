@@ -1,10 +1,10 @@
 # Repository mirroring
 
-Synchronize changes from one repository to a destination repository while applying an exclusion list.
+Synchronize the latest file state of the source repository's `main` branch to a destination repository while applying an exclusion list. The destination is intended to work like a public drive that shows the latest state, not as a copy of the source Git history.
 
 ## 1. Process
 
-The workflow checks the destination repository, clones it, uploads Git LFS objects, synchronizes files using the exclusion list, then commits and pushes the changes.
+The workflow shallow-clones the destination repository, synchronizes the latest files and the LFS objects used by `main`, deletes destination-only files outside the exclusion list, and commits and pushes only when files changed.
 
 ## 2. Usage
 
@@ -90,7 +90,7 @@ jobs:
       DESTINATION_REPO_TOKEN: ${{ secrets.DESTINATION_REPO_TOKEN }}
 ```
 
-The Workflow passes `DESTINATION_REPO_TOKEN` to the Actions that access the destination repository. `configure-lfs-remote` only configures the remote URL; `upload-git-lfs-objects` and `push-changes` receive the token through their `token` input.
+The Workflow passes `DESTINATION_REPO_TOKEN` to the Actions that access the destination repository. `configure-lfs-remote` only configures the remote URL; `upload-git-lfs-objects` and `push-changes` receive the token through their `token` input. The destination's Git history is not cloned, and only LFS objects used by `main` are uploaded.
 
 For self-hosted Runner reliability, Git LFS uploads run up to five transfers at a time and retry each object up to three times by default.
 GitHub authentication is scoped to `github.com`; the presigned S3 upload URLs do not receive the GitHub authorization header.

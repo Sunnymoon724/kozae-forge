@@ -2,6 +2,7 @@ const {spawnSync} = require('node:child_process');
 for (const [name, value] of Object.entries(process.env)) if (name.startsWith('INPUT_')) process.env[name.replaceAll('-', '_')] = value;
 const options = {cwd: process.env.INPUT_DESTINATION_DIRECTORY, stdio: 'inherit'};
 function git(args) { const result = spawnSync('git', args, options); if (result.status !== 0) process.exit(result.status || 1); }
+function setOutput(name, value) { require('node:fs').appendFileSync(process.env.GITHUB_OUTPUT, `${name}=${value}\n`); }
 git(['add', '-A']);
 const changed = spawnSync('git', ['diff', '--cached', '--quiet'], options);
-if (changed.status === 0) console.log('No changes to commit'); else if (changed.status === 1) { git(['config', 'user.name', 'forge-bot']); git(['config', 'user.email', '41898282+github-actions[bot]@users.noreply.github.com']); git(['commit', '-m', process.env.INPUT_MESSAGE]); } else process.exit(changed.status || 1);
+if (changed.status === 0) { console.log('No changes to commit'); setOutput('changed', 'false'); } else if (changed.status === 1) { git(['config', 'user.name', 'forge-bot']); git(['config', 'user.email', '41898282+github-actions[bot]@users.noreply.github.com']); git(['commit', '-m', process.env.INPUT_MESSAGE]); setOutput('changed', 'true'); } else process.exit(changed.status || 1);

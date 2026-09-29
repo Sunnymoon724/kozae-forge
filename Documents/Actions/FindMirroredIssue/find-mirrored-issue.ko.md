@@ -9,6 +9,7 @@
 | `token` | 예 | - | GitHub Token |
 | `destination-repository` | 예 | - | 대상 저장소 |
 | `source-issue-number` | 예 | - | 원본 이슈 번호 |
+| `mirrors` | 아니오 | 빈 값 | 미리 수집한 미러 매핑의 JSON 목록 |
 
 ## 출력
 
@@ -20,6 +21,11 @@
 
 ```yaml
 - uses: Sunnymoon724/kozae-forge/actions/find-mirrored-issue@main
+  with:
+    token: ${{ secrets.DESTINATION_REPO_TOKEN }}
+    destination-repository: OWNER/REPOSITORY
+    source-issue-number: 12
+    mirrors: '[{"sourceIssueNumber":12,"destinationIssueNumber":3}]'
 ```
 
 ## 출력 예시

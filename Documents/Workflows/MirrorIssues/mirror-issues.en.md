@@ -1,12 +1,14 @@
 # Issue mirroring
 
-Synchronizes issues with the `mirror:public` label from a private source repository to a public destination repository. It supports single-issue event synchronization and full reconciliation.
+Synchronizes issues with the `mirror:sync` label from a source repository to a destination repository. It works regardless of repository visibility and supports single-issue event synchronization and full reconciliation.
 
 ## 1. Process
 
-For an issue event, only the event issue is processed. An issue is created or updated only when it has the visibility label. If an existing mirror loses that label, the destination issue is kept, closed, and marked with `mirror:missing`.
+For an issue event, only the event issue is processed. An issue is created or updated only when it has the `mirror:sync` label. If an existing mirror loses that label, the destination issue is kept, closed, and marked with `mirror:missing`.
 
-For `workflow_dispatch` and `schedule`, the workflow compares all source issues with all destination issues carrying the `kozae-forge-mirror` marker. A source issue that no longer exists causes its destination mirror to be deleted. A source issue that still exists but only lost `mirror:public` is kept and marked `closed + mirror:missing`.
+For `workflow_dispatch` and `schedule`, the workflow compares all source issues with all destination issues carrying the `kozae-forge-mirror` marker. A source issue that no longer exists causes its destination mirror to be deleted. A source issue that still exists but only lost `mirror:sync` is kept and marked `closed + mirror:missing`.
+
+Temporary GitHub API failures such as rate limits and server errors are retried with a short backoff. Create requests are not automatically retried to avoid duplicate issues.
 
 ## 2. Usage
 
@@ -37,8 +39,8 @@ secrets:
 |---|---:|---|---|
 | `runner` | No | `ubuntu-latest` | Runner label used for workflow jobs |
 | `destination-repository` | Yes | - | Destination repository in `OWNER/REPOSITORY` format |
-| `visibility-label` | No | `mirror:public` | Source label that selects issues |
-| `missing-label` | No | `mirror:missing` | Label added when an existing mirror loses the visibility label |
+| `mirror-label` | No | `mirror:sync` | Source label that selects issues for mirroring |
+| `missing-label` | No | `mirror:missing` | Label added when an existing mirror loses the mirror label |
 | `source-issue-number` | No | Empty | Optional source issue number for single-issue synchronization |
 | `issue-only` | No | `true` | Ignore pull request comments when the event is `issue_comment` |
 | `sync-comments` | No | `false` | Reserved comment synchronization option |
@@ -64,8 +66,8 @@ jobs:
     uses: Sunnymoon724/kozae-forge/.github/workflows/mirror-issues.yml@main
     with:
       runner: self-hosted
-      destination-repository: OWNER/PUBLIC-REPOSITORY
-      visibility-label: mirror:public
+      destination-repository: OWNER/DESTINATION-REPOSITORY
+      mirror-label: mirror:sync
       missing-label: mirror:missing
       source-issue-number: ${{ github.event.issue.number }}
       issue-only: true

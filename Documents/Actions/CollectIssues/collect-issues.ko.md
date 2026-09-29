@@ -8,15 +8,17 @@
 |---|---:|---|---|
 | `token` | 예 | - | 원본 이슈 조회 권한이 있는 Token |
 | `source-repository` | 예 | - | `owner/name` 형식의 원본 저장소 |
-| `visibility-label` | 예 | - | 이슈를 선택하는 라벨 |
-| `include-unlabeled` | 아니오 | `false` | 공개 라벨이 없는 이슈도 포함할지 여부 |
+| `mirror-label` | 예 | - | 미러링할 이슈를 선택하는 라벨 |
+| `include-unlabeled` | 아니오 | `false` | 미러 라벨이 없는 이슈도 포함할지 여부 |
 | `issue-number` | 아니오 | 빈 값 | 번호로 이슈 하나만 수집 |
+| `output-mode` | 아니오 | `full` | `numbers`로 설정하면 이슈 번호만 출력 |
 
 ## 출력
 
 | 출력 | 기본값 | 설명 |
 |---|---|---|
 | `issues` | - | 선택한 이슈의 JSON 배열 |
+| `issue` | - | `issue-number`를 설정했을 때 해당 이슈의 JSON 객체 |
 
 ## 입력 예시
 
@@ -26,7 +28,7 @@
   with:
     token: ${{ secrets.DESTINATION_REPO_TOKEN }}
     source-repository: OWNER/PRIVATE-REPOSITORY
-    visibility-label: mirror:public
+    mirror-label: mirror:sync
 ```
 
 ## 출력 예시

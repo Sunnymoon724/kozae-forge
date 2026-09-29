@@ -4,8 +4,8 @@
 
 1. 선택한 시간대를 기준으로 처리할 날짜를 정합니다. 두 날짜가 모두 비어 있으면 어제를 사용하고, `start-date`만 입력하면 그 날짜만 처리합니다.
 2. 날짜 형식을 확인하고, 최대 31일까지 처리할 수 있도록 제한합니다.
-3. 날짜마다 `collect-commits-by-time`이 해당 날짜의 커밋을 수집합니다.
-4. `prepare-content`, `validate-content-size`, `request-content`가 AI로 요청한 형식의 글을 작성합니다.
+3. 저장소를 한 번만 Checkout하고 요청한 모든 날짜의 커밋을 함께 수집합니다.
+4. 날짜별로 `prepare-content`, `validate-content-size`, `request-content`가 AI로 요청한 형식의 글을 작성합니다.
 5. 커밋이 없는 날짜는 파일을 만들지 않습니다.
 6. 생성된 파일을 하나의 `generated-content` Artifact로 묶습니다.
 
@@ -77,8 +77,7 @@ jobs:
 
 ## 3. 사용 Action
 
-- `calculate-date-range`
-- `collect-commits-by-time`
+- Workflow 내부 날짜별 커밋 수집 단계
 - `prepare-content`
 - `validate-content-size`
 - `request-content`

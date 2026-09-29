@@ -1,12 +1,14 @@
 # 이슈 미러링
 
-Private 원본 저장소에서 `mirror:public` 라벨이 붙은 이슈를 Public 대상 저장소로 동기화합니다. 단일 이슈 이벤트와 전체 대조를 모두 지원합니다.
+원본 저장소에서 `mirror:sync` 라벨이 붙은 이슈를 대상 저장소로 동기화합니다. 저장소 공개 여부와 관계없이 사용할 수 있으며, 단일 이슈 이벤트와 전체 대조를 모두 지원합니다.
 
 ## 1. 처리 방법
 
-이슈 이벤트가 발생하면 해당 이슈 하나만 처리합니다. `mirror:public`이 있을 때만 대상 이슈를 만들거나 수정합니다. 기존 미러에서 이 라벨이 사라지면 대상 이슈는 유지하고 닫은 뒤 `mirror:missing`을 추가합니다.
+이슈 이벤트가 발생하면 해당 이슈 하나만 처리합니다. `mirror:sync`가 있을 때만 대상 이슈를 만들거나 수정합니다. 기존 미러에서 이 라벨이 사라지면 대상 이슈는 유지하고 닫은 뒤 `mirror:missing`을 추가합니다.
 
-`workflow_dispatch`와 `schedule`에서는 원본 이슈 전체와 `kozae-forge-mirror` 표시가 있는 대상 이슈 전체를 비교합니다. 원본 이슈가 실제로 삭제된 경우에만 대상 미러를 삭제합니다. 원본 이슈는 남아 있지만 `mirror:public`만 사라진 경우에는 대상 이슈를 유지하고 `closed + mirror:missing`으로 처리합니다.
+`workflow_dispatch`와 `schedule`에서는 원본 이슈 전체와 `kozae-forge-mirror` 표시가 있는 대상 이슈 전체를 비교합니다. 원본 이슈가 실제로 삭제된 경우에만 대상 미러를 삭제합니다. 원본 이슈는 남아 있지만 `mirror:sync`만 사라진 경우에는 대상 이슈를 유지하고 `closed + mirror:missing`으로 처리합니다.
+
+Rate Limit이나 서버 오류처럼 잠시 발생하는 GitHub API 오류는 짧게 기다린 뒤 다시 시도합니다. 이슈가 중복 생성되지 않도록 생성 요청은 자동으로 다시 시도하지 않습니다.
 
 ## 2. 사용 방법
 
@@ -37,8 +39,8 @@ secrets:
 |---|---:|---|---|
 | `runner` | 아니오 | `ubuntu-latest` | Workflow Job에 사용할 Runner 레이블 |
 | `destination-repository` | 예 | - | `OWNER/REPOSITORY` 형식의 대상 저장소 |
-| `visibility-label` | 아니오 | `mirror:public` | 미러링 대상을 선택하는 원본 라벨 |
-| `missing-label` | 아니오 | `mirror:missing` | 기존 미러에서 공개 라벨이 사라졌을 때 추가할 라벨 |
+| `mirror-label` | 아니오 | `mirror:sync` | 미러링 대상을 선택하는 원본 라벨 |
+| `missing-label` | 아니오 | `mirror:missing` | 기존 미러에서 미러 라벨이 사라졌을 때 추가할 라벨 |
 | `source-issue-number` | 아니오 | 빈 값 | 단일 이슈 동기화에 사용할 원본 이슈 번호 |
 | `issue-only` | 아니오 | `true` | `issue_comment`에서 PR 댓글을 무시할지 여부 |
 | `sync-comments` | 아니오 | `false` | 댓글 동기화용 예약 옵션 |
@@ -64,8 +66,8 @@ jobs:
     uses: Sunnymoon724/kozae-forge/.github/workflows/mirror-issues.yml@main
     with:
       runner: self-hosted
-      destination-repository: OWNER/PUBLIC-REPOSITORY
-      visibility-label: mirror:public
+      destination-repository: OWNER/DESTINATION-REPOSITORY
+      mirror-label: mirror:sync
       missing-label: mirror:missing
       source-issue-number: ${{ github.event.issue.number }}
       issue-only: true

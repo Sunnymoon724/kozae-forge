@@ -11,9 +11,9 @@ on:
       destination-repository:
         required: true
         type: string
-      visibility-label:
+      mirror-label:
         required: false
-        default: mirror:public
+        default: mirror:sync
         type: string
       missing-label:
         description: Label added when an existing mirror loses its visibility label
@@ -61,9 +61,10 @@ jobs:
         with:
           token: ${{ github.token }}
           source-repository: ${{ github.repository }}
-          visibility-label: ${{ inputs.visibility-label }}
+          mirror-label: ${{ inputs.mirror-label }}
           include-unlabeled: ${{ (github.event_name == 'workflow_dispatch' || github.event_name == 'schedule') && inputs.source-issue-number == '' }}
           issue-number: ${{ inputs.source-issue-number || github.event.issue.number || '' }}
+          output-mode: numbers
 
   collect-mirrors:
     if: ${{ (github.event_name == 'workflow_dispatch' || github.event_name == 'schedule') && inputs.source-issue-number == '' }}
@@ -78,71 +79,80 @@ jobs:
           destination-repository: ${{ inputs.destination-repository }}
 
   mirror:
-    needs: collect-source
-    if: ${{ needs.collect-source.outputs.issues != '[]' }}
+    needs: [collect-source, collect-mirrors]
+    if: ${{ always() && needs.collect-source.result == 'success' && needs.collect-source.outputs.issues != '[]' }}
     runs-on: ${{ inputs.runner }}
     strategy:
       fail-fast: false
       matrix:
         issue: ${{ fromJSON(needs.collect-source.outputs.issues) }}
     steps:
+      - id: source
+        uses: Sunnymoon724/kozae-forge/actions/collect-issues@main
+        with:
+          token: ${{ github.token }}
+          source-repository: ${{ github.repository }}
+          mirror-label: ${{ inputs.mirror-label }}
+          issue-number: ${{ matrix.issue.number }}
+
       - id: find
         uses: Sunnymoon724/kozae-forge/actions/find-mirrored-issue@main
         with:
           token: ${{ secrets.DESTINATION_REPO_TOKEN }}
           destination-repository: ${{ inputs.destination-repository }}
           source-issue-number: ${{ matrix.issue.number }}
+          mirrors: ${{ needs.collect-mirrors.outputs.issues }}
 
       - id: create
-        if: matrix.issue.mirrorPublic == true && steps.find.outputs.issue-number == ''
+        if: fromJSON(steps.source.outputs.issue).shouldMirror == true && steps.find.outputs.issue-number == ''
         uses: Sunnymoon724/kozae-forge/actions/create-issue@main
         with:
           token: ${{ secrets.DESTINATION_REPO_TOKEN }}
           destination-repository: ${{ inputs.destination-repository }}
-          issue: ${{ toJSON(matrix.issue) }}
+          issue: ${{ steps.source.outputs.issue }}
 
-      - if: matrix.issue.mirrorPublic == true && steps.find.outputs.issue-number != ''
+      - if: fromJSON(steps.source.outputs.issue).shouldMirror == true && steps.find.outputs.issue-number != ''
         uses: Sunnymoon724/kozae-forge/actions/update-issue@main
         with:
           token: ${{ secrets.DESTINATION_REPO_TOKEN }}
           destination-repository: ${{ inputs.destination-repository }}
           issue-number: ${{ steps.find.outputs.issue-number }}
-          issue: ${{ toJSON(matrix.issue) }}
+          issue: ${{ steps.source.outputs.issue }}
 
-      - if: matrix.issue.mirrorPublic == true && (steps.find.outputs.issue-number != '' || steps.create.outputs.issue-number != '')
+      - if: fromJSON(steps.source.outputs.issue).shouldMirror == true && (steps.find.outputs.issue-number != '' || steps.create.outputs.issue-number != '')
         uses: Sunnymoon724/kozae-forge/actions/sync-issue-labels@main
         with:
           token: ${{ secrets.DESTINATION_REPO_TOKEN }}
           destination-repository: ${{ inputs.destination-repository }}
           issue-number: ${{ steps.find.outputs.issue-number || steps.create.outputs.issue-number }}
-          issue: ${{ toJSON(matrix.issue) }}
-          excluded-label: ${{ inputs.visibility-label }}
+          issue: ${{ steps.source.outputs.issue }}
+          excluded-label: ${{ inputs.mirror-label }}
 
-      - if: matrix.issue.mirrorPublic == true && (steps.find.outputs.issue-number != '' || steps.create.outputs.issue-number != '')
+      - if: fromJSON(steps.source.outputs.issue).shouldMirror == true && (steps.find.outputs.issue-number != '' || steps.create.outputs.issue-number != '')
         uses: Sunnymoon724/kozae-forge/actions/sync-issue-state@main
         with:
           token: ${{ secrets.DESTINATION_REPO_TOKEN }}
           destination-repository: ${{ inputs.destination-repository }}
           issue-number: ${{ steps.find.outputs.issue-number || steps.create.outputs.issue-number }}
-          issue: ${{ toJSON(matrix.issue) }}
+          issue: ${{ steps.source.outputs.issue }}
 
-      - if: matrix.issue.mirrorPublic != true && steps.find.outputs.issue-number != ''
+      - if: fromJSON(steps.source.outputs.issue).shouldMirror != true && steps.find.outputs.issue-number != ''
         uses: Sunnymoon724/kozae-forge/actions/sync-issue-labels@main
         with:
           token: ${{ secrets.DESTINATION_REPO_TOKEN }}
           destination-repository: ${{ inputs.destination-repository }}
           issue-number: ${{ steps.find.outputs.issue-number }}
-          issue: ${{ toJSON(matrix.issue) }}
-          excluded-label: ${{ inputs.visibility-label }}
+          issue: ${{ steps.source.outputs.issue }}
+          excluded-label: ${{ inputs.mirror-label }}
           additional-labels: ${{ inputs.missing-label }}
 
-      - if: matrix.issue.mirrorPublic != true && steps.find.outputs.issue-number != ''
+      - if: fromJSON(steps.source.outputs.issue).shouldMirror != true && steps.find.outputs.issue-number != ''
         uses: Sunnymoon724/kozae-forge/actions/sync-issue-state@main
         with:
           token: ${{ secrets.DESTINATION_REPO_TOKEN }}
           destination-repository: ${{ inputs.destination-repository }}
           issue-number: ${{ steps.find.outputs.issue-number }}
-          issue: ${{ toJSON(matrix.issue) }}
+          issue: ${{ steps.source.outputs.issue }}
           state: closed
 
   prepare-deletions:

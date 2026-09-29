@@ -1,3 +1,4 @@
+require('../_shared/retry-fetch').installFetchRetry();
 const fs = require('node:fs');
 
 for (const [name, value] of Object.entries(process.env)) {

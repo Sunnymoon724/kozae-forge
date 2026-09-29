@@ -4,8 +4,8 @@
 
 1. Resolve the requested dates in the selected timezone. When both dates are empty, the workflow uses yesterday. When only `start-date` is set, it processes that date only.
 2. The workflow validates the dates and limits a range to 31 days.
-3. Each date is processed separately. `collect-commits-by-time` collects commits for that date.
-4. `prepare-content`, `validate-content-size`, and `request-content` use AI to write content in the requested format.
+3. The repository is checked out once, and commits for all requested dates are collected together.
+4. Each date is processed separately. `prepare-content`, `validate-content-size`, and `request-content` use AI to write content in the requested format.
 5. Dates without commits do not create files.
 6. All generated files are combined into one `generated-content` artifact.
 
@@ -77,8 +77,7 @@ With `tag: development-log`, generated files use the `${date}-development-log.md
 
 ## 3. Actions used
 
-- `calculate-date-range`
-- `collect-commits-by-time`
+- inline date-range commit collection
 - `prepare-content`
 - `validate-content-size`
 - `request-content`

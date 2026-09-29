@@ -11,6 +11,12 @@
 | `destination-directory` | 예 | - | 변경사항이 있는 저장소 디렉토리 |
 | `message` | 아니오 | `Update files` | commit 메시지 |
 
+## 출력값
+
+| 출력값 | 설명 |
+|---|---|
+| `changed` | 새 commit이 만들어졌으면 `true`, 변경사항이 없으면 `false` |
+
 ## 입력 예시
 
 ```yaml

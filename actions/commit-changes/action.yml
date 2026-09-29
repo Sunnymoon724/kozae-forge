@@ -3,4 +3,6 @@ description: Commit staged changes in a directory
 inputs:
   destination-directory: {description: Directory containing the changes, required: true}
   message: {description: Commit message, required: false, default: Update files}
+outputs:
+  changed: {description: Whether a commit was created}
 runs: {using: node24, main: index.js}

@@ -159,32 +159,80 @@ jobs:
             process.exit(1);
           }
 
-  generate:
+  collect:
     needs: prepare
     runs-on: ${{ inputs.runner }}
-    strategy:
-      fail-fast: false
-      matrix:
-        date: ${{ fromJSON(needs.prepare.outputs.dates) }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           ref: ${{ inputs.branch }}
 
-      - id: time-range
-        uses: Sunnymoon724/kozae-forge/actions/calculate-date-range@main
+      - name: Collect commits for all dates
+        env:
+          DATES: ${{ needs.prepare.outputs.dates }}
+          TIMEZONE: ${{ inputs.timezone }}
+          AUTHORS: ${{ inputs.authors }}
+        shell: node {0}
+        run: |
+          const fs = require('node:fs');
+          const { spawnSync } = require('node:child_process');
+
+          process.env.TZ = process.env.TIMEZONE;
+          fs.mkdirSync('.commit-data', { recursive: true });
+          const authors = process.env.AUTHORS.trim();
+          const head = spawnSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' });
+          if (head.status !== 0) throw new Error(head.stderr || 'Unable to find the checked out commit.');
+
+          for (const date of JSON.parse(process.env.DATES)) {
+            const start = new Date(`${date}T00:00:00`);
+            if (Number.isNaN(start.getTime())) throw new Error(`Invalid date: ${date}`);
+            const end = new Date(start);
+            end.setDate(end.getDate() + 1);
+
+            const args = ['log', `--since=${start.toISOString()}`, `--until=${end.toISOString()}`];
+            if (authors) args.push(`--author=${authors.split(',').map((author) => author.trim()).filter(Boolean).join('\\|')}`);
+            args.push('--format=- %s (%h) [author: %an]', head.stdout.trim());
+
+            const result = spawnSync('git', args, { encoding: 'utf8' });
+            if (result.status !== 0) throw new Error(result.stderr || `Unable to collect commits for ${date}.`);
+            const commits = result.stdout.trim();
+            if (commits) fs.writeFileSync(`.commit-data/${date}.txt`, commits);
+            console.log(`${date}: ${commits ? 'commits found' : 'no commits'}`);
+          }
+
+      - name: Upload collected commits
+        uses: actions/upload-artifact@v4
         with:
-          timezone: ${{ inputs.timezone }}
-          target-date: ${{ matrix.date }}
+          name: collected-commits
+          path: .commit-data
+          if-no-files-found: ignore
+
+  generate:
+    needs: [prepare, collect]
+    runs-on: ${{ inputs.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        date: ${{ fromJSON(needs.prepare.outputs.dates) }}
+    steps:
+      - name: Download collected commits
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          name: collected-commits
+          path: .commit-data
 
       - id: collect
-        uses: Sunnymoon724/kozae-forge/actions/collect-commits-by-time@main
-        with:
-          start-time: ${{ steps.time-range.outputs.start-time }}
-          end-time: ${{ steps.time-range.outputs.end-time }}
-          timezone: ${{ inputs.timezone }}
-          authors: ${{ inputs.authors }}
+        name: Load commits for this date
+        env:
+          DATE: ${{ matrix.date }}
+        shell: node {0}
+        run: |
+          const fs = require('node:fs');
+          const path = `.commit-data/${process.env.DATE}.txt`;
+          const commits = fs.existsSync(path) ? fs.readFileSync(path, 'utf8') : '';
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `commits<<EOF\n${commits}\nEOF\nhas-content=${commits ? 'true' : 'false'}\n`);
 
       - id: request
         if: steps.collect.outputs.has-content == 'true'

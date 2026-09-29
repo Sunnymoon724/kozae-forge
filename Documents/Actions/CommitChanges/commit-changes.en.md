@@ -11,6 +11,12 @@ The commit author name is shown as `forge-bot`; authentication and the profile i
 | `destination-directory` | Yes | - | Repository directory containing the changes |
 | `message` | No | `Update files` | Commit message |
 
+## Outputs
+
+| Output | Description |
+|---|---|
+| `changed` | `true` when a new commit was created, or `false` when there were no changes |
+
 ## Input example
 
 ```yaml

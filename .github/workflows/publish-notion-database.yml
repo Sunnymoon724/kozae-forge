@@ -35,7 +35,13 @@ on:
         type: string
       source-url:
         description: Notion database URL
-        required: true
+        required: false
+        default: ''
+        type: string
+      data-source-id:
+        description: Optional resolved Notion data source ID; skips source URL lookup when provided
+        required: false
+        default: ''
         type: string
       title-property:
         description: Optional database title property name; inferred when omitted
@@ -101,9 +107,9 @@ jobs:
           ref: ${{ inputs.checkout-ref || github.ref }}
 
       - name: Validate content inputs
-        if: (inputs.content == '') == (inputs.content-file == '')
+        if: (inputs.content == '') == (inputs.content-file == '') || (inputs.source-url == '' && inputs.data-source-id == '')
         shell: node {0}
-        run: throw new Error('Provide exactly one of content or content-file.')
+        run: throw new Error('Provide exactly one of content or content-file, and provide source-url or data-source-id.')
 
       - name: Save inline content
         if: inputs.content != ''
@@ -113,6 +119,7 @@ jobs:
           content: ${{ inputs.content }}
 
       - id: data-source
+        if: inputs.data-source-id == ''
         uses: Sunnymoon724/kozae-forge/actions/resolve-notion-data-source@main
         with:
           source-url: ${{ inputs.source-url }}
@@ -128,7 +135,7 @@ jobs:
       - id: find
         uses: Sunnymoon724/kozae-forge/actions/find-notion-database-entry@main
         with:
-          data-source-id: ${{ steps.data-source.outputs.data-source-id }}
+          data-source-id: ${{ inputs.data-source-id || steps.data-source.outputs.data-source-id }}
           title-property: ${{ inputs.title-property }}
           title: ${{ inputs.title }}
           notion-token: ${{ secrets.notion-token }}
@@ -137,7 +144,7 @@ jobs:
         if: steps.find.outputs.page-id == ''
         uses: Sunnymoon724/kozae-forge/actions/create-notion-database-entry@main
         with:
-          data-source-id: ${{ steps.data-source.outputs.data-source-id }}
+          data-source-id: ${{ inputs.data-source-id || steps.data-source.outputs.data-source-id }}
           title-property: ${{ steps.find.outputs.title-property }}
           title: ${{ inputs.title }}
           group-property: ${{ inputs.group-property }}

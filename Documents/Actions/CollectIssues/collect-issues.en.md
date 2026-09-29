@@ -8,15 +8,17 @@ A GitHub Action that collects issues selected by a label.
 |---|---:|---|---|
 | `token` | Yes | - | GitHub token with source issue read access |
 | `source-repository` | Yes | - | Source repository in `owner/name` format |
-| `visibility-label` | Yes | - | Label that selects issues |
+| `mirror-label` | Yes | - | Label that selects issues for mirroring |
 | `include-unlabeled` | No | `false` | Include issues without the visibility label |
 | `issue-number` | No | Empty | Collect one issue by number |
+| `output-mode` | No | `full` | Use `numbers` to output only issue numbers |
 
 ## Outputs
 
 | Output | Default | Description |
 |---|---|---|
 | `issues` | - | JSON array of selected issues |
+| `issue` | - | Selected issue as a JSON object when `issue-number` is set |
 
 ## Input example
 
@@ -26,7 +28,7 @@ A GitHub Action that collects issues selected by a label.
   with:
     token: ${{ secrets.DESTINATION_REPO_TOKEN }}
     source-repository: OWNER/PRIVATE-REPOSITORY
-    visibility-label: mirror:public
+    mirror-label: mirror:sync
 ```
 
 ## Output example

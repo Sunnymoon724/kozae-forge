@@ -1,6 +1,6 @@
 # upload-git-lfs-objects
 
-Uploads all Git LFS objects for one branch through an already configured remote. Use `configure-lfs-remote` first.
+Uploads Git LFS objects for one branch through an already configured remote. Use `configure-lfs-remote` first.
 
 The token is passed through a temporary authorization configuration scoped to `github.com`, and interactive credential prompts are disabled. The S3 upload URLs returned by GitHub do not receive the GitHub authorization header.
 
@@ -12,6 +12,7 @@ The token is passed through a temporary authorization configuration scoped to `g
 | `repository-directory` | Yes | - | Git repository directory |
 | `remote-name` | No | `public` | Configured remote name |
 | `branch` | No | `main` | Branch to upload |
+| `all` | No | `true` | Upload every LFS object. If `false`, upload only objects used by the branch. |
 | `concurrent-transfers` | No | `5` | Maximum simultaneous LFS uploads |
 | `max-retries` | No | `3` | Maximum retries for each LFS object |
 
@@ -24,6 +25,7 @@ The token is passed through a temporary authorization configuration scoped to `g
     repository-directory: .
     remote-name: public
     branch: main
+    all: false
     concurrent-transfers: 5
     max-retries: 3
 ```

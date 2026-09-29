@@ -1,3 +1,4 @@
+require('../_shared/retry-fetch').installFetchRetry();
 for (const [name, value] of Object.entries(process.env)) {
   if (name.startsWith('INPUT_')) {
     process.env[name.replaceAll('-', '_')] = value;
@@ -9,6 +10,13 @@ const p = process.env;
 const marker = `<!-- kozae-forge-mirror:source-issue=${p.INPUT_SOURCE_ISSUE_NUMBER} -->`;
 
 async function main() {
+  if (p.INPUT_MIRRORS) {
+    const mirrors = JSON.parse(p.INPUT_MIRRORS);
+    const mirror = mirrors.find((item) => String(item.sourceIssueNumber) === String(p.INPUT_SOURCE_ISSUE_NUMBER));
+    fs.appendFileSync(p.GITHUB_OUTPUT, `issue-number=${mirror?.destinationIssueNumber || ''}\n`);
+    return;
+  }
+
   for (let page = 1; ; page += 1) {
     const response = await fetch(`https://api.github.com/repos/${p.INPUT_DESTINATION_REPOSITORY}/issues?state=all&per_page=100&page=${page}`, {headers: {Authorization: `Bearer ${p.INPUT_TOKEN}`, Accept: 'application/vnd.github+json'}});
     if (!response.ok) throw new Error(await response.text());

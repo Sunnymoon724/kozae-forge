@@ -1,6 +1,6 @@
 # clone-destination-repository
 
-A GitHub Action that clones a destination repository using a GitHub token and initializes Git LFS.
+A GitHub Action that clones a destination repository to a selected depth using a GitHub token and initializes Git LFS.
 
 Authentication is passed through Git's temporary authorization configuration, and interactive credential prompts are disabled.
 
@@ -11,6 +11,7 @@ Authentication is passed through Git's temporary authorization configuration, an
 | `token` | Yes | - | GitHub token used to access the destination repository |
 | `repository` | Yes | - | Destination repository (`owner/name`) |
 | `destination-directory` | Yes | - | Directory where the repository is cloned |
+| `depth` | No | `1` | Clone depth. Use `0` to clone the full history. |
 
 ## Input example
 
@@ -20,4 +21,5 @@ Authentication is passed through Git's temporary authorization configuration, an
     token: ${{ secrets.DESTINATION_REPO_TOKEN }}
     repository: OWNER/DESTINATION-REPOSITORY
     destination-directory: destination-repo
+    depth: 1
 ```

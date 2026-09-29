@@ -7,6 +7,7 @@ inputs:
   repository-directory: {description: Directory of the Git repository, required: true}
   remote-name: {description: Name of the configured Git remote, required: false, default: public}
   branch: {description: Branch whose LFS objects are uploaded, required: false, default: main}
+  all: {description: Upload every LFS object instead of objects reachable from the branch, required: false, default: 'true'}
   concurrent-transfers: {description: Maximum simultaneous LFS uploads, required: false, default: "5"}
   max-retries: {description: Maximum retries for each LFS object, required: false, default: "3"}
 runs: {using: node24, main: index.js}

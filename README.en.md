@@ -40,7 +40,7 @@ Reusable GitHub Actions and Workflows for KoZae projects.
     - [Collect document sources](Documents/Actions/CollectDocumentSources/collect-document-sources.en.md)
     - [Map document targets](Documents/Actions/MapDocumentTargets/map-document-targets.en.md)
   - Notion
-    - [Append Notion page content](Documents/Actions/AppendNotionPageContent/append-notion-page-content.en.md) (plain text or Markdown blocks)
+    - [Append Notion page content](Documents/Actions/AppendNotionPageContent/append-notion-page-content.en.md)
     - [Upload Notion file](Documents/Actions/UploadNotionFile/upload-notion-file.en.md)
     - [Clear Notion page](Documents/Actions/ClearNotionPage/clear-notion-page.en.md)
     - [Update Notion database entry properties](Documents/Actions/UpdateNotionDatabaseEntryProperties/update-notion-database-entry-properties.en.md)
@@ -54,6 +54,7 @@ Reusable GitHub Actions and Workflows for KoZae projects.
     - [Collect issues](Documents/Actions/CollectIssues/collect-issues.en.md)
     - [Collect open issues](Documents/Actions/CollectOpenIssues/collect-open-issues.en.md)
     - [Find mirrored issue](Documents/Actions/FindMirroredIssue/find-mirrored-issue.en.md)
+    - [Sync public issue to Notion](Documents/Actions/SyncPublicIssueToNotion/sync-public-issue-to-notion.en.md)
     - [Collect mirrored issues](Documents/Actions/CollectMirroredIssues/collect-mirrored-issues.en.md)
     - [Delete mirrored issue](Documents/Actions/DeleteMirroredIssue/delete-mirrored-issue.en.md)
     - [Create issue](Documents/Actions/CreateIssue/create-issue.en.md)

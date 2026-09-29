@@ -2,9 +2,11 @@
 
 A reusable GitHub Actions Workflow that creates a Notion database entry when absent, or updates its properties and replaces its content when present.
 
+Temporary Notion API rate-limit and server errors are retried with a short backoff. Create requests are not automatically retried to avoid duplicate entries.
+
 ## 1. Process
 
-1. Check out the calling repository and resolve the data source from the database URL.
+1. Check out the calling repository and resolve the data source from the database URL, unless a previously resolved `data-source-id` is provided.
 2. Find an active entry by its title, inferring the title property when omitted.
 3. Create the entry when it is absent.
 4. Otherwise, update its properties, clear its blocks, and append the content.
@@ -36,7 +38,8 @@ NOTION_TOKEN
 | `content-file` | Conditional | Empty | Repository-relative content file path; use this or `content` |
 | `content` | Conditional | Empty | Inline content; use this or `content-file` |
 | `content-format` | No | `plain` | Use `markdown` to create headings, lists, checkboxes, dividers, and links as Notion blocks |
-| `source-url` | Yes | - | Notion database URL |
+| `source-url` | No | Empty | Notion database URL; required when `data-source-id` is empty |
+| `data-source-id` | No | Empty | Previously resolved data source ID; skips the URL lookup when provided |
 | `title-property` | No | Empty | Database title property name; inferred from the data source when omitted |
 | `title` | Yes | - | Entry title |
 | `group-property` | No | Empty | Select property name |

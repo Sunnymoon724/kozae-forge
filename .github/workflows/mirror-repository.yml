@@ -47,18 +47,13 @@ jobs:
           token: ${{ secrets.DESTINATION_REPO_TOKEN }}
           repository: ${{ inputs.destination-repository }}
           destination-directory: destination-repo
+          depth: '1'
 
       - name: Configure Git LFS remote
         uses: Sunnymoon724/kozae-forge/actions/configure-lfs-remote@main
         with:
           repository-directory: .
           repository: ${{ inputs.destination-repository }}
-
-      - name: Upload lfs objects
-        uses: Sunnymoon724/kozae-forge/actions/upload-git-lfs-objects@main
-        with:
-          token: ${{ secrets.DESTINATION_REPO_TOKEN }}
-          repository-directory: .
 
       - name: Copy allowed files
         uses: Sunnymoon724/kozae-forge/actions/copy-folder@main
@@ -69,11 +64,21 @@ jobs:
           exclude-file: ${{ inputs.exclude-file }}
 
       - name: Commit changes
+        id: commit
         uses: Sunnymoon724/kozae-forge/actions/commit-changes@main
         with:
           destination-directory: destination-repo
 
+      - name: Upload LFS objects
+        if: steps.commit.outputs.changed == 'true'
+        uses: Sunnymoon724/kozae-forge/actions/upload-git-lfs-objects@main
+        with:
+          token: ${{ secrets.DESTINATION_REPO_TOKEN }}
+          repository-directory: .
+          all: false
+
       - name: Push changes
+        if: steps.commit.outputs.changed == 'true'
         uses: Sunnymoon724/kozae-forge/actions/push-changes@main
         with:
           token: ${{ secrets.DESTINATION_REPO_TOKEN }}

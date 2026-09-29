@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.16
+
+- Added a composite action to sync mirrored public issues to Notion.
+
 ## 0.4.15
 
 - Extended Notion database publishing with inferred title properties, Status fields, inline content, and Markdown block conversion.

@@ -1,3 +1,4 @@
+require('../_shared/retry-fetch').installFetchRetry();
 for (const [name, value] of Object.entries(process.env)) {
   if (name.startsWith('INPUT_')) {
     process.env[name.replaceAll('-', '_')] = value;
@@ -32,10 +33,12 @@ async function main() {
     .filter((issue) => p.INPUT_ISSUE_NUMBER || !issue.pull_request)
     .map((issue) => ({
       ...issue,
-      mirrorPublic: issue.labels.some((label) => label.name === p.INPUT_VISIBILITY_LABEL),
+      shouldMirror: issue.labels.some((label) => label.name === p.INPUT_MIRROR_LABEL),
     }))
-    .filter((issue) => p.INPUT_ISSUE_NUMBER || includeUnlabeled || issue.mirrorPublic);
-  appendFileSync(p.GITHUB_OUTPUT, `issues<<EOF\n${JSON.stringify(selected)}\nEOF\n`);
+    .filter((issue) => p.INPUT_ISSUE_NUMBER || includeUnlabeled || issue.shouldMirror);
+  const output = p.INPUT_OUTPUT_MODE === 'numbers' ? selected.map(({number}) => ({number})) : selected;
+  const issue = p.INPUT_ISSUE_NUMBER ? selected[0] || null : null;
+  appendFileSync(p.GITHUB_OUTPUT, `issues<<EOF\n${JSON.stringify(output)}\nEOF\nissue=${JSON.stringify(issue)}\n`);
 }
 
 main().catch((e) => { console.error(e); process.exit(1); });
