@@ -87,10 +87,35 @@ on:
         required: false
         default: ''
         type: string
+      image-storage:
+        description: 'Image storage mode: notion or r2'
+        required: false
+        default: notion
+        type: string
+      r2-endpoint:
+        required: false
+        default: ''
+        type: string
+      r2-bucket:
+        required: false
+        default: ''
+        type: string
+      r2-public-base-url:
+        required: false
+        default: ''
+        type: string
+      r2-key-prefix:
+        required: false
+        default: weekly-images
+        type: string
     secrets:
       notion-token:
         description: Notion integration token
         required: true
+      r2-access-key-id:
+        required: false
+      r2-secret-access-key:
+        required: false
     outputs:
       page-id:
         description: Created or updated Notion database page ID
@@ -126,11 +151,38 @@ jobs:
           notion-token: ${{ secrets.notion-token }}
 
       - id: upload-images
-        if: inputs.image-files != ''
+        if: inputs.image-files != '' && inputs.image-storage == 'notion'
         uses: Sunnymoon724/kozae-forge/actions/upload-notion-file@main
         with:
           file-paths: ${{ inputs.image-files }}
           notion-token: ${{ secrets.notion-token }}
+
+      - id: upload-r2-images
+        if: inputs.image-files != '' && inputs.image-storage == 'r2'
+        uses: Sunnymoon724/kozae-forge/actions/upload-r2-files@main
+        with:
+          file-paths: ${{ inputs.image-files }}
+          endpoint: ${{ inputs.r2-endpoint }}
+          bucket: ${{ inputs.r2-bucket }}
+          public-base-url: ${{ inputs.r2-public-base-url }}
+          access-key-id: ${{ secrets.r2-access-key-id }}
+          secret-access-key: ${{ secrets.r2-secret-access-key }}
+          key-prefix: ${{ inputs.r2-key-prefix }}
+
+      - name: Prepare content with R2 links
+        id: prepare-r2-content
+        if: inputs.image-storage == 'r2' && inputs.image-files != ''
+        shell: node {0}
+        env:
+          SOURCE_FILE: ${{ inputs.content != '' && '.generated-content/notion-entry.md' || inputs.content-file }}
+          LINKS: ${{ steps.upload-r2-images.outputs.markdown-links }}
+        run: |
+          const fs = require('node:fs');
+          fs.mkdirSync('.generated-content', {recursive: true});
+          const target = '.generated-content/notion-entry-with-images.md';
+          fs.copyFileSync(process.env.SOURCE_FILE, target);
+          fs.appendFileSync(target, `\n\n## Images\n${process.env.LINKS}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `content-file=${target}\n`);
 
       - id: find
         uses: Sunnymoon724/kozae-forge/actions/find-notion-database-entry@main
@@ -153,7 +205,7 @@ jobs:
           status-value: ${{ inputs.status-value }}
           date-property: ${{ inputs.date-property }}
           date: ${{ inputs.date }}
-          content-file: ${{ inputs.content != '' && '.generated-content/notion-entry.md' || inputs.content-file }}
+          content-file: ${{ steps.prepare-r2-content.outputs.content-file || (inputs.content != '' && '.generated-content/notion-entry.md' || inputs.content-file) }}
           content-format: ${{ inputs.content-format }}
           image-file-uploads: ${{ steps.upload-images.outputs.file-upload-ids || '[]' }}
           notion-token: ${{ secrets.notion-token }}
@@ -179,7 +231,7 @@ jobs:
       - if: steps.find.outputs.page-id != ''
         uses: Sunnymoon724/kozae-forge/actions/append-notion-page-content@main
         with:
-          content-file: ${{ inputs.content != '' && '.generated-content/notion-entry.md' || inputs.content-file }}
+          content-file: ${{ steps.prepare-r2-content.outputs.content-file || (inputs.content != '' && '.generated-content/notion-entry.md' || inputs.content-file) }}
           content-format: ${{ inputs.content-format }}
           page-id: ${{ steps.find.outputs.page-id }}
           image-file-uploads: ${{ steps.upload-images.outputs.file-upload-ids || '[]' }}

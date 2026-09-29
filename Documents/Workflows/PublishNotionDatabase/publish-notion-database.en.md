@@ -49,6 +49,7 @@ NOTION_TOKEN
 | `date-property` | No | Empty | Date property name |
 | `date` | No | Empty | Date value |
 | `image-files` | No | Empty | Newline-delimited PNG/GIF file paths |
+| `image-storage` | No | `notion` | Use `notion` for direct upload or `r2` for Cloudflare R2 links |
 
 ### Workflow configuration
 
