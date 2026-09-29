@@ -8,6 +8,11 @@ export default {
 
     const body = await request.text();
     const signature = request.headers.get('x-hub-signature-256');
+    if (!env.WEBHOOK_SECRET) {
+      console.error('WEBHOOK_SECRET is not configured for this Worker environment.');
+      return json({ error: 'Webhook secret is not configured' }, 500);
+    }
+
     if (!(await verifySignature(body, signature, env.WEBHOOK_SECRET))) {
       return json({ error: 'Invalid webhook signature' }, 401);
     }
