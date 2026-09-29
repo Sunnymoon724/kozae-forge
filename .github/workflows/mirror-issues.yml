@@ -25,6 +25,11 @@ on:
         required: false
         default: ''
         type: string
+      issue-only:
+        description: Process issue comments only and ignore pull request comments
+        required: false
+        default: true
+        type: boolean
       sync-comments:
         required: false
         default: false
@@ -46,6 +51,7 @@ permissions:
 
 jobs:
   collect-source:
+    if: ${{ github.event_name != 'issue_comment' || inputs.issue-only == false || !github.event.issue.pull_request }}
     runs-on: ${{ inputs.runner }}
     outputs:
       issues: ${{ steps.collect.outputs.issues }}

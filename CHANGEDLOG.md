@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.14
+
+- Added the `issue-only` option for filtering pull request comments from `issue_comment` workflows.
+
 ## 0.4.13
 
 - Added Notion PNG/GIF uploads and image blocks for database entries.

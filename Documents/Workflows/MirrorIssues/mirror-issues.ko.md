@@ -40,6 +40,7 @@ secrets:
 | `visibility-label` | 아니오 | `mirror:public` | 미러링 대상을 선택하는 원본 라벨 |
 | `missing-label` | 아니오 | `mirror:missing` | 기존 미러에서 공개 라벨이 사라졌을 때 추가할 라벨 |
 | `source-issue-number` | 아니오 | 빈 값 | 단일 이슈 동기화에 사용할 원본 이슈 번호 |
+| `issue-only` | 아니오 | `true` | `issue_comment`에서 PR 댓글을 무시할지 여부 |
 | `sync-comments` | 아니오 | `false` | 댓글 동기화용 예약 옵션 |
 | `sync-milestones` | 아니오 | `false` | 마일스톤 동기화용 예약 옵션 |
 | `sync-assignees` | 아니오 | `false` | 담당자 동기화용 예약 옵션 |
@@ -67,6 +68,7 @@ jobs:
       visibility-label: mirror:public
       missing-label: mirror:missing
       source-issue-number: ${{ github.event.issue.number }}
+      issue-only: true
       sync-comments: false
       sync-milestones: false
       sync-assignees: false

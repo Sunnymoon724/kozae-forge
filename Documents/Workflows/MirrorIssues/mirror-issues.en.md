@@ -40,6 +40,7 @@ secrets:
 | `visibility-label` | No | `mirror:public` | Source label that selects issues |
 | `missing-label` | No | `mirror:missing` | Label added when an existing mirror loses the visibility label |
 | `source-issue-number` | No | Empty | Optional source issue number for single-issue synchronization |
+| `issue-only` | No | `true` | Ignore pull request comments when the event is `issue_comment` |
 | `sync-comments` | No | `false` | Reserved comment synchronization option |
 | `sync-milestones` | No | `false` | Reserved milestone synchronization option |
 | `sync-assignees` | No | `false` | Reserved assignee synchronization option |
@@ -67,6 +68,7 @@ jobs:
       visibility-label: mirror:public
       missing-label: mirror:missing
       source-issue-number: ${{ github.event.issue.number }}
+      issue-only: true
       sync-comments: false
       sync-milestones: false
       sync-assignees: false

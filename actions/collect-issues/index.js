@@ -29,7 +29,7 @@ async function getIssues() {
 async function main() {
   const includeUnlabeled = p.INPUT_INCLUDE_UNLABELED === 'true';
   const selected = (await getIssues())
-    .filter((issue) => !issue.pull_request)
+    .filter((issue) => p.INPUT_ISSUE_NUMBER || !issue.pull_request)
     .map((issue) => ({
       ...issue,
       mirrorPublic: issue.labels.some((label) => label.name === p.INPUT_VISIBILITY_LABEL),
