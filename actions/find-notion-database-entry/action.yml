@@ -8,6 +8,6 @@ inputs:
   source-issue-number: {description: Optional source issue number used for stable lookup, required: false, default: ''}
   notion-token: {description: Notion integration token, required: true}
 outputs:
-  page-id: {description: Matching database page ID, if found}
+  page-id: {description: 'Matching database page ID, if found'}
   title-property: {description: Resolved title property name}
 runs: {using: node24, main: index.js}
