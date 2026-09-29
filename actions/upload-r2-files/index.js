@@ -46,6 +46,21 @@ async function upload(filePath, index) {
 
 async function main() {
   const p = process.env;
+  for (const name of ['INPUT_ENDPOINT', 'INPUT_BUCKET', 'INPUT_PUBLIC_BASE_URL', 'INPUT_ACCESS_KEY_ID', 'INPUT_SECRET_ACCESS_KEY']) {
+    if (!p[name]?.trim()) throw new Error(`${name.replace('INPUT_', '').toLowerCase()} is required.`);
+  }
+  try {
+    const endpoint = new URL(p.INPUT_ENDPOINT);
+    if (!['http:', 'https:'].includes(endpoint.protocol)) throw new Error('must use http or https');
+  } catch (error) {
+    throw new Error(`endpoint must be a valid URL, for example https://<account-id>.r2.cloudflarestorage.com (${error.message})`);
+  }
+  try {
+    const publicBaseUrl = new URL(p.INPUT_PUBLIC_BASE_URL);
+    if (!['http:', 'https:'].includes(publicBaseUrl.protocol)) throw new Error('must use http or https');
+  } catch (error) {
+    throw new Error(`public-base-url must be a valid URL (${error.message})`);
+  }
   const files = p.INPUT_FILE_PATHS.split(/\r?\n/).map((value) => value.trim()).filter(Boolean);
   if (!files.length) throw new Error('file-paths must contain at least one file.');
   const uploads = [];
