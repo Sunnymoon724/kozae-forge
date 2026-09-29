@@ -12,7 +12,7 @@ async function main() {
       'Content-Type': 'application/json',
       'Notion-Version': '2026-03-11',
     },
-    body: JSON.stringify({archived: true}),
+    body: JSON.stringify({in_trash: true}),
   });
   if (!response.ok) throw new Error(await response.text());
 }
