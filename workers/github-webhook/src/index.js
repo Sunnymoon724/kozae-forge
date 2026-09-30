@@ -48,20 +48,58 @@ export default {
     }
 
     const workflow = getWorkflow(repository, env);
-    const installationToken = await createInstallationToken(repository, env);
-    await dispatchWorkflow(repository, workflow, installationToken, {
-      'source-issue-number': String(issueNumber),
+    const debounceId = env.ISSUE_DEBOUNCER.idFromName(`${repository}:${issueNumber}`);
+    const debounce = env.ISSUE_DEBOUNCER.get(debounceId);
+    await debounce.fetch('https://kozae-forge.internal/queue', {
+      method: 'POST',
+      body: JSON.stringify({repository, workflow, issueNumber: String(issueNumber)}),
     });
 
     return json({
       ok: true,
-      dispatched: true,
+      queued: true,
       repository,
       workflow,
       issueNumber,
     });
   },
 };
+
+export class IssueDebouncer {
+  constructor(state, env) {
+    this.state = state;
+    this.env = env;
+  }
+
+  async fetch(request) {
+    if (request.method !== 'POST') {
+      return json({error: 'Method not allowed'}, 405);
+    }
+
+    const job = await request.json();
+    const delaySeconds = Math.max(1, Number(this.env.DEBOUNCE_SECONDS || 120));
+    await this.state.storage.put('job', job);
+    await this.state.storage.setAlarm(Date.now() + delaySeconds * 1000);
+    return json({queued: true, delaySeconds});
+  }
+
+  async alarm() {
+    const job = await this.state.storage.get('job');
+    if (!job) return;
+
+    try {
+      const installationToken = await createInstallationToken(job.repository, this.env);
+      await dispatchWorkflow(job.repository, job.workflow, installationToken, {
+        'source-issue-number': job.issueNumber,
+      });
+      await this.state.storage.delete('job');
+    } catch (error) {
+      console.error('Failed to dispatch debounced workflow:', error);
+      await this.state.storage.setAlarm(Date.now() + 60 * 1000);
+      throw error;
+    }
+  }
+}
 
 function json(value, status = 200) {
   return new Response(JSON.stringify(value), {
