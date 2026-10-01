@@ -1,6 +1,6 @@
 # clone-destination-repository
 
-A GitHub Action that clones a destination repository to a selected depth using a GitHub token and initializes Git LFS.
+A GitHub Action that clones a destination repository to a selected depth using a GitHub token and initializes Git LFS without downloading LFS file contents during clone.
 
 Authentication is passed through Git's temporary authorization configuration, and interactive credential prompts are disabled.
 

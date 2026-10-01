@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.19
+
+- Skipped Git LFS file downloads while cloning destination repositories to reduce mirror time and memory use.
+
 ## 0.4.18
 
 - Made mirrored issue collection include the destination issue title so Notion entries can be found without a missing source-issue property.

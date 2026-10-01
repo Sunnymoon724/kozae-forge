@@ -4,7 +4,7 @@ const authorization = Buffer.from(`x-access-token:${process.env.INPUT_TOKEN}`).t
 const cloneArguments = ['clone'];
 if (process.env.INPUT_DEPTH !== '0') cloneArguments.push('--depth', process.env.INPUT_DEPTH);
 cloneArguments.push(`https://github.com/${process.env.INPUT_REPOSITORY}.git`, process.env.INPUT_DESTINATION_DIRECTORY);
-const result = spawnSync('git', cloneArguments, {stdio: 'inherit', env: {...process.env, GIT_TERMINAL_PROMPT: '0', GCM_INTERACTIVE: 'Never', GIT_CONFIG_COUNT: '1', GIT_CONFIG_KEY_0: 'http.extraheader', GIT_CONFIG_VALUE_0: `AUTHORIZATION: Basic ${authorization}`}, timeout: 300000});
+const result = spawnSync('git', cloneArguments, {stdio: 'inherit', env: {...process.env, GIT_TERMINAL_PROMPT: '0', GCM_INTERACTIVE: 'Never', GIT_LFS_SKIP_SMUDGE: '1', GIT_CONFIG_COUNT: '1', GIT_CONFIG_KEY_0: 'http.extraheader', GIT_CONFIG_VALUE_0: `AUTHORIZATION: Basic ${authorization}`}, timeout: 300000});
 if (result.error) throw result.error;
 if (result.signal) throw new Error(`git clone timed out or was terminated: ${result.signal}`);
 if (result.status !== 0) process.exit(result.status || 1);
