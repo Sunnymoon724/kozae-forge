@@ -8,6 +8,7 @@
 4. 날짜별로 `prepare-content`, `validate-content-size`, `request-content`가 AI로 요청한 형식의 글을 작성합니다.
 5. 커밋이 없는 날짜는 파일을 만들지 않습니다.
 6. 생성된 파일을 하나의 `generated-content` Artifact로 묶습니다.
+7. 처리 기간에 커밋이 하나도 없으면 수집 Artifact를 만들지 않고, 후속 다운로드 단계도 건너뜁니다.
 
 이 Workflow는 저장소에 파일을 영구 저장하거나 커밋하지 않습니다. 후속 Job에서 `generated-content` Artifact를 다운로드한 뒤 별도로 commit과 push를 수행합니다.
 

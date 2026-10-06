@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.20
+
+- Skipped downloading the commit collection artifact when the selected date range has no commits.
+
 ## 0.4.19
 
 - Skipped Git LFS file downloads while cloning destination repositories to reduce mirror time and memory use.

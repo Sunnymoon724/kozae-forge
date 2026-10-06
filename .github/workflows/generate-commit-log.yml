@@ -162,6 +162,8 @@ jobs:
   collect:
     needs: prepare
     runs-on: ${{ inputs.runner }}
+    outputs:
+      has-content: ${{ steps.collect-commits.outputs.has-content }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -169,6 +171,7 @@ jobs:
           ref: ${{ inputs.branch }}
 
       - name: Collect commits for all dates
+        id: collect-commits
         env:
           DATES: ${{ needs.prepare.outputs.dates }}
           TIMEZONE: ${{ inputs.timezone }}
@@ -201,6 +204,9 @@ jobs:
             console.log(`${date}: ${commits ? 'commits found' : 'no commits'}`);
           }
 
+          const hasContent = fs.readdirSync('.commit-data').length > 0;
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `has-content=${hasContent}\n`);
+
       - name: Upload collected commits
         uses: actions/upload-artifact@v4
         with:
@@ -217,7 +223,7 @@ jobs:
         date: ${{ fromJSON(needs.prepare.outputs.dates) }}
     steps:
       - name: Download collected commits
-        continue-on-error: true
+        if: needs.collect.outputs.has-content == 'true'
         uses: actions/download-artifact@v4
         with:
           name: collected-commits
