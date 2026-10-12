@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.23
+
+- Included the hidden `.commit-data` directory when uploading the collected commits artifact.
+
 ## 0.4.22
 
 - Added diagnostic logs for commit collection and generated commit files.

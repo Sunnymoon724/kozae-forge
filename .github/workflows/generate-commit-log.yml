@@ -241,6 +241,7 @@ jobs:
           name: collected-commits
           path: .commit-data
           if-no-files-found: error
+          include-hidden-files: true
 
   generate:
     needs: [prepare, collect]

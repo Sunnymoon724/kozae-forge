@@ -8,8 +8,9 @@
 4. Each date is processed separately. `prepare-content`, `validate-content-size`, and `request-content` use AI to write content in the requested format.
 5. Dates without commits do not create files.
 6. All generated files are combined into one `generated-content` artifact.
-7. If the whole range has no commits, an empty marker keeps the collection artifact available, and downstream generation skips dates without a commit file.
-8. The collection step logs the checked-out branch, HEAD, dates, author filter, per-date results, and generated file list.
+7. If the whole range has no commits, an empty marker keeps the collection artifact available, including the hidden collection directory.
+8. Downstream generation skips dates without a commit file.
+9. The collection step logs the checked-out branch, HEAD, dates, author filter, per-date results, and generated file list.
 
 This workflow does not persist or commit files to the repository. Use the `generated-content` artifact in a later job, then commit and push the files separately if needed.
 
