@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.22
+
+- Added diagnostic logs for commit collection and generated commit files.
+
 ## 0.4.21
 
 - Always created the commit collection artifact with an empty marker when the selected range has no commits.

@@ -9,6 +9,7 @@
 5. Dates without commits do not create files.
 6. All generated files are combined into one `generated-content` artifact.
 7. If the whole range has no commits, an empty marker keeps the collection artifact available, and downstream generation skips dates without a commit file.
+8. The collection step logs the checked-out branch, HEAD, dates, author filter, per-date results, and generated file list.
 
 This workflow does not persist or commit files to the repository. Use the `generated-content` artifact in a later job, then commit and push the files separately if needed.
 

@@ -170,6 +170,20 @@ jobs:
           fetch-depth: 0
           ref: ${{ inputs.branch }}
 
+      - name: Log commit collection context
+        shell: node {0}
+        run: |
+          const { spawnSync } = require('node:child_process');
+          const run = (args) => spawnSync('git', args, { encoding: 'utf8' });
+          const topLevel = run(['rev-parse', '--show-toplevel']);
+          const branch = run(['branch', '--show-current']);
+          const head = run(['rev-parse', 'HEAD']);
+          const headSummary = run(['show', '-s', '--format=%h %aI %an %s', 'HEAD']);
+          console.log(`Repository root: ${topLevel.stdout.trim()}`);
+          console.log(`Checked out branch: ${branch.stdout.trim() || '(detached HEAD)'}`);
+          console.log(`Checked out HEAD: ${head.stdout.trim()}`);
+          console.log(`HEAD summary: ${headSummary.stdout.trim()}`);
+
       - name: Collect commits for all dates
         id: collect-commits
         env:
@@ -184,10 +198,14 @@ jobs:
           process.env.TZ = process.env.TIMEZONE;
           fs.mkdirSync('.commit-data', { recursive: true });
           const authors = process.env.AUTHORS.trim();
+          const dates = JSON.parse(process.env.DATES);
+          console.log(`Collection timezone: ${process.env.TIMEZONE}`);
+          console.log(`Collection authors: ${authors || '(all authors)'}`);
+          console.log(`Collection dates: ${dates.join(', ')}`);
           const head = spawnSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' });
           if (head.status !== 0) throw new Error(head.stderr || 'Unable to find the checked out commit.');
 
-          for (const date of JSON.parse(process.env.DATES)) {
+          for (const date of dates) {
             const start = new Date(`${date}T00:00:00`);
             if (Number.isNaN(start.getTime())) throw new Error(`Invalid date: ${date}`);
             const end = new Date(start);
@@ -200,15 +218,24 @@ jobs:
             const result = spawnSync('git', args, { encoding: 'utf8' });
             if (result.status !== 0) throw new Error(result.stderr || `Unable to collect commits for ${date}.`);
             const commits = result.stdout.trim();
-            if (commits) fs.writeFileSync(`.commit-data/${date}.txt`, commits);
-            console.log(`${date}: ${commits ? 'commits found' : 'no commits'}`);
+            const commitCount = commits ? commits.split('\n').length : 0;
+            if (commits) {
+              const outputPath = `.commit-data/${date}.txt`;
+              fs.writeFileSync(outputPath, commits);
+              console.log(`${date}: commits found (${commitCount}), output=${outputPath}, bytes=${Buffer.byteLength(commits)}`);
+            } else {
+              console.log(`${date}: no commits, git log output bytes=0`);
+            }
           }
 
           const hasContent = fs.readdirSync('.commit-data').length > 0;
+          console.log(`Collected files: ${fs.readdirSync('.commit-data').join(', ') || '(none)'}`);
+          console.log(`Collected content found: ${hasContent}`);
           fs.appendFileSync(process.env.GITHUB_OUTPUT, `has-content=${hasContent}\n`);
           if (!hasContent) fs.writeFileSync('.commit-data/no-commits.txt', '');
 
       - name: Upload collected commits
+        id: upload-collected-commits
         uses: actions/upload-artifact@v4
         with:
           name: collected-commits
