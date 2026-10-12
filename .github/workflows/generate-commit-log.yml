@@ -206,13 +206,14 @@ jobs:
 
           const hasContent = fs.readdirSync('.commit-data').length > 0;
           fs.appendFileSync(process.env.GITHUB_OUTPUT, `has-content=${hasContent}\n`);
+          if (!hasContent) fs.writeFileSync('.commit-data/no-commits.txt', '');
 
       - name: Upload collected commits
         uses: actions/upload-artifact@v4
         with:
           name: collected-commits
           path: .commit-data
-          if-no-files-found: ignore
+          if-no-files-found: error
 
   generate:
     needs: [prepare, collect]
@@ -223,7 +224,6 @@ jobs:
         date: ${{ fromJSON(needs.prepare.outputs.dates) }}
     steps:
       - name: Download collected commits
-        if: needs.collect.outputs.has-content == 'true'
         uses: actions/download-artifact@v4
         with:
           name: collected-commits

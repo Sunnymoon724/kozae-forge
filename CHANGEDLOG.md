@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.21
+
+- Always created the commit collection artifact with an empty marker when the selected range has no commits.
+
 ## 0.4.20
 
 - Skipped downloading the commit collection artifact when the selected date range has no commits.
