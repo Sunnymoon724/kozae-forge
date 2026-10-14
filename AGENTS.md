@@ -32,6 +32,7 @@ KoZae Forge is a collection of reusable GitHub Actions for KoZae projects.
 - Whenever an Action or Workflow changes, update its related documentation and README entries as part of the same change.
 - Keep `VERSION` and the latest `CHANGEDLOG.md` entry in sync for releases.
 - Preserve both English and Korean README files when updating project-level documentation.
+- Use Node.js for repository automation and workflow scripts so they can run on Windows and Linux. Do not add new PowerShell scripts or PowerShell workflow steps.
 
 ## Read-only work
 
