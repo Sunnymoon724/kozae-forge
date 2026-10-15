@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.24
+
+- Disabled reasoning output for OpenAI-compatible content requests so the generated content is returned in the expected response field.
+
 ## 0.4.23
 
 - Included the hidden `.commit-data` directory when uploading the collected commits artifact.

@@ -1,6 +1,6 @@
 # Request content
 
-Requests generated content from an OpenAI-compatible API.
+Requests generated content from an OpenAI-compatible API. OpenAI-compatible providers are asked to return the result without a reasoning phase.
 
 The Action validates every required input before sending the request and reports the missing input name when validation fails.
 

@@ -26,7 +26,9 @@ async function main() {
     throw new Error('Unsupported provider.');
   }
 
-  const response = await fetch(`${apiBase.replace(/\/$/, '')}/chat/completions`, {method: 'POST', headers: {Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json'}, body: JSON.stringify({model, messages: [{role: 'system', content: prompt}, {role: 'user', content}]})});
+  const request = {model, messages: [{role: 'system', content: prompt}, {role: 'user', content}]};
+  if (provider === 'openai-compatible') request.reasoning_effort = 'none';
+  const response = await fetch(`${apiBase.replace(/\/$/, '')}/chat/completions`, {method: 'POST', headers: {Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json'}, body: JSON.stringify(request)});
   if (!response.ok) {
     throw new Error(await response.text());
   }
