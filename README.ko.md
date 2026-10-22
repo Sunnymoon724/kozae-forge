@@ -14,6 +14,7 @@ KoZae 프로젝트에서 재사용할 수 있는 GitHub Actions와 Workflow 모�
     - [Notion 데이터베이스 항목 게시](Documents/Workflows/PublishNotionDatabase/publish-notion-database.ko.md) (생성·갱신, Status 속성, Markdown 블록)
   - 저장소·이슈 자동화
     - [저장소 미러링](Documents/Workflows/MirrorRepository/mirror-repository.ko.md)
+    - [브랜치 병합](Documents/Workflows/MergeBranches/merge-branches.ko.md)
     - [이슈 미러링](Documents/Workflows/MirrorIssues/mirror-issues.ko.md)
 
 - Action

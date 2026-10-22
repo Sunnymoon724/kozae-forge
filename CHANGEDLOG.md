@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.0
+
+- Added a reusable Workflow for merging multiple branches into a target branch in order.
+
 ## 0.4.24
 
 - Disabled reasoning output for OpenAI-compatible content requests so the generated content is returned in the expected response field.

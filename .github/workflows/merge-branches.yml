@@ -1,0 +1,83 @@
+name: Merge branches
+
+on:
+  workflow_call:
+    inputs:
+      runner:
+        description: Runner label used for the merge job
+        required: false
+        default: ubuntu-latest
+        type: string
+      target-branch:
+        description: Branch that receives the merges
+        required: false
+        default: main
+        type: string
+      source-branches:
+        description: Source branches to merge, one branch name per line
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  merge:
+    runs-on: ${{ inputs.runner }}
+
+    steps:
+      - name: Checkout target branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.target-branch }}
+          fetch-depth: 0
+          token: ${{ github.token }}
+
+      - name: Merge source branches
+        shell: node {0}
+        env:
+          SOURCE_BRANCHES: ${{ inputs.source-branches }}
+          TARGET_BRANCH: ${{ inputs.target-branch }}
+        run: |
+          const { spawnSync } = require('node:child_process');
+
+          function run(args) {
+            console.log(`$ git ${args.join(' ')}`);
+            const result = spawnSync('git', args, { encoding: 'utf8' });
+            if (result.stdout) process.stdout.write(result.stdout);
+            if (result.stderr) process.stderr.write(result.stderr);
+            if (result.status !== 0) {
+              throw new Error(`git ${args[0]} failed with exit code ${result.status ?? 'unknown'}.`);
+            }
+          }
+
+          const target = process.env.TARGET_BRANCH.trim();
+          const branches = process.env.SOURCE_BRANCHES
+            .split(/\r?\n/)
+            .map((branch) => branch.trim())
+            .filter(Boolean);
+
+          if (!target) throw new Error('target-branch must not be empty.');
+          if (!branches.length) throw new Error('source-branches must contain at least one branch.');
+
+          for (const branch of [target, ...branches]) {
+            if (branch.includes('..') || /[\s~^:?*[\\]/.test(branch)) {
+              throw new Error(`Invalid branch name: ${branch}`);
+            }
+          }
+          if (branches.includes(target)) {
+            throw new Error('source-branches must not contain target-branch.');
+          }
+
+          run(['config', 'user.name', 'github-actions[bot]']);
+          run(['config', 'user.email', '41898282+github-actions[bot]@users.noreply.github.com']);
+          run(['fetch', 'origin', '--prune']);
+          run(['checkout', target]);
+          run(['merge', '--ff-only', `origin/${target}`]);
+
+          for (const branch of branches) {
+            console.log(`Merging origin/${branch} into ${target}`);
+            run(['merge', '--no-edit', `origin/${branch}`]);
+          }
+
+          run(['push', 'origin', `HEAD:${target}`]);

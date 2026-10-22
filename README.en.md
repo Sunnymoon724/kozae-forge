@@ -14,6 +14,7 @@ Reusable GitHub Actions and Workflows for KoZae projects.
     - [Publish Notion database entry](Documents/Workflows/PublishNotionDatabase/publish-notion-database.en.md) (upsert, Status properties, Markdown blocks)
   - Repository and issue automation
     - [Repository mirroring](Documents/Workflows/MirrorRepository/mirror-repository.en.md)
+    - [Merge branches](Documents/Workflows/MergeBranches/merge-branches.en.md)
     - [Issue mirroring](Documents/Workflows/MirrorIssues/mirror-issues.en.md)
 
 - Action
