@@ -15,6 +15,7 @@ KoZae 프로젝트에서 재사용할 수 있는 GitHub Actions와 Workflow 모�
   - 저장소·이슈 자동화
     - [저장소 미러링](Documents/Workflows/MirrorRepository/mirror-repository.ko.md)
     - [브랜치 병합](Documents/Workflows/MergeBranches/merge-branches.ko.md)
+    - [Pull Request 생성 및 병합](Documents/Workflows/CreateAndMergePullRequest/create-and-merge-pull-request.ko.md)
     - [이슈 미러링](Documents/Workflows/MirrorIssues/mirror-issues.ko.md)
 
 - Action

@@ -1,0 +1,199 @@
+name: Create and merge pull request
+
+on:
+  workflow_call:
+    inputs:
+      source-branch:
+        description: Branch to merge into the target branch
+        required: true
+        type: string
+      source-sha:
+        description: Commit SHA that was tested by the caller's build
+        required: true
+        type: string
+      target-branch:
+        description: Branch that receives the changes
+        required: false
+        default: main
+        type: string
+      build-result:
+        description: Result of the caller's build job
+        required: true
+        type: string
+      pull-request-title:
+        description: Pull request title
+        required: false
+        default: Merge changes into main
+        type: string
+      pull-request-body:
+        description: Pull request description
+        required: false
+        default: Created automatically after a branch update.
+        type: string
+    secrets:
+      token:
+        description: Token with permission to create and merge pull requests
+        required: true
+      discord_webhook_url:
+        description: Optional Discord webhook for build or merge exceptions
+        required: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  create-pull-request:
+    if: inputs.source-branch != inputs.target-branch
+    runs-on: ubuntu-latest
+    outputs:
+      url: ${{ steps.pr.outputs.url }}
+      number: ${{ steps.pr.outputs.number }}
+    steps:
+      - name: Create or find pull request
+        id: pr
+        shell: node {0}
+        env:
+          GH_TOKEN: ${{ secrets.token }}
+          GH_REPOSITORY: ${{ github.repository }}
+          SOURCE_BRANCH: ${{ inputs.source-branch }}
+          TARGET_BRANCH: ${{ inputs.target-branch }}
+          PR_TITLE: ${{ inputs.pull-request-title }}
+          PR_BODY: ${{ inputs.pull-request-body }}
+        run: |
+          const fs = require('node:fs');
+          const { spawnSync } = require('node:child_process');
+
+          function gh(args) {
+            const result = spawnSync('gh', args, {encoding: 'utf8'});
+            if (result.error) throw result.error;
+            return result;
+          }
+
+          function savePullRequest(pullRequest) {
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, `url=${pullRequest.url}\nnumber=${pullRequest.number}\n`);
+            console.log(`Pull request #${pullRequest.number}: ${pullRequest.url}`);
+          }
+
+          const listArgs = [
+            'pr', 'list', '--repo', process.env.GH_REPOSITORY,
+            '--head', process.env.SOURCE_BRANCH, '--base', process.env.TARGET_BRANCH,
+            '--state', 'open', '--json', 'number,url', '--limit', '1',
+          ];
+          const existing = gh(listArgs);
+          if (existing.status !== 0) throw new Error(existing.stderr || 'Could not search for an existing pull request.');
+          const [pullRequest] = JSON.parse(existing.stdout);
+          if (pullRequest) {
+            savePullRequest(pullRequest);
+            process.exit(0);
+          }
+
+          const created = gh([
+            'pr', 'create', '--repo', process.env.GH_REPOSITORY,
+            '--base', process.env.TARGET_BRANCH, '--head', process.env.SOURCE_BRANCH,
+            '--title', process.env.PR_TITLE, '--body', process.env.PR_BODY,
+          ]);
+          if (created.stdout) process.stdout.write(created.stdout);
+          if (created.stderr) process.stderr.write(created.stderr);
+          if (created.status !== 0) throw new Error(`Could not create pull request (exit ${created.status ?? 'unknown'}).`);
+
+          const listed = gh(listArgs);
+          if (listed.status !== 0) throw new Error(listed.stderr || 'Created pull request, but could not read its details.');
+          const [createdPullRequest] = JSON.parse(listed.stdout);
+          if (!createdPullRequest) throw new Error('Created pull request was not found.');
+          savePullRequest(createdPullRequest);
+
+  auto-merge:
+    needs: create-pull-request
+    if: inputs.build-result == 'success' && needs.create-pull-request.result == 'success'
+    runs-on: ubuntu-latest
+    outputs:
+      conflict: ${{ steps.merge.outputs.conflict }}
+    steps:
+      - name: Merge pull request when its tested commit is still current
+        id: merge
+        shell: node {0}
+        env:
+          GH_TOKEN: ${{ secrets.token }}
+          GH_REPOSITORY: ${{ github.repository }}
+          PR_NUMBER: ${{ needs.create-pull-request.outputs.number }}
+          SOURCE_SHA: ${{ inputs.source-sha }}
+        run: |
+          const fs = require('node:fs');
+          const { spawnSync } = require('node:child_process');
+
+          function gh(args) {
+            const result = spawnSync('gh', args, {encoding: 'utf8'});
+            if (result.error) throw result.error;
+            return result;
+          }
+
+          let details;
+          for (let attempt = 0; attempt < 5; attempt += 1) {
+            const pullRequest = gh([
+              'pr', 'view', process.env.PR_NUMBER, '--repo', process.env.GH_REPOSITORY,
+              '--json', 'headRefOid,mergeable',
+            ]);
+            if (pullRequest.status !== 0) throw new Error(pullRequest.stderr || 'Could not read the pull request.');
+            details = JSON.parse(pullRequest.stdout);
+            if (details.mergeable !== 'UNKNOWN') break;
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+          }
+          if (details.headRefOid !== process.env.SOURCE_SHA) {
+            console.log(`The branch advanced to ${details.headRefOid}; waiting for a build of the newer commit.`);
+            process.exit(0);
+          }
+          if (details.mergeable === 'UNKNOWN') throw new Error('GitHub could not determine whether the pull request can be merged.');
+          if (details.mergeable === 'CONFLICTING') {
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, 'conflict=true\n');
+            console.log('GitHub reports merge conflicts; leaving the pull request open for manual resolution.');
+            process.exit(0);
+          }
+
+          const merged = gh([
+            'pr', 'merge', process.env.PR_NUMBER, '--repo', process.env.GH_REPOSITORY, '--merge',
+          ]);
+          if (merged.stdout) process.stdout.write(merged.stdout);
+          if (merged.stderr) process.stderr.write(merged.stderr);
+          if (merged.status !== 0) throw new Error(`Pull request could not be merged: ${merged.stderr || merged.status}`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, 'conflict=false\n');
+
+  notify-exception:
+    needs: [create-pull-request, auto-merge]
+    if: always() && (inputs.build-result == 'failure' || needs.auto-merge.outputs.conflict == 'true')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify Discord about a build or merge exception
+        shell: node {0}
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.discord_webhook_url }}
+          PR_URL: ${{ needs.create-pull-request.outputs.url }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          BUILD_RESULT: ${{ inputs.build-result }}
+        run: |
+          const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
+          if (!webhookUrl) {
+            console.log('Discord webhook is not configured; skipping notification.');
+            process.exit(0);
+          }
+
+          const link = process.env.PR_URL || process.env.RUN_URL;
+          const reason = process.env.BUILD_RESULT === 'failure'
+            ? '빌드가 실패했습니다.'
+            : '브랜치 충돌이 확인되어 자동 병합하지 않았습니다. 텍스트 충돌은 웹에서, Unreal 에셋 충돌은 로컬에서 해결해 주세요.';
+          const payload = {
+            content: 'PR 승인이 필요합니다.',
+            embeds: [{
+              title: 'Pull Request 확인 요청',
+              url: link,
+              description: `${reason}\n[PR 또는 실행 결과 열기](${link})`,
+              color: 15158332,
+            }],
+          };
+
+          const response = await fetch(webhookUrl, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(payload),
+          });
+          if (!response.ok) throw new Error(`Discord webhook failed: ${response.status} ${await response.text()}`);

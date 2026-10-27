@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.0
+
+- Added a reusable Workflow that creates or reuses a pull request, merges it after a successful caller build, and sends optional Discord notifications for build or merge exceptions.
+
 ## 0.5.0
 
 - Added a reusable Workflow for merging multiple branches into a target branch in order.
