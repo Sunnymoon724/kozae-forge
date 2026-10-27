@@ -65,6 +65,7 @@ KoZae 프로젝트에서 재사용할 수 있는 GitHub Actions와 Workflow 모�
     - [이슈 상태 동기화](Documents/Actions/SyncIssueState/sync-issue-state.ko.md)
   - 검증·알림
     - [npm 빌드 검증](Documents/Actions/ValidateNpmBuild/validate-npm-build.ko.md)
+    - [Unreal 프로젝트 빌드](Documents/Actions/BuildUnrealProject/build-unreal-project.ko.md)
     - [Webhook 알림](Documents/Actions/NotifyWebhook/notify-webhook.ko.md)
   - Pull Request
     - [Pull Request 생성](Documents/Actions/CreatePullRequest/create-pull-request.ko.md)

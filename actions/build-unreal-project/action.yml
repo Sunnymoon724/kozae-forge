@@ -1,0 +1,27 @@
+name: Build Unreal project
+description: Build an Unreal project with an installed Windows Unreal Engine
+inputs:
+  engine-root:
+    description: Absolute path to the installed Unreal Engine directory
+    required: true
+  project-file:
+    description: Unreal project file path, absolute or relative to the workspace
+    required: true
+  target:
+    description: Unreal build target, such as RabbitEditor
+    required: true
+  platform:
+    description: Unreal build platform
+    required: false
+    default: Win64
+  configuration:
+    description: Unreal build configuration
+    required: false
+    default: Development
+  check-editor-running:
+    description: Fail if UnrealEditor.exe is running on the runner
+    required: false
+    default: 'true'
+runs:
+  using: node24
+  main: index.js

@@ -65,6 +65,7 @@ Reusable GitHub Actions and Workflows for KoZae projects.
     - [Synchronize issue state](Documents/Actions/SyncIssueState/sync-issue-state.en.md)
   - Validation and notifications
     - [Validate npm build](Documents/Actions/ValidateNpmBuild/validate-npm-build.en.md)
+    - [Build Unreal project](Documents/Actions/BuildUnrealProject/build-unreal-project.en.md)
     - [Notify webhook](Documents/Actions/NotifyWebhook/notify-webhook.en.md)
   - Pull requests
     - [Create pull request](Documents/Actions/CreatePullRequest/create-pull-request.en.md)

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.1
+
+- Added a reusable Windows Action for building Unreal project targets with configurable engine, project, platform, and configuration inputs.
+
 ## 0.6.0
 
 - Added a reusable Workflow that creates or reuses a pull request, merges it after a successful caller build, and sends optional Discord notifications for build or merge exceptions.
