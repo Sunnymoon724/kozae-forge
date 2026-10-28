@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.4
+
+- Removed CommonJS `require()` from the reusable workflow's ESM-detected Node.js script to prevent ambiguous module format errors.
+
 ## 0.6.3
 
 - Fixed Node.js workflow scripts failing on Node.js 22+ by keeping `require()` and `await` inside async functions.

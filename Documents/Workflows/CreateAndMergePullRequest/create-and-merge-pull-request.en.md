@@ -67,7 +67,7 @@ jobs:
 
 ## 3. Notes
 
-- The embedded Node.js scripts run their asynchronous logic inside an async function for compatibility with Node.js 22 and later.
+- The embedded Node.js scripts use ES module imports and run asynchronous logic inside an async function for compatibility with Node.js 22 and later.
 - This Workflow does not build or test the project. If there is no merge conflict, it updates the target branch directly.
 - Only merge conflicts create a pull request. Other errors, including token permissions or branch protection, fail the Workflow.
 - The `build-result` input remains for compatibility with existing callers. Passing `failure` creates a PR and sends a Discord notification, as before.

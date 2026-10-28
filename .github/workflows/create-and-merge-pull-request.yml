@@ -65,7 +65,7 @@ jobs:
           PR_TITLE: ${{ inputs.pull-request-title }}
           PR_BODY: ${{ inputs.pull-request-body }}
         run: |
-          const fs = require('node:fs');
+          import fs from 'node:fs';
 
           async function main() {
 
