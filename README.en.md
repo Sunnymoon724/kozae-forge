@@ -15,7 +15,7 @@ Reusable GitHub Actions and Workflows for KoZae projects.
   - Repository and issue automation
     - [Repository mirroring](Documents/Workflows/MirrorRepository/mirror-repository.en.md)
     - [Merge branches](Documents/Workflows/MergeBranches/merge-branches.en.md)
-    - [Create and merge pull request](Documents/Workflows/CreateAndMergePullRequest/create-and-merge-pull-request.en.md)
+    - [Merge branches and create a pull request on conflict](Documents/Workflows/CreateAndMergePullRequest/create-and-merge-pull-request.en.md)
     - [Issue mirroring](Documents/Workflows/MirrorIssues/mirror-issues.en.md)
 
 - Action

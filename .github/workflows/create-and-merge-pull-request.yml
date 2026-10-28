@@ -1,4 +1,4 @@
-name: Create and merge pull request
+name: Merge branch or create pull request on conflict
 
 on:
   workflow_call:
@@ -8,8 +8,8 @@ on:
         required: true
         type: string
       source-sha:
-        description: Commit SHA that was tested by the caller's build
-        required: true
+        description: Expected source commit; stale runs are skipped when the branch has advanced
+        required: false
         type: string
       target-branch:
         description: Branch that receives the changes
@@ -17,25 +17,26 @@ on:
         default: main
         type: string
       build-result:
-        description: Result of the caller's build job
-        required: true
+        description: Deprecated compatibility input; a failed build creates a PR instead of merging
+        required: false
+        default: success
         type: string
       pull-request-title:
-        description: Pull request title
+        description: Pull request title used when a merge conflict occurs
         required: false
         default: Merge changes into main
         type: string
       pull-request-body:
-        description: Pull request description
+        description: Pull request description used when a merge conflict occurs
         required: false
-        default: Created automatically after a branch update.
+        default: Created automatically because the branches have merge conflicts.
         type: string
     secrets:
       token:
-        description: Token with permission to create and merge pull requests
+        description: Token with permission to merge branches and create pull requests
         required: true
       discord_webhook_url:
-        description: Optional Discord webhook for build or merge exceptions
+        description: Optional Discord webhook for conflicts or legacy build failures
         required: false
 
 permissions:
@@ -43,133 +44,137 @@ permissions:
   pull-requests: write
 
 jobs:
-  create-pull-request:
+  merge-or-create-pull-request:
     if: inputs.source-branch != inputs.target-branch
     runs-on: ubuntu-latest
     outputs:
-      url: ${{ steps.pr.outputs.url }}
-      number: ${{ steps.pr.outputs.number }}
+      outcome: ${{ steps.merge.outputs.outcome }}
+      pull-request-url: ${{ steps.merge.outputs.pull-request-url }}
     steps:
-      - name: Create or find pull request
-        id: pr
-        shell: node {0}
-        env:
-          GH_TOKEN: ${{ secrets.token }}
-          GH_REPOSITORY: ${{ github.repository }}
-          SOURCE_BRANCH: ${{ inputs.source-branch }}
-          TARGET_BRANCH: ${{ inputs.target-branch }}
-          PR_TITLE: ${{ inputs.pull-request-title }}
-          PR_BODY: ${{ inputs.pull-request-body }}
-        run: |
-          const fs = require('node:fs');
-          const { spawnSync } = require('node:child_process');
-
-          function gh(args) {
-            const result = spawnSync('gh', args, {encoding: 'utf8'});
-            if (result.error) throw result.error;
-            return result;
-          }
-
-          function savePullRequest(pullRequest) {
-            fs.appendFileSync(process.env.GITHUB_OUTPUT, `url=${pullRequest.url}\nnumber=${pullRequest.number}\n`);
-            console.log(`Pull request #${pullRequest.number}: ${pullRequest.url}`);
-          }
-
-          const listArgs = [
-            'pr', 'list', '--repo', process.env.GH_REPOSITORY,
-            '--head', process.env.SOURCE_BRANCH, '--base', process.env.TARGET_BRANCH,
-            '--state', 'open', '--json', 'number,url', '--limit', '1',
-          ];
-          const existing = gh(listArgs);
-          if (existing.status !== 0) throw new Error(existing.stderr || 'Could not search for an existing pull request.');
-          const [pullRequest] = JSON.parse(existing.stdout);
-          if (pullRequest) {
-            savePullRequest(pullRequest);
-            process.exit(0);
-          }
-
-          const created = gh([
-            'pr', 'create', '--repo', process.env.GH_REPOSITORY,
-            '--base', process.env.TARGET_BRANCH, '--head', process.env.SOURCE_BRANCH,
-            '--title', process.env.PR_TITLE, '--body', process.env.PR_BODY,
-          ]);
-          if (created.stdout) process.stdout.write(created.stdout);
-          if (created.stderr) process.stderr.write(created.stderr);
-          if (created.status !== 0) throw new Error(`Could not create pull request (exit ${created.status ?? 'unknown'}).`);
-
-          const listed = gh(listArgs);
-          if (listed.status !== 0) throw new Error(listed.stderr || 'Created pull request, but could not read its details.');
-          const [createdPullRequest] = JSON.parse(listed.stdout);
-          if (!createdPullRequest) throw new Error('Created pull request was not found.');
-          savePullRequest(createdPullRequest);
-
-  auto-merge:
-    needs: create-pull-request
-    if: inputs.build-result == 'success' && needs.create-pull-request.result == 'success'
-    runs-on: ubuntu-latest
-    outputs:
-      conflict: ${{ steps.merge.outputs.conflict }}
-    steps:
-      - name: Merge pull request when its tested commit is still current
+      - name: Merge into target or create a pull request on conflict
         id: merge
         shell: node {0}
         env:
           GH_TOKEN: ${{ secrets.token }}
+          GH_API_URL: ${{ github.api_url }}
           GH_REPOSITORY: ${{ github.repository }}
-          PR_NUMBER: ${{ needs.create-pull-request.outputs.number }}
+          SOURCE_BRANCH: ${{ inputs.source-branch }}
           SOURCE_SHA: ${{ inputs.source-sha }}
+          TARGET_BRANCH: ${{ inputs.target-branch }}
+          BUILD_RESULT: ${{ inputs.build-result }}
+          PR_TITLE: ${{ inputs.pull-request-title }}
+          PR_BODY: ${{ inputs.pull-request-body }}
         run: |
           const fs = require('node:fs');
-          const { spawnSync } = require('node:child_process');
 
-          function gh(args) {
-            const result = spawnSync('gh', args, {encoding: 'utf8'});
-            if (result.error) throw result.error;
-            return result;
+          const [owner, repository] = process.env.GH_REPOSITORY.split('/');
+          if (!owner || !repository) throw new Error(`Invalid repository: ${process.env.GH_REPOSITORY}`);
+
+          const apiBase = `${process.env.GH_API_URL}/repos/${owner}/${repository}`;
+          async function request(path, options = {}) {
+            const response = await fetch(`${apiBase}${path}`, {
+              ...options,
+              headers: {
+                Accept: 'application/vnd.github+json',
+                Authorization: `Bearer ${process.env.GH_TOKEN}`,
+                'X-GitHub-Api-Version': '2022-11-28',
+                ...(options.body ? {'Content-Type': 'application/json'} : {}),
+                ...options.headers,
+              },
+              body: options.body ? JSON.stringify(options.body) : undefined,
+            });
+            const text = await response.text();
+            let data;
+            try { data = text ? JSON.parse(text) : null; }
+            catch { data = {message: text}; }
+            return {status: response.status, ok: response.ok, data};
           }
 
-          let details;
-          for (let attempt = 0; attempt < 5; attempt += 1) {
-            const pullRequest = gh([
-              'pr', 'view', process.env.PR_NUMBER, '--repo', process.env.GH_REPOSITORY,
-              '--json', 'headRefOid,mergeable',
-            ]);
-            if (pullRequest.status !== 0) throw new Error(pullRequest.stderr || 'Could not read the pull request.');
-            details = JSON.parse(pullRequest.stdout);
-            if (details.mergeable !== 'UNKNOWN') break;
-            await new Promise((resolve) => setTimeout(resolve, 1000));
+          function output(values) {
+            for (const [key, value] of Object.entries(values)) {
+              fs.appendFileSync(process.env.GITHUB_OUTPUT, `${key}=${value ?? ''}\n`);
+            }
           }
-          if (details.headRefOid !== process.env.SOURCE_SHA) {
-            console.log(`The branch advanced to ${details.headRefOid}; waiting for a build of the newer commit.`);
+
+          async function findOrCreatePullRequest() {
+            const head = `${owner}:${process.env.SOURCE_BRANCH}`;
+            const query = new URLSearchParams({
+              state: 'open',
+              head,
+              base: process.env.TARGET_BRANCH,
+              per_page: '1',
+            });
+            const listed = await request(`/pulls?${query}`);
+            if (!listed.ok) throw new Error(`Could not search pull requests (${listed.status}): ${JSON.stringify(listed.data)}`);
+            if (listed.data.length > 0) return listed.data[0];
+
+            const created = await request('/pulls', {
+              method: 'POST',
+              body: {
+                title: process.env.PR_TITLE,
+                body: process.env.PR_BODY,
+                head: process.env.SOURCE_BRANCH,
+                base: process.env.TARGET_BRANCH,
+              },
+            });
+            if (!created.ok) throw new Error(`Could not create pull request (${created.status}): ${JSON.stringify(created.data)}`);
+            return created.data;
+          }
+
+          if (process.env.BUILD_RESULT !== 'success') {
+            const pullRequest = await findOrCreatePullRequest();
+            console.log(`Build result is ${process.env.BUILD_RESULT}; leaving PR open: ${pullRequest.html_url}`);
+            output({outcome: 'build-failure', 'pull-request-url': pullRequest.html_url});
             process.exit(0);
           }
-          if (details.mergeable === 'UNKNOWN') throw new Error('GitHub could not determine whether the pull request can be merged.');
-          if (details.mergeable === 'CONFLICTING') {
-            fs.appendFileSync(process.env.GITHUB_OUTPUT, 'conflict=true\n');
-            console.log('GitHub reports merge conflicts; leaving the pull request open for manual resolution.');
+
+          const ref = process.env.SOURCE_BRANCH.split('/').map(encodeURIComponent).join('/');
+          const source = await request(`/git/ref/heads/${ref}`);
+          if (!source.ok) throw new Error(`Could not read source branch (${source.status}): ${JSON.stringify(source.data)}`);
+          const sourceSha = source.data.object.sha;
+          if (process.env.SOURCE_SHA && sourceSha !== process.env.SOURCE_SHA) {
+            console.log(`Source branch advanced to ${sourceSha}; skipping this stale run.`);
+            output({outcome: 'stale', 'pull-request-url': ''});
             process.exit(0);
           }
 
-          const merged = gh([
-            'pr', 'merge', process.env.PR_NUMBER, '--repo', process.env.GH_REPOSITORY, '--merge',
-          ]);
-          if (merged.stdout) process.stdout.write(merged.stdout);
-          if (merged.stderr) process.stderr.write(merged.stderr);
-          if (merged.status !== 0) throw new Error(`Pull request could not be merged: ${merged.stderr || merged.status}`);
-          fs.appendFileSync(process.env.GITHUB_OUTPUT, 'conflict=false\n');
+          const merged = await request('/merges', {
+            method: 'POST',
+            body: {
+              base: process.env.TARGET_BRANCH,
+              head: sourceSha,
+              commit_message: `Merge ${process.env.SOURCE_BRANCH} into ${process.env.TARGET_BRANCH}`,
+            },
+          });
 
-  notify-exception:
-    needs: [create-pull-request, auto-merge]
-    if: always() && (inputs.build-result == 'failure' || needs.auto-merge.outputs.conflict == 'true')
+          if (merged.status === 201 || merged.status === 204) {
+            console.log(merged.status === 204
+              ? `The source branch is already included in ${process.env.TARGET_BRANCH}.`
+              : `Merged ${process.env.SOURCE_BRANCH} into ${process.env.TARGET_BRANCH} at ${merged.data.sha}.`);
+            output({outcome: 'merged', 'pull-request-url': ''});
+            process.exit(0);
+          }
+
+          if (merged.status !== 409) {
+            throw new Error(`Could not merge branch (${merged.status}): ${JSON.stringify(merged.data)}. Check token permissions and target branch rules.`);
+          }
+
+          console.log('GitHub reports a merge conflict. Creating or reusing a pull request for manual resolution.');
+          const pullRequest = await findOrCreatePullRequest();
+          console.log(`Conflict pull request: ${pullRequest.html_url}`);
+          output({outcome: 'conflict', 'pull-request-url': pullRequest.html_url});
+
+  notify-conflict:
+    needs: merge-or-create-pull-request
+    if: needs.merge-or-create-pull-request.outputs.outcome == 'conflict' || needs.merge-or-create-pull-request.outputs.outcome == 'build-failure'
     runs-on: ubuntu-latest
     steps:
-      - name: Notify Discord about a build or merge exception
+      - name: Notify Discord about the pull request
         shell: node {0}
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.discord_webhook_url }}
-          PR_URL: ${{ needs.create-pull-request.outputs.url }}
-          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          BUILD_RESULT: ${{ inputs.build-result }}
+          PR_URL: ${{ needs.merge-or-create-pull-request.outputs.pull-request-url }}
+          OUTCOME: ${{ needs.merge-or-create-pull-request.outputs.outcome }}
         run: |
           const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
           if (!webhookUrl) {
@@ -177,16 +182,16 @@ jobs:
             process.exit(0);
           }
 
-          const link = process.env.PR_URL || process.env.RUN_URL;
-          const reason = process.env.BUILD_RESULT === 'failure'
-            ? '빌드가 실패했습니다.'
-            : '브랜치 충돌이 확인되어 자동 병합하지 않았습니다. 텍스트 충돌은 웹에서, Unreal 에셋 충돌은 로컬에서 해결해 주세요.';
+          const reason = process.env.OUTCOME === 'build-failure'
+            ? '호출한 빌드가 실패했습니다.'
+            : '브랜치 충돌이 있어 자동 병합하지 못했습니다.';
+          const url = process.env.PR_URL;
           const payload = {
-            content: 'PR 승인이 필요합니다.',
+            content: `확인이 필요한 PR이 있습니다. ${url}`,
             embeds: [{
               title: 'Pull Request 확인 요청',
-              url: link,
-              description: `${reason}\n[PR 또는 실행 결과 열기](${link})`,
+              url,
+              description: `${reason}\n[PR 열기](${url})`,
               color: 15158332,
             }],
           };

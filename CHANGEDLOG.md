@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.6.2
+
+- Merged source branches directly into the target when conflict-free, creating a pull request and optional Discord alert only when a merge conflict occurs.
+- Kept the previous build-result input for compatibility while making it optional for new callers.
+
 ## 0.6.1
 
 - Added a reusable Windows Action for building Unreal project targets with configurable engine, project, platform, and configuration inputs.
