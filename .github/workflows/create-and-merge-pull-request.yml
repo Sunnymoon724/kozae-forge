@@ -67,6 +67,8 @@ jobs:
         run: |
           const fs = require('node:fs');
 
+          async function main() {
+
           const [owner, repository] = process.env.GH_REPOSITORY.split('/');
           if (!owner || !repository) throw new Error(`Invalid repository: ${process.env.GH_REPOSITORY}`);
 
@@ -163,6 +165,12 @@ jobs:
           const pullRequest = await findOrCreatePullRequest();
           console.log(`Conflict pull request: ${pullRequest.html_url}`);
           output({outcome: 'conflict', 'pull-request-url': pullRequest.html_url});
+          }
+
+          main().catch((error) => {
+            console.error(error);
+            process.exitCode = 1;
+          });
 
   notify-conflict:
     needs: merge-or-create-pull-request
@@ -176,6 +184,7 @@ jobs:
           PR_URL: ${{ needs.merge-or-create-pull-request.outputs.pull-request-url }}
           OUTCOME: ${{ needs.merge-or-create-pull-request.outputs.outcome }}
         run: |
+          async function main() {
           const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
           if (!webhookUrl) {
             console.log('Discord webhook is not configured; skipping notification.');
@@ -202,3 +211,9 @@ jobs:
             body: JSON.stringify(payload),
           });
           if (!response.ok) throw new Error(`Discord webhook failed: ${response.status} ${await response.text()}`);
+          }
+
+          main().catch((error) => {
+            console.error(error);
+            process.exitCode = 1;
+          });

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.3
+
+- Fixed Node.js workflow scripts failing on Node.js 22+ by keeping `require()` and `await` inside async functions.
+
 ## 0.6.2
 
 - Merged source branches directly into the target when conflict-free, creating a pull request and optional Discord alert only when a merge conflict occurs.
