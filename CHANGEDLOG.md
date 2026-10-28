@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.5
+
+- Used the caller's automatically issued `GITHUB_TOKEN` directly in the reusable workflow, retaining the custom token secret only for caller compatibility.
+
 ## 0.6.4
 
 - Removed CommonJS `require()` from the reusable workflow's ESM-detected Node.js script to prevent ambiguous module format errors.

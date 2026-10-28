@@ -12,7 +12,7 @@ Text conflicts may be resolved in the pull request interface. Binary assets such
 
 ## 2. Usage
 
-Grant `contents: write` and `pull-requests: write` to the calling Workflow, and pass a token that can merge branches and create pull requests. If repository rules block direct merges, configure the token or rules to permit this operation. Permission or branch-protection errors fail the Workflow; they are not treated as merge conflicts.
+Grant `contents: write` and `pull-requests: write` to the calling Workflow. The reusable Workflow uses the caller's automatically issued `GITHUB_TOKEN`; no token needs to be created or entered. The optional `token` secret is retained only for compatibility with existing callers and is ignored. If repository rules block direct merges, configure the token permissions or rules to permit this operation. Permission or branch-protection errors fail the Workflow; they are not treated as merge conflicts.
 
 To enable Discord notifications, register this repository secret:
 
@@ -37,7 +37,7 @@ If the webhook URL is omitted or empty, only the Discord notification is skipped
 
 | Secret | Required | Description |
 |---|---:|---|
-| `token` | Yes | Token with `contents: write` and `pull-requests: write` permissions |
+| `token` | No | Deprecated compatibility secret; ignored. The Workflow uses the caller's `GITHUB_TOKEN`. |
 | `discord_webhook_url` | No | Discord webhook for conflict PR links |
 
 ```yaml
@@ -61,7 +61,6 @@ jobs:
       target-branch: main
       pull-request-title: Merge ${{ github.ref_name }} into main
     secrets:
-      token: ${{ github.token }}
       discord_webhook_url: ${{ secrets.DISCORD_WEBHOOK_URL }}
 ```
 

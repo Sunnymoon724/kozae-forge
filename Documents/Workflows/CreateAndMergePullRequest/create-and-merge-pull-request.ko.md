@@ -12,7 +12,7 @@
 
 ## 2. 사용 방법
 
-호출 Workflow에 `contents: write`와 `pull-requests: write` 권한을 지정하고, 브랜치 병합 및 PR 생성 권한이 있는 토큰을 전달합니다. 저장소 규칙에서 직접 병합을 막고 있다면 토큰이 해당 규칙을 통과하도록 설정해야 합니다. 권한이나 브랜치 보호로 직접 병합이 거부되는 경우에는 충돌 PR로 처리하지 않고 Workflow가 실패합니다.
+호출 Workflow에 `contents: write`와 `pull-requests: write` 권한을 지정합니다. 재사용 Workflow는 호출 저장소에서 자동 발급한 `GITHUB_TOKEN`을 사용하므로 토큰을 직접 만들거나 입력할 필요가 없습니다. 기존 호출부 호환을 위해 선택 입력으로 남긴 `token` 시크릿은 받기만 하고 사용하지 않습니다. 저장소 규칙에서 직접 병합을 막고 있다면 토큰 권한이나 규칙을 조정해야 합니다. 권한이나 브랜치 보호로 직접 병합이 거부되는 경우에는 충돌 PR로 처리하지 않고 Workflow가 실패합니다.
 
 Discord 알림을 사용하려면 저장소에 다음 시크릿을 등록합니다.
 
@@ -37,7 +37,7 @@ Webhook URL이 없거나 비어 있으면 Discord 알림만 건너뜁니다.
 
 | 시크릿 | 필수 | 설명 |
 |---|---:|---|
-| `token` | 예 | `contents: write`, `pull-requests: write` 권한이 있는 토큰 |
+| `token` | 아니오 | 이전 호출부 호환용 시크릿. 사용하지 않으며 호출 저장소의 `GITHUB_TOKEN`을 사용합니다. |
 | `discord_webhook_url` | 아니오 | 충돌 PR 링크를 보낼 Discord Webhook |
 
 ```yaml
@@ -61,7 +61,6 @@ jobs:
       target-branch: main
       pull-request-title: Merge ${{ github.ref_name }} into main
     secrets:
-      token: ${{ github.token }}
       discord_webhook_url: ${{ secrets.DISCORD_WEBHOOK_URL }}
 ```
 
