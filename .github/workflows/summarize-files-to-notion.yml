@@ -1,0 +1,276 @@
+name: Summarize files to Notion
+
+on:
+  workflow_call:
+    inputs:
+      runner:
+        description: Runner label for content summary jobs
+        required: false
+        default: ubuntu-latest
+        type: string
+      runner-labels:
+        description: Optional JSON array of runner labels
+        required: false
+        default: ''
+        type: string
+      checkout-ref:
+        description: Optional caller repository ref used for prompts and referenced images
+        required: false
+        default: ''
+        type: string
+      artifact-name:
+        description: Name of the text-file artifact
+        required: false
+        default: generated-content
+        type: string
+      file-names:
+        description: JSON array of UTF-8 text filenames in the artifact
+        required: true
+        type: string
+      prompt-source-file:
+        description: Repository-relative AI summarization prompt file
+        required: true
+        type: string
+      prompt-template-file:
+        description: Optional repository-relative prompt template file
+        required: false
+        default: ''
+        type: string
+      provider:
+        required: true
+        type: string
+      api-base:
+        required: true
+        type: string
+      model:
+        required: true
+        type: string
+      notion-source-url:
+        description: Notion database or data source URL
+        required: true
+        type: string
+      title-property:
+        description: Notion database title property name
+        required: true
+        type: string
+      title:
+        description: Title for the single Notion entry
+        required: true
+        type: string
+      group-property:
+        description: Optional Select property name
+        required: false
+        default: ''
+        type: string
+      group-value:
+        description: Optional Select property value
+        required: false
+        default: ''
+        type: string
+      upsert:
+        description: Update an existing entry with the same title instead of creating a duplicate
+        required: false
+        default: false
+        type: boolean
+      date-property:
+        description: Optional Notion date property name for upsert mode
+        required: false
+        default: ''
+        type: string
+      date:
+        description: Optional YYYY-MM-DD date for upsert mode
+        required: false
+        default: ''
+        type: string
+      image-files:
+        description: Optional newline-delimited image paths in the caller repository for upsert mode
+        required: false
+        default: ''
+        type: string
+      image-storage:
+        description: Image storage for upsert mode (notion or external)
+        required: false
+        default: notion
+        type: string
+      image-public-base-url:
+        description: Public site base URL for external images
+        required: false
+        default: ''
+        type: string
+      image-public-path:
+        description: Public path containing external images
+        required: false
+        default: /media
+        type: string
+    secrets:
+      API_KEY:
+        required: true
+      NOTION_TOKEN:
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  summarize:
+    runs-on: ${{ inputs.runner-labels != '' && fromJSON(inputs.runner-labels) || inputs.runner }}
+    outputs:
+      content: ${{ steps.summary.outputs.content }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.checkout-ref || github.ref }}
+
+      - name: Download text files
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.artifact-name }}
+          path: .generated-content
+
+      - name: Prepare summary prompt
+        id: prompt
+        uses: Sunnymoon724/kozae-forge/actions/prepare-content@main
+        with:
+          source-file: ${{ inputs.prompt-source-file }}
+          template-file: ${{ inputs.prompt-template-file }}
+
+      - name: Combine text files
+        id: combined
+        uses: Sunnymoon724/kozae-forge/actions/combine-text-files@main
+        with:
+          directory: .generated-content
+          file-names: ${{ inputs.file-names }}
+
+      - name: Read combined content
+        id: content
+        uses: Sunnymoon724/kozae-forge/actions/prepare-content@main
+        with:
+          source-file: ${{ steps.combined.outputs.content-file }}
+
+      - name: Generate Notion summary
+        id: summary
+        uses: Sunnymoon724/kozae-forge/actions/request-content@main
+        with:
+          provider: ${{ inputs.provider }}
+          api-base: ${{ inputs.api-base }}
+          model: ${{ inputs.model }}
+          content: ${{ steps.content.outputs.content }}
+          prompt: ${{ steps.prompt.outputs.content }}
+          api-key: ${{ secrets.API_KEY }}
+
+      - name: Save summary for Notion update
+        if: inputs.upsert == true
+        uses: Sunnymoon724/kozae-forge/actions/save-content@main
+        with:
+          file-path: .generated-content/notion-summary.md
+          content: ${{ steps.summary.outputs.content }}
+
+      - name: Resolve Notion data source for update
+        id: update-source
+        if: inputs.upsert == true
+        uses: Sunnymoon724/kozae-forge/actions/resolve-notion-data-source@main
+        with:
+          source-url: ${{ inputs.notion-source-url }}
+          notion-token: ${{ secrets.NOTION_TOKEN }}
+
+      - name: Upload Notion images
+        id: upload-images
+        if: inputs.upsert == true && inputs.image-files != '' && inputs.image-storage == 'notion'
+        uses: Sunnymoon724/kozae-forge/actions/upload-notion-file@main
+        with:
+          file-paths: ${{ inputs.image-files }}
+          notion-token: ${{ secrets.NOTION_TOKEN }}
+
+      - name: Prepare public image links
+        id: external-content
+        if: inputs.upsert == true && inputs.image-files != '' && inputs.image-storage == 'external'
+        uses: Sunnymoon724/kozae-forge/actions/append-external-image-links@main
+        with:
+          source-file: .generated-content/notion-summary.md
+          image-files: ${{ inputs.image-files }}
+          public-base-url: ${{ inputs.image-public-base-url }}
+          public-path: ${{ inputs.image-public-path }}
+
+      - name: Find Notion database entry
+        id: find-entry
+        if: inputs.upsert == true
+        uses: Sunnymoon724/kozae-forge/actions/find-notion-database-entry@main
+        with:
+          data-source-id: ${{ steps.update-source.outputs.data-source-id }}
+          title-property: ${{ inputs.title-property }}
+          title: ${{ inputs.title }}
+          notion-token: ${{ secrets.NOTION_TOKEN }}
+
+      - name: Create missing Notion database entry
+        if: inputs.upsert == true && steps.find-entry.outputs.page-id == ''
+        uses: Sunnymoon724/kozae-forge/actions/create-notion-database-entry@main
+        with:
+          data-source-id: ${{ steps.update-source.outputs.data-source-id }}
+          title-property: ${{ steps.find-entry.outputs.title-property }}
+          title: ${{ inputs.title }}
+          group-property: ${{ inputs.group-property }}
+          group-value: ${{ inputs.group-value }}
+          date-property: ${{ inputs.date-property }}
+          date: ${{ inputs.date }}
+          content-file: ${{ steps.external-content.outputs.content-file || '.generated-content/notion-summary.md' }}
+          content-format: markdown
+          image-file-uploads: ${{ steps.upload-images.outputs.file-upload-ids || '[]' }}
+          notion-token: ${{ secrets.NOTION_TOKEN }}
+
+      - name: Update existing Notion database entry properties
+        if: inputs.upsert == true && steps.find-entry.outputs.page-id != ''
+        uses: Sunnymoon724/kozae-forge/actions/update-notion-database-entry-properties@main
+        with:
+          page-id: ${{ steps.find-entry.outputs.page-id }}
+          group-property: ${{ inputs.group-property }}
+          group-value: ${{ inputs.group-value }}
+          date-property: ${{ inputs.date-property }}
+          date: ${{ inputs.date }}
+          notion-token: ${{ secrets.NOTION_TOKEN }}
+
+      - name: Clear existing Notion database entry content
+        if: inputs.upsert == true && steps.find-entry.outputs.page-id != ''
+        uses: Sunnymoon724/kozae-forge/actions/clear-notion-page@main
+        with:
+          page-id: ${{ steps.find-entry.outputs.page-id }}
+          notion-token: ${{ secrets.NOTION_TOKEN }}
+
+      - name: Append updated Notion database entry content
+        if: inputs.upsert == true && steps.find-entry.outputs.page-id != ''
+        uses: Sunnymoon724/kozae-forge/actions/append-notion-page-content@main
+        with:
+          page-id: ${{ steps.find-entry.outputs.page-id }}
+          content-file: ${{ steps.external-content.outputs.content-file || '.generated-content/notion-summary.md' }}
+          content-format: markdown
+          image-file-uploads: ${{ steps.upload-images.outputs.file-upload-ids || '[]' }}
+          notion-token: ${{ secrets.NOTION_TOKEN }}
+
+  create:
+    needs: summarize
+    if: inputs.upsert != true
+    runs-on: ${{ inputs.runner-labels != '' && fromJSON(inputs.runner-labels) || inputs.runner }}
+    steps:
+      - name: Save Notion summary
+        uses: Sunnymoon724/kozae-forge/actions/save-content@main
+        with:
+          file-path: .generated-content/notion-summary.md
+          content: ${{ needs.summarize.outputs.content }}
+
+      - name: Resolve Notion data source
+        id: notion-source
+        uses: Sunnymoon724/kozae-forge/actions/resolve-notion-data-source@main
+        with:
+          source-url: ${{ inputs.notion-source-url }}
+          notion-token: ${{ secrets.NOTION_TOKEN }}
+
+      - name: Publish summary to Notion database
+        uses: Sunnymoon724/kozae-forge/actions/create-notion-database-entry@main
+        with:
+          content-file: .generated-content/notion-summary.md
+          content-format: markdown
+          data-source-id: ${{ steps.notion-source.outputs.data-source-id }}
+          title-property: ${{ inputs.title-property }}
+          title: ${{ inputs.title }}
+          group-property: ${{ inputs.group-property }}
+          group-value: ${{ inputs.group-value }}
+          notion-token: ${{ secrets.NOTION_TOKEN }}

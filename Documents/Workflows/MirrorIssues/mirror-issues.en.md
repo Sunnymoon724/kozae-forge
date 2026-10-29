@@ -83,4 +83,5 @@ jobs:
 - `sync-issue-labels`
 - `sync-issue-state`
 - `collect-mirrored-issues`
+- `find-orphaned-mirrors` (full refresh deletion check)
 - `delete-mirrored-issue`

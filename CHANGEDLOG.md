@@ -1,5 +1,100 @@
 # Changelog
 
+## 0.16.4
+
+- Moved Notion database upsert steps into the file-summary Workflow and removed the unused composite publishing Action.
+
+## 0.16.3
+
+- Removed the project-specific blog title Action; Durian now sets generated daily post titles in its own workflow.
+
+## 0.16.2
+
+- Changed the default weekly period label to `YYYY-MM-DD~YYYY-MM-DD` while retaining custom display templates.
+
+## 0.16.1
+
+- Made `resolve-weekly-period` return a format-configurable period label without a report suffix; Durian and Rabbit now append their own weekly-report title.
+
+## 0.16.0
+
+- Converted `publish-notion-database` from a reusable Workflow to a composite Action and updated the file-summary Workflow to publish within its summarization job.
+
+## 0.15.0
+
+- Renamed the reusable commit-based AI content generation Workflow to `generate-content-from-commits` and updated Durian and Rabbit callers without changing behavior.
+
+## 0.14.0
+
+- Moved weekly-log collection and missing-weekday alerts into Durian and Rabbit, reused the file-summary-to-Notion Workflow for publishing, and removed the redundant weekly Workflow.
+- Added optional Notion upsert, date, and image inputs to preserve weekly report behavior.
+
+## 0.13.0
+
+- Renamed the file-summary-to-Notion Workflow and its combining Action to reflect support for arbitrary UTF-8 text filenames, and updated Durian and Rabbit callers.
+
+## 0.12.1
+
+- Combined selected Markdown files into one AI summary and Notion entry using a caller-provided title, without requiring dates in filenames.
+- Exposed display-formatted commit-log dates for callers that still want date-based titles.
+
+## 0.12.0
+
+- Renamed the Markdown-to-AI-summary-to-Notion workflow and clarified its general purpose while preserving its existing date-based file handling.
+
+## 0.11.0
+
+- Moved the Durian-specific mirrored-issue-to-Notion and orchestration Workflows into Project Durian; kept issue mirroring reusable in Forge.
+
+## 0.10.5
+
+- Split pull-request publishing into commit, guarded push, PR creation, and label Actions; updated Durian and Rabbit callers.
+- Split blog title preparation from media linking.
+- Split weekly report period resolution and media lookup from daily log collection.
+
+## 0.10.4
+
+- Extracted commit-log date resolution and multi-day commit collection into focused Actions without adding checkouts.
+- Moved public image link preparation and orphaned mirror comparison from reusable Workflows into Actions.
+
+## 0.10.3
+
+- Composed focused branch-merge, pull-request, and webhook Actions in the reusable merge-or-PR Workflow instead of embedding API and Discord scripts.
+
+## 0.10.2
+
+- Allowed pull-request creation to stage selected paths and protected remote branches from concurrent force-push overwrites.
+
+## 0.10.1
+
+- Added distinct artifact prefixes for concurrent author-filtered commit-log calls.
+- Kept an empty generated-content artifact when an author has no commits, avoiding missing-artifact download errors.
+- Packaged only files downloaded in the current run, preventing stale self-hosted workspace files from appearing in reports.
+- Allowed weekly reports to combine daily posts from multiple member folders.
+
+## 0.10.0
+
+- Added a reusable weekly development log workflow and a focused daily-log collection action, including missing-weekday alerts and Notion publication.
+
+## 0.9.0
+
+- Added a reusable workflow that coordinates issue mirroring, Notion synchronization, and full-refresh deletion handling for caller repositories.
+
+## 0.8.0
+
+- Added a reusable mirrored-issue Notion workflow so event, single-issue, and full-refresh callers share the same synchronization steps.
+
+## 0.7.1
+
+- Summarized oversized AI inputs in UTF-8-safe chunks before generating one final document, and applied this to daily commit logs.
+
+## 0.7.0
+
+- Added a reusable workflow that summarizes generated Markdown files and publishes dated Notion reports.
+- Allowed commit-log callers to provide prompt and template file paths, avoiding separate prompt preparation jobs.
+- Exposed resolved dates and an optional branch name from the existing commit-log workflow so callers do not resolve the same dates twice.
+- Added a reusable action to set generated blog post titles and append links to matching date-based media files.
+
 ## 0.6.7
 
 - Removed the GitHub issue-comment webhook Worker and disabled issue-comment events in the reusable issue-mirroring workflow.

@@ -1,0 +1,7 @@
+name: Append blog media links
+description: Add links to date-matched media in Markdown blog posts
+inputs:
+  directory: {description: Directory containing dated Markdown posts, required: true}
+  media-directory: {description: Directory containing dated media files, required: true}
+  media-url-prefix: {description: Public media URL prefix, required: false, default: /media}
+runs: {using: node24, main: index.js}

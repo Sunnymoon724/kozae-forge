@@ -66,8 +66,14 @@ jobs:
 
 ## 3. 참고 사항
 
-- 내장 Node.js 스크립트는 Node.js 22 이상에서 모듈 형식 충돌이 나지 않도록 ES 모듈 import와 async 함수를 사용합니다.
+- Workflow는 `merge-branch`, `ensure-pull-request` Action을 조합합니다. Discord 전송에는 `notify-webhook`을 사용합니다.
 - 이 Workflow는 빌드나 테스트를 하지 않습니다. 병합 충돌이 없으면 곧바로 대상 브랜치에 반영합니다.
 - 병합 충돌만 PR 생성 사유로 취급합니다. 권한 오류, 브랜치 보호 규칙 등 다른 오류는 Workflow를 실패시킵니다.
 - 이전 호출부 호환을 위해 `build-result` 입력은 남아 있습니다. `failure`를 넘기면 기존처럼 PR을 만들고 Discord 알림을 보냅니다.
 - Discord 알림에는 생성되거나 재사용된 PR 링크가 포함됩니다.
+
+## 4. 사용하는 Action
+
+- `merge-branch`
+- `ensure-pull-request`
+- `notify-webhook`

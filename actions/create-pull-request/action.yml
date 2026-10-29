@@ -1,10 +1,11 @@
 name: Create pull request
-description: Create a pull request with workspace changes
+description: Create or reuse a pull request for an already pushed branch
 inputs:
   token: {description: GitHub token used to create the pull request, required: true}
   branch: {description: Branch used for the pull request, required: false, default: automation/update-content}
-  commit-message: {description: Commit message for the changes, required: false, default: 'docs: update generated content'}
   title: {description: Pull request title, required: false, default: 'docs: update generated content'}
   body: {description: Pull request body, required: false, default: 'This pull request contains generated content. Please review the changes before merging.'}
-  labels: {description: Comma-separated labels for the pull request, required: false, default: ''}
+outputs:
+  pull-request-number: {description: Number of the created or reused pull request}
+  pull-request-url: {description: URL of the created or reused pull request}
 runs: {using: node24, main: index.js}

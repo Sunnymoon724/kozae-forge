@@ -151,20 +151,14 @@ jobs:
     if: ${{ (github.event_name == 'workflow_dispatch' || github.event_name == 'schedule') && inputs.source-issue-number == '' }}
     runs-on: ${{ inputs.runner }}
     outputs:
-      issues: ${{ steps.compare.outputs.issues }}
+      issues: ${{ steps.compare.outputs.mirrors }}
     steps:
       - id: compare
         name: Find deleted source issues
-        env:
-          SOURCE_ISSUES: ${{ needs.collect-source.outputs.issues }}
-          MIRRORED_ISSUES: ${{ needs.collect-mirrors.outputs.issues }}
-        shell: node {0}
-        run: |
-          const fs = require('node:fs');
-          const sourceNumbers = new Set(JSON.parse(process.env.SOURCE_ISSUES).map((issue) => String(issue.number)));
-          const orphans = JSON.parse(process.env.MIRRORED_ISSUES).filter((mirror) => !sourceNumbers.has(String(mirror.sourceIssueNumber)));
-          fs.appendFileSync(process.env.GITHUB_OUTPUT, `issues<<EOF\n${JSON.stringify(orphans)}\nEOF\n`);
-          console.log(`Found ${orphans.length} mirrored issue(s) whose source was deleted.`);
+        uses: Sunnymoon724/kozae-forge/actions/find-orphaned-mirrors@main
+        with:
+          source-issues: ${{ needs.collect-source.outputs.issues }}
+          mirrored-issues: ${{ needs.collect-mirrors.outputs.issues }}
 
   delete-orphans:
     needs: prepare-deletions

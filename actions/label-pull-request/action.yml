@@ -1,0 +1,7 @@
+name: Label pull request
+description: Add labels to one pull request
+inputs:
+  token: {description: GitHub token with issue write permission, required: true}
+  pull-request-number: {description: Pull request number, required: true}
+  labels: {description: Comma-separated labels, required: true}
+runs: {using: node24, main: index.js}

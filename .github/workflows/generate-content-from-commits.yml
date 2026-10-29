@@ -1,0 +1,289 @@
+name: Generate content from commits
+
+on:
+  workflow_call:
+    inputs:
+      runner:
+        description: Runner label used for generated jobs
+        required: false
+        default: ubuntu-latest
+        type: string
+      branch:
+        required: false
+        default: main
+        type: string
+      timezone:
+        required: true
+        type: string
+      start-date:
+        description: Start date in YYYY-MM-DD format. Defaults to yesterday when empty.
+        required: false
+        default: ''
+        type: string
+      end-date:
+        description: Optional end date in YYYY-MM-DD format. Empty means start-date only.
+        required: false
+        default: ''
+        type: string
+      branch-prefix:
+        description: Optional prefix for a branch name based on the resolved dates
+        required: false
+        default: ''
+        type: string
+      authors:
+        description: Optional comma-separated commit author names or email filters
+        required: false
+        default: ''
+        type: string
+      exclude-merge-commits:
+        description: Exclude merge commits from the collected history
+        required: false
+        default: false
+        type: boolean
+      provider:
+        required: true
+        type: string
+      api-base:
+        required: true
+        type: string
+      model:
+        required: true
+        type: string
+      max-content-bytes:
+        description: Maximum UTF-8 bytes per AI request; longer commit lists are summarized in chunks
+        required: true
+        type: number
+      prompt:
+        description: Inline content generation prompt; use this or prompt-source-file
+        required: false
+        default: ''
+        type: string
+      prompt-source-file:
+        description: Optional prompt file in the caller repository
+        required: false
+        default: ''
+        type: string
+      prompt-template-file:
+        description: Optional template file appended to the prompt
+        required: false
+        default: ''
+        type: string
+      tag:
+        description: Tag included in the generated file name
+        required: true
+        type: string
+      artifact-prefix:
+        description: Optional prefix for artifact names when generating logs for multiple authors in one run
+        required: false
+        default: ''
+        type: string
+    secrets:
+      API_KEY:
+        required: true
+    outputs:
+      start-date:
+        value: ${{ jobs.prepare.outputs.start-date }}
+      end-date:
+        value: ${{ jobs.prepare.outputs.end-date }}
+      start-date-display:
+        value: ${{ jobs.prepare.outputs.start-date-display }}
+      end-date-display:
+        value: ${{ jobs.prepare.outputs.end-date-display }}
+      branch-name:
+        value: ${{ jobs.prepare.outputs.branch-name }}
+      has-content:
+        value: ${{ jobs.package.outputs.has-content }}
+      file-names:
+        value: ${{ jobs.package.outputs.file-names }}
+
+permissions:
+  contents: read
+
+jobs:
+  prepare:
+    runs-on: ${{ inputs.runner }}
+    outputs:
+      dates: ${{ steps.dates.outputs.dates }}
+      start-date: ${{ steps.dates.outputs.start-date }}
+      end-date: ${{ steps.dates.outputs.end-date }}
+      start-date-display: ${{ steps.dates.outputs.start-date-display }}
+      end-date-display: ${{ steps.dates.outputs.end-date-display }}
+      branch-name: ${{ steps.dates.outputs.branch-name }}
+      prompt: ${{ steps.prepared-prompt.outputs.content }}
+    steps:
+      - id: dates
+        name: Resolve commit log dates
+        uses: Sunnymoon724/kozae-forge/actions/resolve-commit-log-dates@main
+        with:
+          start-date: ${{ inputs.start-date }}
+          end-date: ${{ inputs.end-date }}
+          timezone: ${{ inputs.timezone }}
+          branch-prefix: ${{ inputs.branch-prefix }}
+
+      - name: Validate prompt input
+        if: inputs.prompt == '' && inputs.prompt-source-file == ''
+        shell: node {0}
+        run: throw new Error('Provide prompt or prompt-source-file.')
+
+      - uses: actions/checkout@v4
+        if: inputs.prompt-source-file != '' || inputs.prompt-template-file != ''
+
+      - name: Prepare generation prompt
+        id: prepared-prompt
+        uses: Sunnymoon724/kozae-forge/actions/prepare-content@main
+        with:
+          content: ${{ inputs.prompt }}
+          source-file: ${{ inputs.prompt-source-file }}
+          template-file: ${{ inputs.prompt-template-file }}
+
+  collect:
+    needs: prepare
+    runs-on: ${{ inputs.runner }}
+    outputs:
+      has-content: ${{ steps.collect-commits.outputs.has-content }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ inputs.branch }}
+
+      - name: Log commit collection context
+        shell: node {0}
+        run: |
+          const { spawnSync } = require('node:child_process');
+          const run = (args) => spawnSync('git', args, { encoding: 'utf8' });
+          const topLevel = run(['rev-parse', '--show-toplevel']);
+          const branch = run(['branch', '--show-current']);
+          const head = run(['rev-parse', 'HEAD']);
+          const headSummary = run(['show', '-s', '--format=%h %aI %an %s', 'HEAD']);
+          console.log(`Repository root: ${topLevel.stdout.trim()}`);
+          console.log(`Checked out branch: ${branch.stdout.trim() || '(detached HEAD)'}`);
+          console.log(`Checked out HEAD: ${head.stdout.trim()}`);
+          console.log(`HEAD summary: ${headSummary.stdout.trim()}`);
+
+      - name: Collect commits for all dates
+        id: collect-commits
+        uses: Sunnymoon724/kozae-forge/actions/collect-dated-commits@main
+        with:
+          dates: ${{ needs.prepare.outputs.dates }}
+          timezone: ${{ inputs.timezone }}
+          authors: ${{ inputs.authors }}
+          exclude-merge-commits: ${{ inputs.exclude-merge-commits }}
+
+      - name: Upload collected commits
+        id: upload-collected-commits
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.artifact-prefix }}collected-commits
+          path: .commit-data
+          if-no-files-found: error
+          include-hidden-files: true
+
+  generate:
+    needs: [prepare, collect]
+    runs-on: ${{ inputs.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        date: ${{ fromJSON(needs.prepare.outputs.dates) }}
+    steps:
+      - name: Download collected commits
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.artifact-prefix }}collected-commits
+          path: .commit-data
+
+      - id: collect
+        name: Load commits for this date
+        env:
+          DATE: ${{ matrix.date }}
+        shell: node {0}
+        run: |
+          const fs = require('node:fs');
+          const path = `.commit-data/${process.env.DATE}.txt`;
+          const commits = fs.existsSync(path) ? fs.readFileSync(path, 'utf8') : '';
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `commits<<EOF\n${commits}\nEOF\nhas-content=${commits ? 'true' : 'false'}\n`);
+
+      - id: request
+        if: steps.collect.outputs.has-content == 'true'
+        uses: Sunnymoon724/kozae-forge/actions/prepare-content@main
+        with:
+          content: ${{ steps.collect.outputs.commits }}
+
+      - id: generated
+        if: steps.collect.outputs.has-content == 'true'
+        uses: Sunnymoon724/kozae-forge/actions/request-content@main
+        with:
+          provider: ${{ inputs.provider }}
+          api-base: ${{ inputs.api-base }}
+          model: ${{ inputs.model }}
+          prompt: ${{ needs.prepare.outputs.prompt }}
+          content: ${{ steps.request.outputs.content }}
+          max-content-bytes: ${{ inputs.max-content-bytes }}
+          api-key: ${{ secrets.API_KEY }}
+
+      - if: steps.collect.outputs.has-content == 'true'
+        uses: Sunnymoon724/kozae-forge/actions/save-content@main
+        with:
+          file-path: ./${{ matrix.date }}-${{ inputs.tag }}.md
+          content: ${{ steps.generated.outputs.content }}
+
+      - name: Upload generated content for this date
+        if: steps.collect.outputs.has-content == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.artifact-prefix }}generated-content-${{ matrix.date }}
+          path: ./${{ matrix.date }}-${{ inputs.tag }}.md
+
+  package:
+    needs: [collect, generate]
+    runs-on: ${{ inputs.runner }}
+    outputs:
+      has-content: ${{ steps.package.outputs.has-content }}
+      file-names: ${{ steps.package.outputs.file-names }}
+    steps:
+      - name: Prepare artifact package directory
+        id: package-dir
+        shell: node {0}
+        run: |
+          const fs = require('node:fs');
+          const os = require('node:os');
+          const path = require('node:path');
+          const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'forge-generated-'));
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `directory=${directory}\n`);
+
+      - name: Download generated content
+        if: needs.collect.outputs.has-content == 'true'
+        uses: actions/download-artifact@v4
+        with:
+          pattern: ${{ inputs.artifact-prefix }}generated-content-*
+          path: ${{ steps.package-dir.outputs.directory }}
+          merge-multiple: true
+
+      - id: package
+        name: Check generated content
+        env:
+          TAG: ${{ inputs.tag }}
+          PACKAGE_DIR: ${{ steps.package-dir.outputs.directory }}
+        shell: node {0}
+        run: |
+          const fs = require('fs');
+          const path = require('node:path');
+          const files = fs.readdirSync(process.env.PACKAGE_DIR, { withFileTypes: true })
+            .filter((entry) => entry.isFile() && entry.name.endsWith(`-${process.env.TAG}.md`))
+            .map((entry) => entry.name)
+            .sort();
+
+          if (files.length > 0) {
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, `has-content=true\nfile-names=${JSON.stringify(files)}\n`);
+          } else {
+            fs.writeFileSync(path.join(process.env.PACKAGE_DIR, 'no-content.txt'), '');
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, 'has-content=false\nfile-names=[]\n');
+          }
+
+      - name: Upload generated content
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.artifact-prefix }}generated-content
+          path: ${{ steps.package-dir.outputs.directory }}
+          if-no-files-found: error

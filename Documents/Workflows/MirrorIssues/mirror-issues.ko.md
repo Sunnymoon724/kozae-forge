@@ -83,4 +83,5 @@ jobs:
 - `sync-issue-labels`
 - `sync-issue-state`
 - `collect-mirrored-issues`
+- `find-orphaned-mirrors` (전체 갱신 시 삭제 대상 확인)
 - `delete-mirrored-issue`

@@ -1,0 +1,11 @@
+name: Resolve weekly period
+description: Resolve a Monday-through-Sunday period ending no later than yesterday
+inputs:
+  week-start: {description: Optional Monday in YYYY-MM-DD format, required: false, default: ''}
+  timezone: {description: IANA timezone for yesterday, required: false, default: Asia/Seoul}
+  period-format: {description: 'Display template using {start-date}, {end-date}, or year/month/day placeholders', required: false, default: '{start-date}~{end-date}'}
+outputs:
+  start-date: {description: First date of the period}
+  end-date: {description: Last date included in the period}
+  period-label: {description: Formatted period without a report suffix}
+runs: {using: node24, main: index.js}

@@ -1,0 +1,15 @@
+name: Resolve commit log dates
+description: Resolve up to 31 processing dates and an optional branch name
+inputs:
+  start-date: {description: First date in YYYY-MM-DD format; empty means yesterday, required: false, default: ''}
+  end-date: {description: Last date in YYYY-MM-DD format; empty means the start date, required: false, default: ''}
+  timezone: {description: IANA timezone used to determine yesterday, required: true}
+  branch-prefix: {description: Optional prefix for a branch name based on the dates, required: false, default: ''}
+outputs:
+  dates: {description: JSON array of processing dates}
+  start-date: {description: Resolved first date}
+  end-date: {description: Resolved last date}
+  start-date-display: {description: First date formatted as YYYY/MM/DD}
+  end-date-display: {description: Last date formatted as YYYY/MM/DD}
+  branch-name: {description: Branch name based on the dates, or empty}
+runs: {using: node24, main: index.js}

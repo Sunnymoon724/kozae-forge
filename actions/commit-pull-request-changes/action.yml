@@ -1,0 +1,9 @@
+name: Commit pull request changes
+description: Stage selected paths and commit them on a review branch
+inputs:
+  branch: {description: Review branch name, required: true}
+  paths: {description: Newline-separated paths to stage, required: false, default: '.'}
+  message: {description: Commit message, required: true}
+outputs:
+  changed: {description: Whether changes were committed}
+runs: {using: node24, main: index.js}

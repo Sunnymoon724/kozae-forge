@@ -1,0 +1,9 @@
+name: Combine text files
+description: Combine selected UTF-8 text files into one file for summarization
+inputs:
+  directory: {description: Directory containing the UTF-8 text files, required: true}
+  file-names: {description: JSON array of UTF-8 text filenames, required: true}
+  output-file: {description: Combined output path, required: false, default: .generated-content/combined-content.md}
+outputs:
+  content-file: {description: Path to the combined content file}
+runs: {using: node24, main: index.js}

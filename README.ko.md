@@ -8,27 +8,38 @@ KoZae 프로젝트에서 재사용할 수 있는 GitHub Actions와 Workflow 모�
 
 - Workflow
   - 콘텐츠 생성·게시
-    - [커밋 로그 생성](Documents/Workflows/GenerateCommitLog/generate-commit-log.ko.md)
+    - [커밋 기반 콘텐츠 생성](Documents/Workflows/GenerateContentFromCommits/generate-content-from-commits.ko.md)
+      - 작성자별 병렬 실행 시 Artifact 접두사를 구분할 수 있습니다.
+      - 날짜 결정과 전체 날짜의 커밋 수집을 한 번의 checkout에서 처리합니다.
+    - [파일 요약을 Notion에 게시](Documents/Workflows/SummarizeFilesToNotion/summarize-files-to-notion.ko.md)
+      - 주간보고에 필요한 기존 항목 갱신, Notion 날짜, 이미지 링크를 선택적으로 지원합니다.
     - [문서 정제](Documents/Workflows/RefineDocuments/refine-documents.ko.md)
     - [Notion 페이지 게시](Documents/Workflows/PublishNotionPage/publish-notion-page.ko.md)
-    - [Notion 데이터베이스 항목 게시](Documents/Workflows/PublishNotionDatabase/publish-notion-database.ko.md) (생성·갱신, Status 속성, Markdown 블록)
   - 저장소·이슈 자동화
     - [저장소 미러링](Documents/Workflows/MirrorRepository/mirror-repository.ko.md)
     - [브랜치 병합](Documents/Workflows/MergeBranches/merge-branches.ko.md)
-    - [브랜치 자동 병합 및 충돌 시 Pull Request 생성](Documents/Workflows/CreateAndMergePullRequest/create-and-merge-pull-request.ko.md)
+    - [브랜치 자동 병합 및 충돌 시 Pull Request 생성](Documents/Workflows/CreateAndMergePullRequest/create-and-merge-pull-request.ko.md) (병합·PR·알림 Action 조합)
     - [이슈 미러링](Documents/Workflows/MirrorIssues/mirror-issues.ko.md)
 
 - Action
   - 콘텐츠·파일
     - [콘텐츠 준비](Documents/Actions/PrepareContent/prepare-content.ko.md)
+    - [텍스트 파일 합치기](Documents/Actions/CombineTextFiles/combine-text-files.ko.md)
+    - [블로그 이미지 링크 추가](Documents/Actions/AppendBlogMediaLinks/append-blog-media-links.ko.md)
+    - [주간 기간 결정](Documents/Actions/ResolveWeeklyPeriod/resolve-weekly-period.ko.md)
+      - 기본적으로 ISO 날짜 범위를 출력하며 표시 양식을 지정할 수 있습니다.
+    - [주간 개발일지 수집](Documents/Actions/CollectWeeklyDevelopmentLogs/collect-weekly-development-logs.ko.md)
+    - [참조 이미지 찾기](Documents/Actions/FindReferencedMedia/find-referenced-media.ko.md)
     - [콘텐츠 크기 검증](Documents/Actions/ValidateContentSize/validate-content-size.ko.md)
-    - [콘텐츠 요청](Documents/Actions/RequestContent/request-content.ko.md)
+    - [콘텐츠 요청](Documents/Actions/RequestContent/request-content.ko.md) (필요할 때 분할 요약)
     - [콘텐츠 저장](Documents/Actions/SaveContent/save-content.ko.md)
     - [파일 복사](Documents/Actions/CopyFile/copy-file.ko.md)
     - [폴더 복사](Documents/Actions/CopyFolder/copy-folder.ko.md)
     - [콘텐츠 게시](Documents/Actions/PublishContent/publish-content.ko.md)
   - Git·저장소
     - [날짜 범위 계산](Documents/Actions/CalculateDateRange/calculate-date-range.ko.md)
+    - [커밋 로그 날짜 결정](Documents/Actions/ResolveCommitLogDates/resolve-commit-log-dates.ko.md)
+    - [날짜별 커밋 수집](Documents/Actions/CollectDatedCommits/collect-dated-commits.ko.md)
     - [대상 저장소 Clone](Documents/Actions/CloneDestinationRepository/clone-destination-repository.ko.md)
     - [Git LFS 원격 구성](Documents/Actions/ConfigureLfsRemote/configure-lfs-remote.ko.md)
     - [Git diff 수집](Documents/Actions/CollectGitDiff/collect-git-diff.ko.md)
@@ -42,6 +53,7 @@ KoZae 프로젝트에서 재사용할 수 있는 GitHub Actions와 Workflow 모�
     - [문서 원본 수집](Documents/Actions/CollectDocumentSources/collect-document-sources.ko.md)
     - [문서 대상 매핑](Documents/Actions/MapDocumentTargets/map-document-targets.ko.md)
   - Notion
+    - [외부 이미지 링크 추가](Documents/Actions/AppendExternalImageLinks/append-external-image-links.ko.md)
     - [Notion 페이지 콘텐츠 추가](Documents/Actions/AppendNotionPageContent/append-notion-page-content.ko.md)
     - [Notion 파일 업로드](Documents/Actions/UploadNotionFile/upload-notion-file.ko.md)
     - [Notion 페이지 비우기](Documents/Actions/ClearNotionPage/clear-notion-page.ko.md)
@@ -58,6 +70,7 @@ KoZae 프로젝트에서 재사용할 수 있는 GitHub Actions와 Workflow 모�
     - [열린 이슈 수집](Documents/Actions/CollectOpenIssues/collect-open-issues.ko.md)
     - [미러링 이슈 찾기](Documents/Actions/FindMirroredIssue/find-mirrored-issue.ko.md)
     - [미러 이슈 수집](Documents/Actions/CollectMirroredIssues/collect-mirrored-issues.ko.md)
+    - [원본이 없는 미러 이슈 찾기](Documents/Actions/FindOrphanedMirrors/find-orphaned-mirrors.ko.md)
     - [미러 이슈 삭제](Documents/Actions/DeleteMirroredIssue/delete-mirrored-issue.ko.md)
     - [이슈 생성](Documents/Actions/CreateIssue/create-issue.ko.md)
     - [이슈 갱신](Documents/Actions/UpdateIssue/update-issue.ko.md)
@@ -68,4 +81,9 @@ KoZae 프로젝트에서 재사용할 수 있는 GitHub Actions와 Workflow 모�
     - [Unreal 프로젝트 빌드](Documents/Actions/BuildUnrealProject/build-unreal-project.ko.md)
     - [Webhook 알림](Documents/Actions/NotifyWebhook/notify-webhook.ko.md)
   - Pull Request
+    - [Pull Request 변경사항 커밋](Documents/Actions/CommitPullRequestChanges/commit-pull-request-changes.ko.md)
+    - [Pull Request 브랜치 push](Documents/Actions/PushPullRequestBranch/push-pull-request-branch.ko.md)
     - [Pull Request 생성](Documents/Actions/CreatePullRequest/create-pull-request.ko.md)
+    - [Pull Request 라벨 추가](Documents/Actions/LabelPullRequest/label-pull-request.ko.md)
+    - [브랜치 병합 시도](Documents/Actions/MergeBranch/merge-branch.ko.md)
+    - [Pull Request 확인 또는 생성](Documents/Actions/EnsurePullRequest/ensure-pull-request.ko.md)

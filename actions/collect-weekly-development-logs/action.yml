@@ -1,0 +1,15 @@
+name: Collect weekly development logs
+description: Collect daily Markdown logs and report missing dates in a resolved period
+inputs:
+  start-date: {description: First report date in YYYY-MM-DD format, required: true}
+  end-date: {description: Last report date in YYYY-MM-DD format, required: true}
+  log-directory: {description: Directory containing daily Markdown logs, required: true}
+  log-file-suffix: {description: Suffix after YYYY-MM-DD in daily filenames, required: false, default: '-development-log.md'}
+  log-subdirectories: {description: Optional comma-separated member directories under log-directory, required: false, default: ''}
+outputs:
+  has-content: {description: Whether at least one daily log was found}
+  source-files: {description: Newline-delimited daily Markdown file paths}
+  missing-dates: {description: Comma-separated missing dates}
+  missing-weekdays: {description: Comma-separated missing weekday dates}
+  source: {description: Combined daily log content without embedded images}
+runs: {using: node24, main: index.js}

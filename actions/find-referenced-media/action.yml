@@ -1,0 +1,8 @@
+name: Find referenced media
+description: Find local image files referenced by Markdown files
+inputs:
+  source-files: {description: Newline-separated Markdown file paths, required: true}
+  media-directory: {description: Directory containing the images, required: true}
+outputs:
+  image-files: {description: Newline-delimited matching image paths}
+runs: {using: node24, main: index.js}

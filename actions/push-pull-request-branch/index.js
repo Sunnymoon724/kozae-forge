@@ -1,0 +1,15 @@
+const {spawnSync} = require('node:child_process');
+for (const [name, value] of Object.entries(process.env)) if (name.startsWith('INPUT_')) process.env[name.replaceAll('-', '_')] = value;
+const branch = process.env.INPUT_BRANCH;
+const ref = `refs/heads/${branch}`;
+const checked = spawnSync('git', ['check-ref-format', '--branch', branch], {stdio: 'inherit'});
+if (checked.error) throw checked.error;
+if (checked.status !== 0) throw new Error('Invalid branch name.');
+const result = spawnSync('git', ['ls-remote', '--heads', 'origin', ref], {encoding: 'utf8'});
+if (result.error) throw result.error;
+if (result.status !== 0) throw new Error(result.stderr || `Could not inspect remote branch ${branch}.`);
+const match = result.stdout.split(/\r?\n/).find((line) => line.endsWith(`\t${ref}`));
+const expectedSha = match ? match.split('\t')[0] : '';
+const pushed = spawnSync('git', ['push', `--force-with-lease=${ref}:${expectedSha}`, 'origin', `HEAD:${ref}`], {stdio: 'inherit'});
+if (pushed.error) throw pushed.error;
+if (pushed.status !== 0) throw new Error(`Could not push review branch (${pushed.status}).`);

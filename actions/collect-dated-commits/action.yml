@@ -1,0 +1,10 @@
+name: Collect dated commits
+description: Write one commit-list file per date from a single checked-out repository
+inputs:
+  dates: {description: JSON array of dates in YYYY-MM-DD format, required: true}
+  timezone: {description: IANA timezone used for daily commit boundaries, required: true}
+  authors: {description: Optional comma-separated Git author filters, required: false, default: ''}
+  exclude-merge-commits: {description: Exclude merge commits, required: false, default: 'false'}
+outputs:
+  has-content: {description: Whether any date has commits}
+runs: {using: node24, main: index.js}

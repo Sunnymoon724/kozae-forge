@@ -1,8 +1,8 @@
 # create-pull-request
 
-A GitHub Action that creates a pull request with workspace changes.
+A GitHub Action that creates or reuses a pull request for an already pushed branch.
 
-The calling Workflow must check out the repository before using this Action.
+Commit and push workspace changes first with `commit-pull-request-changes` and `push-pull-request-branch`. Add labels separately with `label-pull-request`.
 
 ## Inputs
 
@@ -10,10 +10,15 @@ The calling Workflow must check out the repository before using this Action.
 |---|---:|---|---|
 | `token` | Yes | - | GitHub token used to create the pull request |
 | `branch` | No | `automation/update-content` | Branch used for the pull request |
-| `commit-message` | No | `docs: update generated content` | Commit message |
 | `title` | No | `docs: update generated content` | Pull request title |
 | `body` | No | Generated content review message | Pull request body |
-| `labels` | No | Empty | Comma-separated pull request labels |
+
+## Outputs
+
+| Output | Description |
+|---|---|
+| `pull-request-number` | Created or reused pull request number |
+| `pull-request-url` | Created or reused pull request URL |
 
 ## Input example
 
@@ -22,9 +27,14 @@ The calling Workflow must check out the repository before using this Action.
   with:
     token: ${{ secrets.GITHUB_TOKEN }}
     branch: automation/sync-wiki
-    commit-message: 'docs: sync wiki pages'
     title: 'docs: sync wiki pages'
     body: |
       This pull request contains generated Chronicle pages.
-    labels: documentation, automated
+```
+
+## Output example
+
+```yaml
+pull-request-number: '42'
+pull-request-url: https://github.com/owner/repository/pull/42
 ```

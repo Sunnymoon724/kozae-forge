@@ -1,0 +1,11 @@
+name: Append external image links
+description: Copy content and append public links for image files
+inputs:
+  source-file: {description: Content file to copy, required: true}
+  image-files: {description: Newline-separated image file paths, required: true}
+  public-base-url: {description: Public site base URL, required: true}
+  public-path: {description: Public image directory path, required: false, default: /media}
+  output-file: {description: Output content file path, required: false, default: .generated-content/notion-entry-with-images.md}
+outputs:
+  content-file: {description: Output file containing external image links}
+runs: {using: node24, main: index.js}

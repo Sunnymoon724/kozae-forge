@@ -66,8 +66,14 @@ jobs:
 
 ## 3. Notes
 
-- The embedded Node.js scripts use ES module imports and run asynchronous logic inside an async function for compatibility with Node.js 22 and later.
+- The Workflow composes the focused `merge-branch` and `ensure-pull-request` Actions. Discord delivery uses `notify-webhook`.
 - This Workflow does not build or test the project. If there is no merge conflict, it updates the target branch directly.
 - Only merge conflicts create a pull request. Other errors, including token permissions or branch protection, fail the Workflow.
 - The `build-result` input remains for compatibility with existing callers. Passing `failure` creates a PR and sends a Discord notification, as before.
 - Discord notifications include the created or reused pull request URL.
+
+## 4. Actions used
+
+- `merge-branch`
+- `ensure-pull-request`
+- `notify-webhook`

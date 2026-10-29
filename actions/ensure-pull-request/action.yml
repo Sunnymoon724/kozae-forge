@@ -1,0 +1,13 @@
+name: Ensure pull request
+description: Find an open pull request for a branch or create one
+inputs:
+  token: {description: GitHub token with pull requests write access, required: true}
+  repository: {description: Repository in owner/name format, required: true}
+  api-url: {description: GitHub API base URL, required: false, default: 'https://api.github.com'}
+  source-branch: {description: Pull request source branch, required: true}
+  target-branch: {description: Pull request target branch, required: true}
+  title: {description: Title for a new pull request, required: true}
+  body: {description: Body for a new pull request, required: true}
+outputs:
+  pull-request-url: {description: URL of the existing or created pull request}
+runs: {using: node24, main: index.js}

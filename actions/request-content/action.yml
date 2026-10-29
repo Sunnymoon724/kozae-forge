@@ -7,6 +7,7 @@ inputs:
   prompt: {description: Instructions for generating content, required: true}
   content: {description: Input content sent to the AI provider, required: true}
   api-key: {description: API key for the AI provider, required: true}
+  max-content-bytes: {description: Optional UTF-8 byte limit per request; larger content is summarized in chunks first, required: false, default: '0'}
 outputs:
   content: {description: Generated content returned by the AI provider}
 runs: {using: node24, main: index.js}

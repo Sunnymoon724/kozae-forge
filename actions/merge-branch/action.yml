@@ -1,0 +1,12 @@
+name: Merge branch
+description: Merge a source branch into a target branch, reporting conflicts or stale runs
+inputs:
+  token: {description: GitHub token with contents write access, required: true}
+  repository: {description: Repository in owner/name format, required: true}
+  api-url: {description: GitHub API base URL, required: false, default: 'https://api.github.com'}
+  source-branch: {description: Branch to merge, required: true}
+  source-sha: {description: Expected source commit, required: false, default: ''}
+  target-branch: {description: Branch receiving the merge, required: true}
+outputs:
+  outcome: {description: merged, conflict, or stale}
+runs: {using: node24, main: index.js}

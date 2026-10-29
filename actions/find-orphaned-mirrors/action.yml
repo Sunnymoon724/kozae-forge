@@ -1,0 +1,9 @@
+name: Find orphaned mirrors
+description: Identify mirrored issues whose source issue no longer exists
+inputs:
+  source-issues: {description: JSON array of source issues, required: true}
+  mirrored-issues: {description: JSON array of mirrored issues, required: true}
+outputs:
+  mirrors: {description: JSON array of orphaned mirrored issues}
+  titles: {description: JSON array of orphaned mirrored issue titles for Notion cleanup}
+runs: {using: node24, main: index.js}

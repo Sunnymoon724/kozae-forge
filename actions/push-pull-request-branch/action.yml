@@ -1,0 +1,5 @@
+name: Push pull request branch
+description: Push a review branch only if its remote ref has not changed
+inputs:
+  branch: {description: Review branch name, required: true}
+runs: {using: node24, main: index.js}
