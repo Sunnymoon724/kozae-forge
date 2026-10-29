@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.6.7
+
+- Removed the GitHub issue-comment webhook Worker and disabled issue-comment events in the reusable issue-mirroring workflow.
+
+## 0.6.6
+
+- Added an option to exclude merge commits from reusable commit-log generation.
+
 ## 0.6.5
 
 - Used the caller's automatically issued `GITHUB_TOKEN` directly in the reusable workflow, retaining the custom token secret only for caller compatibility.

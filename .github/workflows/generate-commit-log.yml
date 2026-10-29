@@ -30,6 +30,11 @@ on:
         required: false
         default: ''
         type: string
+      exclude-merge-commits:
+        description: Exclude merge commits from the collected history
+        required: false
+        default: false
+        type: boolean
       provider:
         required: true
         type: string
@@ -190,6 +195,7 @@ jobs:
           DATES: ${{ needs.prepare.outputs.dates }}
           TIMEZONE: ${{ inputs.timezone }}
           AUTHORS: ${{ inputs.authors }}
+          EXCLUDE_MERGE_COMMITS: ${{ inputs.exclude-merge-commits }}
         shell: node {0}
         run: |
           const fs = require('node:fs');
@@ -212,6 +218,7 @@ jobs:
             end.setDate(end.getDate() + 1);
 
             const args = ['log', `--since=${start.toISOString()}`, `--until=${end.toISOString()}`];
+            if (process.env.EXCLUDE_MERGE_COMMITS === 'true') args.push('--no-merges');
             if (authors) args.push(`--author=${authors.split(',').map((author) => author.trim()).filter(Boolean).join('\\|')}`);
             args.push('--format=- %s (%h) [author: %an]', head.stdout.trim());
 

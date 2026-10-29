@@ -40,6 +40,7 @@ API_KEY
 | `start-date` | 아니오 | 빈 값 | 시작 날짜 (`YYYY-MM-DD`). `end-date`도 비어 있으면 어제 사용 |
 | `end-date` | 아니오 | 빈 값 | 종료 날짜 (`YYYY-MM-DD`). 비어 있으면 `start-date`만 처리 |
 | `authors` | 아니오 | 빈 값 | 커밋 작성자 필터 |
+| `exclude-merge-commits` | 아니오 | `false` | 수집한 기록에서 병합 커밋 제외 |
 | `provider` | 예 | - | AI Provider |
 | `api-base` | 예 | - | AI API 기본 URL |
 | `model` | 예 | - | AI 모델 |
@@ -64,6 +65,7 @@ jobs:
       start-date: 2026-09-01
       end-date: 2026-09-07
       authors: 홍길동
+      exclude-merge-commits: true
       prompt: 커밋 기록을 바탕으로 쉬운 한국어 개발일지를 작성해줘.
       tag: development-log
     secrets:

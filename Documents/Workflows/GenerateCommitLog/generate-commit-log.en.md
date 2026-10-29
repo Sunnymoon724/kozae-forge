@@ -40,6 +40,7 @@ API_KEY
 | `start-date` | No | Empty | Start date in `YYYY-MM-DD`; uses yesterday when empty with no `end-date` |
 | `end-date` | No | Empty | End date in `YYYY-MM-DD`; empty means `start-date` only |
 | `authors` | No | Empty | Commit author filters |
+| `exclude-merge-commits` | No | `false` | Exclude merge commits from the collected history |
 | `provider` | Yes | - | AI provider |
 | `api-base` | Yes | - | AI API base URL |
 | `model` | Yes | - | AI model |
@@ -64,6 +65,7 @@ jobs:
       start-date: 2026-09-01
       end-date: 2026-09-07
       authors: Jane Doe
+      exclude-merge-commits: true
       prompt: Write a Markdown development log from the commit history.
       tag: development-log
     secrets:
