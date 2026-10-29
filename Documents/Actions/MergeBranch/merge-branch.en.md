@@ -17,7 +17,7 @@ A GitHub Action that attempts to merge one branch into another. It reports a mer
 
 | Output | Default | Description |
 |---|---|---|
-| `outcome` | - | `merged`, `conflict`, or `stale` |
+| `outcome` | - | One value: `merged`, `conflict`, or `stale` |
 
 ## Input example
 

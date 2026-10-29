@@ -17,7 +17,7 @@
 
 | 출력값 | 기본값 | 설명 |
 |---|---|---|
-| `outcome` | - | `merged`, `conflict`, `stale` 중 하나 |
+| `outcome` | - | `merged`, `conflict`, `stale` 중 한 값 |
 
 ## 입력 예시
 

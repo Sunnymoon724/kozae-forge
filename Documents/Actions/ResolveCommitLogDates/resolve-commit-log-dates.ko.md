@@ -20,7 +20,7 @@
 | `end-date` | - | 결정된 마지막 날 |
 | `start-date-display` | - | `YYYY/MM/DD` 형식의 첫날 |
 | `end-date-display` | - | `YYYY/MM/DD` 형식의 마지막 날 |
-| `branch-name` | 빈 값 | 접두사가 있을 때 접두사와 날짜로 만든 이름 |
+| `branch-name` | 빈 값 | 접두사가 있으면 접두사와 날짜로 만든 브랜치 이름 하나, 없으면 빈 값 |
 
 ## 입력 예시
 

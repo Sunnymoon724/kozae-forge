@@ -20,7 +20,7 @@ A GitHub Action that resolves one to 31 dates for commit-log generation and opti
 | `end-date` | - | Resolved last date |
 | `start-date-display` | - | First date in `YYYY/MM/DD` format |
 | `end-date-display` | - | Last date in `YYYY/MM/DD` format |
-| `branch-name` | Empty | Prefix and dates when a prefix is supplied |
+| `branch-name` | Empty | One branch name from the prefix and dates, or empty without a prefix |
 
 ## Input example
 

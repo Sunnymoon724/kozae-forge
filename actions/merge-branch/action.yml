@@ -8,5 +8,5 @@ inputs:
   source-sha: {description: Expected source commit, required: false, default: ''}
   target-branch: {description: Branch receiving the merge, required: true}
 outputs:
-  outcome: {description: merged, conflict, or stale}
+  outcome: {description: 'merged, conflict, or stale'}
 runs: {using: node24, main: index.js}

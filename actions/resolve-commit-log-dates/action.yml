@@ -11,5 +11,5 @@ outputs:
   end-date: {description: Resolved last date}
   start-date-display: {description: First date formatted as YYYY/MM/DD}
   end-date-display: {description: Last date formatted as YYYY/MM/DD}
-  branch-name: {description: Branch name based on the dates, or empty}
+  branch-name: {description: 'Branch name based on the dates, or empty'}
 runs: {using: node24, main: index.js}
