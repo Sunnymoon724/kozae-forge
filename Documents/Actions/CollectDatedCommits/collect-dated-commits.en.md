@@ -2,6 +2,8 @@
 
 A GitHub Action that collects commit messages for multiple dates from one checked-out repository. It writes `.commit-data/YYYY-MM-DD.txt` for dates with commits. When no date has commits, it writes `.commit-data/no-commits.txt` so artifact upload still succeeds.
 
+Git commands trust only the current checkout directory for this invocation, allowing a self-hosted runner service account to read a checkout owned by a different Windows account without changing global Git configuration.
+
 ## Inputs
 
 | Input | Required | Default | Description |

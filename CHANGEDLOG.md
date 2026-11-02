@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.7.1
+
+- Scoped `safe.directory` to commit-collection Git commands so self-hosted runner services can read checkouts owned by another account.
+- Set up Node.js 24 in each commit-content Workflow job that runs Node scripts, including self-hosted runners without `node` on `PATH`.
+
 ## 0.7.0
 
 - Added reusable Workflows for generating content from commits and summarizing selected UTF-8 files into a single Notion database entry, with caller-provided prompts and titles.

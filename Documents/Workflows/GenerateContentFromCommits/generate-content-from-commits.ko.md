@@ -12,6 +12,8 @@
 8. 후속 작업은 날짜별 커밋 파일이 없으면 해당 날짜를 건너뜁니다.
 9. 커밋 수집 단계에서 Checkout 브랜치, HEAD, 날짜, 작성자 필터, 날짜별 결과, 생성 파일 목록을 로그로 남깁니다.
 
+`shell: node {0}`을 쓰는 각 Job은 Node.js 24를 먼저 준비합니다. 셀프 호스티드 Runner의 `PATH`에 `node`가 없어도 실행할 수 있습니다. 수집 상황을 기록하는 Git 명령은 해당 실행에서 현재 체크아웃 경로만 신뢰합니다.
+
 이 Workflow는 저장소에 파일을 영구 저장하거나 커밋하지 않습니다. 후속 Job에서 `generated-content` Artifact를 다운로드한 뒤 별도로 commit과 push를 수행합니다.
 
 ## 2. 사용 방법
@@ -110,6 +112,7 @@ jobs:
 
 ## 3. 사용 Action
 
+- `actions/setup-node` (Node 스크립트를 실행하는 각 Job에서 Node.js 24 준비)
 - `resolve-commit-log-dates`
 - `collect-dated-commits` (전체 날짜를 한 번의 checkout에서 처리)
 - `prepare-content`

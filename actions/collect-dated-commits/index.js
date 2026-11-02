@@ -6,7 +6,7 @@ for (const [name, value] of Object.entries(process.env)) {
 }
 
 function git(args, message) {
-  const result = spawnSync('git', args, {encoding: 'utf8'});
+  const result = spawnSync('git', ['-c', `safe.directory=${process.cwd()}`, ...args], {encoding: 'utf8'});
   if (result.error) throw result.error;
   if (result.status !== 0) throw new Error(result.stderr || message);
   return result.stdout.trim();

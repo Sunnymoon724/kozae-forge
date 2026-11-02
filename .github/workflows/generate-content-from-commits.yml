@@ -111,6 +111,11 @@ jobs:
       branch-name: ${{ steps.dates.outputs.branch-name }}
       prompt: ${{ steps.prepared-prompt.outputs.content }}
     steps:
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
       - id: dates
         name: Resolve commit log dates
         uses: Sunnymoon724/kozae-forge/actions/resolve-commit-log-dates@main
@@ -147,11 +152,16 @@ jobs:
           fetch-depth: 0
           ref: ${{ inputs.branch }}
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
       - name: Log commit collection context
         shell: node {0}
         run: |
           const { spawnSync } = require('node:child_process');
-          const run = (args) => spawnSync('git', args, { encoding: 'utf8' });
+          const run = (args) => spawnSync('git', ['-c', `safe.directory=${process.cwd()}`, ...args], { encoding: 'utf8' });
           const topLevel = run(['rev-parse', '--show-toplevel']);
           const branch = run(['branch', '--show-current']);
           const head = run(['rev-parse', 'HEAD']);
@@ -187,6 +197,11 @@ jobs:
       matrix:
         date: ${{ fromJSON(needs.prepare.outputs.dates) }}
     steps:
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
       - name: Download collected commits
         uses: actions/download-artifact@v4
         with:
@@ -242,6 +257,11 @@ jobs:
       has-content: ${{ steps.package.outputs.has-content }}
       file-names: ${{ steps.package.outputs.file-names }}
     steps:
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
       - name: Prepare artifact package directory
         id: package-dir
         shell: node {0}

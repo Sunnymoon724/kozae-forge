@@ -12,6 +12,8 @@
 8. Downstream generation skips dates without a commit file.
 9. The collection step logs the checked-out branch, HEAD, dates, author filter, per-date results, and generated file list.
 
+Each job that runs `shell: node {0}` sets up Node.js 24 first, including on self-hosted runners where `node` is not already on `PATH`. The collection context Git commands trust only the current checkout for those invocations.
+
 This workflow does not persist or commit files to the repository. Use the `generated-content` artifact in a later job, then commit and push the files separately if needed.
 
 ## 2. Usage
@@ -110,6 +112,7 @@ For concurrent member calls, set a distinct `artifact-prefix` such as `member1-`
 
 ## 3. Actions used
 
+- `actions/setup-node` (Node.js 24 in every job that runs Node scripts)
 - `resolve-commit-log-dates`
 - `collect-dated-commits` (one checkout for all dates)
 - `prepare-content`
