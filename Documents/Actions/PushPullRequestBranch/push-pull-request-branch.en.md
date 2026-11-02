@@ -2,6 +2,8 @@
 
 Push the current commit to a review branch with a remote-ref lease, failing when another run changed that branch.
 
+Git trusts only the current checkout for these commands, including on self-hosted runners whose service account differs from the checkout owner.
+
 ## Inputs
 
 | Input | Required | Default | Description |

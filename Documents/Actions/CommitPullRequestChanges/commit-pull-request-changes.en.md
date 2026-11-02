@@ -2,6 +2,8 @@
 
 Stage selected paths and commit changes on a review branch. No remote push or PR API call is made.
 
+Git trusts only the current checkout for these commands, so the Action also works when a self-hosted runner service uses an account different from the checkout owner.
+
 ## Inputs
 
 | Input | Required | Default | Description |

@@ -81,8 +81,8 @@ KoZae 프로젝트에서 재사용할 수 있는 GitHub Actions와 Workflow 모�
     - [Unreal 프로젝트 빌드](Documents/Actions/BuildUnrealProject/build-unreal-project.ko.md)
     - [Webhook 알림](Documents/Actions/NotifyWebhook/notify-webhook.ko.md)
   - Pull Request
-    - [Pull Request 변경사항 커밋](Documents/Actions/CommitPullRequestChanges/commit-pull-request-changes.ko.md)
-    - [Pull Request 브랜치 push](Documents/Actions/PushPullRequestBranch/push-pull-request-branch.ko.md)
+    - [Pull Request 변경사항 커밋](Documents/Actions/CommitPullRequestChanges/commit-pull-request-changes.ko.md) (셀프 호스티드 Runner 체크아웃 지원)
+    - [Pull Request 브랜치 push](Documents/Actions/PushPullRequestBranch/push-pull-request-branch.ko.md) (셀프 호스티드 Runner 체크아웃 지원)
     - [Pull Request 생성](Documents/Actions/CreatePullRequest/create-pull-request.ko.md)
     - [Pull Request 라벨 추가](Documents/Actions/LabelPullRequest/label-pull-request.ko.md)
     - [브랜치 병합 시도](Documents/Actions/MergeBranch/merge-branch.ko.md)

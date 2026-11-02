@@ -81,8 +81,8 @@ Reusable GitHub Actions and Workflows for KoZae projects.
     - [Build Unreal project](Documents/Actions/BuildUnrealProject/build-unreal-project.en.md)
     - [Notify webhook](Documents/Actions/NotifyWebhook/notify-webhook.en.md)
   - Pull requests
-    - [Commit pull request changes](Documents/Actions/CommitPullRequestChanges/commit-pull-request-changes.en.md)
-    - [Push pull request branch](Documents/Actions/PushPullRequestBranch/push-pull-request-branch.en.md)
+    - [Commit pull request changes](Documents/Actions/CommitPullRequestChanges/commit-pull-request-changes.en.md) (self-hosted runner checkout support)
+    - [Push pull request branch](Documents/Actions/PushPullRequestBranch/push-pull-request-branch.en.md) (self-hosted runner checkout support)
     - [Create pull request](Documents/Actions/CreatePullRequest/create-pull-request.en.md)
     - [Label pull request](Documents/Actions/LabelPullRequest/label-pull-request.en.md)
     - [Merge branch](Documents/Actions/MergeBranch/merge-branch.en.md)

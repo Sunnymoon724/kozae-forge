@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.3
+
+- Trust only the current checkout in review-branch commit and push Git commands so self-hosted runner services can publish generated pull requests.
+
 ## 0.7.2
 
 - Allow unauthenticated local OpenAI-compatible requests, including Ollama, while retaining API-key validation for remote providers.

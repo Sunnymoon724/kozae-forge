@@ -3,7 +3,7 @@ const {spawnSync} = require('node:child_process');
 for (const [name, value] of Object.entries(process.env)) if (name.startsWith('INPUT_')) process.env[name.replaceAll('-', '_')] = value;
 
 function git(args) {
-  const result = spawnSync('git', args, {stdio: 'inherit'});
+  const result = spawnSync('git', ['-c', `safe.directory=${process.cwd()}`, ...args], {stdio: 'inherit'});
   if (result.error) throw result.error;
   if (result.status !== 0) throw new Error(`git ${args[0]} failed (${result.status}).`);
 }
@@ -12,7 +12,7 @@ const branch = process.env.INPUT_BRANCH;
 git(['check-ref-format', '--branch', branch]);
 const paths = (process.env.INPUT_PATHS || '.').split(/\r?\n/).map((value) => value.trim()).filter(Boolean);
 git(['add', '-A', '--', ...paths]);
-const changed = spawnSync('git', ['diff', '--cached', '--quiet']);
+const changed = spawnSync('git', ['-c', `safe.directory=${process.cwd()}`, 'diff', '--cached', '--quiet']);
 if (changed.error) throw changed.error;
 if (changed.status === 0) {
   fs.appendFileSync(process.env.GITHUB_OUTPUT, 'changed=false\n');
