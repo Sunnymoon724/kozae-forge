@@ -2,7 +2,7 @@
 
 Requests generated content from an OpenAI-compatible API. OpenAI-compatible providers are asked to return the result without a reasoning phase.
 
-The Action validates every required input before sending the request and reports the missing input name when validation fails.
+The Action validates every required input before sending the request and reports the missing input name when validation fails. `api-key` may be omitted only for an `openai-compatible` API on `localhost`, `127.0.0.1`, or `::1` (such as local Ollama). No Authorization header is sent in that case. Remote APIs and the `openai` provider still require a key.
 
 When `max-content-bytes` is set and the input exceeds it, the Action splits the input into UTF-8-safe chunks, summarizes each chunk, and uses the combined notes to generate one final result. If the notes still exceed the limit, it summarizes them again. Without this input, the original single-request behavior is unchanged. Chunking adds API calls and can lose detail in the intermediate summaries.
 
@@ -15,7 +15,7 @@ When `max-content-bytes` is set and the input exceeds it, the Action splits the 
 | `model` | Yes | AI model name |
 | `prompt` | Yes | Generation instructions |
 | `content` | Yes | Input content |
-| `api-key` | Yes | AI provider API key |
+| `api-key` | Conditional | AI provider API key; optional for local OpenAI-compatible APIs only |
 | `max-content-bytes` | No | UTF-8 byte limit per AI request; `0` disables chunking |
 
 ## Outputs

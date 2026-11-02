@@ -104,7 +104,7 @@ on:
         type: string
     secrets:
       API_KEY:
-        required: true
+        required: false
       NOTION_TOKEN:
         required: true
 

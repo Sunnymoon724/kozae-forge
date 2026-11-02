@@ -17,7 +17,7 @@ Set `sync-mode` to `changed` (changed documents) or `full` (all documents).
 
 ### Token registration
 
-Register the `api-key` secret required by the AI provider.
+Register the `api-key` secret when required by the AI provider. Local OpenAI-compatible APIs such as Ollama do not need it; remote APIs and the `openai` provider do.
 
 ```text
 Settings → Secrets and variables → Actions

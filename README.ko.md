@@ -31,7 +31,7 @@ KoZae 프로젝트에서 재사용할 수 있는 GitHub Actions와 Workflow 모�
     - [주간 개발일지 수집](Documents/Actions/CollectWeeklyDevelopmentLogs/collect-weekly-development-logs.ko.md)
     - [참조 이미지 찾기](Documents/Actions/FindReferencedMedia/find-referenced-media.ko.md)
     - [콘텐츠 크기 검증](Documents/Actions/ValidateContentSize/validate-content-size.ko.md)
-    - [콘텐츠 요청](Documents/Actions/RequestContent/request-content.ko.md) (필요할 때 분할 요약)
+    - [콘텐츠 요청](Documents/Actions/RequestContent/request-content.ko.md) (필요할 때 분할 요약, 로컬 Ollama는 API 키 불필요)
     - [콘텐츠 저장](Documents/Actions/SaveContent/save-content.ko.md)
     - [파일 복사](Documents/Actions/CopyFile/copy-file.ko.md)
     - [폴더 복사](Documents/Actions/CopyFolder/copy-folder.ko.md)

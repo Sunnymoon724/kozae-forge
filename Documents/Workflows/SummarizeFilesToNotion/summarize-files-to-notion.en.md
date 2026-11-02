@@ -14,13 +14,13 @@ Filenames need neither dates nor a Markdown extension. By default, rerunning cre
 
 ### Token registration
 
-Register the AI provider key and Notion integration token in the caller repository's Actions secrets.
+Register the Notion integration token in the caller repository's Actions secrets. Register the AI provider key for remote APIs or the `openai` provider; local OpenAI-compatible APIs such as Ollama do not need it.
 
 ```text
 Settings → Secrets and variables → Actions
 ```
 
-Secret names: `AI_API_KEY`, `NOTION_TOKEN`.
+Secret names: `NOTION_TOKEN` (required), `AI_API_KEY` (conditional).
 
 ### Input configuration
 

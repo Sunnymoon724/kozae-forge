@@ -31,7 +31,7 @@ Reusable GitHub Actions and Workflows for KoZae projects.
     - [Collect weekly development logs](Documents/Actions/CollectWeeklyDevelopmentLogs/collect-weekly-development-logs.en.md)
     - [Find referenced media](Documents/Actions/FindReferencedMedia/find-referenced-media.en.md)
     - [Validate content size](Documents/Actions/ValidateContentSize/validate-content-size.en.md)
-    - [Request content](Documents/Actions/RequestContent/request-content.en.md) (optional chunked summarization)
+    - [Request content](Documents/Actions/RequestContent/request-content.en.md) (optional chunked summarization; no API key for local Ollama)
     - [Save content](Documents/Actions/SaveContent/save-content.en.md)
     - [Copy file](Documents/Actions/CopyFile/copy-file.en.md)
     - [Copy folder](Documents/Actions/CopyFolder/copy-folder.en.md)

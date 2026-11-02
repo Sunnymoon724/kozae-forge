@@ -55,7 +55,7 @@ on:
     secrets:
       api-key:
         description: API key for the AI provider
-        required: true
+        required: false
     outputs:
       has-sources:
         description: Whether at least one source document was processed

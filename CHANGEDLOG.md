@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.2
+
+- Allow unauthenticated local OpenAI-compatible requests, including Ollama, while retaining API-key validation for remote providers.
+
 ## 0.7.1
 
 - Scoped `safe.directory` to commit-collection Git commands so self-hosted runner services can read checkouts owned by another account.

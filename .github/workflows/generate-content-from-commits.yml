@@ -79,7 +79,7 @@ on:
         type: string
     secrets:
       API_KEY:
-        required: true
+        required: false
     outputs:
       start-date:
         value: ${{ jobs.prepare.outputs.start-date }}

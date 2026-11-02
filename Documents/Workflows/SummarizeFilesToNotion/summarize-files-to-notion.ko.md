@@ -20,7 +20,7 @@ UTF-8 텍스트 파일을 받아 AI로 요약한 뒤, Markdown 형식의 요약 
 Settings → Secrets and variables → Actions
 ```
 
-Secret 이름: `AI_API_KEY`, `NOTION_TOKEN`.
+Secret 이름: `NOTION_TOKEN`(필수), `AI_API_KEY`(원격 API 또는 `openai` 제공자에서 필요). 로컬 Ollama와 같은 OpenAI 호환 API에는 `AI_API_KEY`가 필요하지 않습니다.
 
 ### 입력값 설정
 

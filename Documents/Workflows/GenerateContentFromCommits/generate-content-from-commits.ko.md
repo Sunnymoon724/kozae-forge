@@ -20,7 +20,7 @@
 
 ### 토큰 등록
 
-AI Provider에 필요한 `API_KEY` Actions Secret을 등록합니다.
+AI Provider에 키가 필요할 때 `API_KEY` Actions Secret을 등록합니다. 로컬 Ollama와 같은 OpenAI 호환 API에는 필요 없지만 원격 API와 `openai` 제공자에는 필요합니다.
 
 ```text
 Settings → Secrets and variables → Actions

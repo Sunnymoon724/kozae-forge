@@ -22,7 +22,7 @@ async function main() {
   const model = requiredInput('INPUT_MODEL');
   const prompt = requiredInput('INPUT_PROMPT');
   const content = requiredInput('INPUT_CONTENT');
-  const apiKey = requiredInput('INPUT_API_KEY');
+  const apiKey = process.env.INPUT_API_KEY || '';
   const maxContentBytes = Number(process.env.INPUT_MAX_CONTENT_BYTES || 0);
   if (!Number.isSafeInteger(maxContentBytes) || maxContentBytes < 0) {
     throw new Error('max-content-bytes must be a non-negative integer.');
@@ -30,11 +30,17 @@ async function main() {
   if (!['openai', 'openai-compatible'].includes(provider)) {
     throw new Error('Unsupported provider.');
   }
+  const localHost = ['localhost', '127.0.0.1', '[::1]'].includes(new URL(apiBase).hostname);
+  if (!apiKey && !(provider === 'openai-compatible' && localHost)) {
+    throw new Error('Missing required input: api-key');
+  }
 
   async function generate(systemPrompt, input) {
     const request = {model, messages: [{role: 'system', content: systemPrompt}, {role: 'user', content: input}]};
     if (provider === 'openai-compatible') request.reasoning_effort = 'none';
-    const response = await fetch(`${apiBase.replace(/\/$/, '')}/chat/completions`, {method: 'POST', headers: {Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json'}, body: JSON.stringify(request)});
+    const headers = {'Content-Type': 'application/json'};
+    if (apiKey) headers.Authorization = `Bearer ${apiKey}`;
+    const response = await fetch(`${apiBase.replace(/\/$/, '')}/chat/completions`, {method: 'POST', headers, body: JSON.stringify(request)});
     if (!response.ok) throw new Error(await response.text());
     const result = (await response.json()).choices?.[0]?.message?.content;
     if (!result) throw new Error('The API response did not include generated content.');

@@ -20,7 +20,7 @@ This workflow does not persist or commit files to the repository. Use the `gener
 
 ### Token registration
 
-Register the `API_KEY` Actions secret required by the AI provider.
+Register the `API_KEY` Actions secret when required by the AI provider. Local OpenAI-compatible APIs such as Ollama do not need it; remote APIs and the `openai` provider do.
 
 ```text
 Settings → Secrets and variables → Actions
