@@ -1,21 +1,32 @@
 function richTextParts(text, parseLinks) {
   const parts = [];
-  const addText = (value, link) => {
+  const addText = (value, link, bold = false) => {
     for (let offset = 0; offset < value.length; offset += 2000) {
       const item = {type: 'text', text: {content: value.slice(offset, offset + 2000)}};
       if (link) item.text.link = {url: link};
+      if (bold) item.annotations = {bold: true};
       parts.push(item);
     }
   };
   if (!parseLinks) { addText(text); return parts; }
-  const linkPattern = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g;
+  const addLinkedText = (value, bold = false) => {
+    const linkPattern = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g;
+    let lastIndex = 0;
+    for (const match of value.matchAll(linkPattern)) {
+      addText(value.slice(lastIndex, match.index), undefined, bold);
+      addText(match[1], match[2], bold);
+      lastIndex = match.index + match[0].length;
+    }
+    addText(value.slice(lastIndex), undefined, bold);
+  };
+  const boldPattern = /\*\*(.+?)\*\*/g;
   let lastIndex = 0;
-  for (const match of text.matchAll(linkPattern)) {
-    addText(text.slice(lastIndex, match.index));
-    addText(match[1], match[2]);
+  for (const match of text.matchAll(boldPattern)) {
+    addLinkedText(text.slice(lastIndex, match.index));
+    addLinkedText(match[1], true);
     lastIndex = match.index + match[0].length;
   }
-  addText(text.slice(lastIndex));
+  addLinkedText(text.slice(lastIndex));
   return parts;
 }
 function textBlock(type, text, {checked = false, parseLinks = false} = {}) {

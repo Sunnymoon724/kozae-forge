@@ -18,7 +18,7 @@
 | `date-property` | 아니오 | 빈 값 | 날짜 속성 이름 |
 | `date` | 아니오 | 빈 값 | 날짜 값 |
 | `content-file` | 예 | - | 콘텐츠 파일 |
-| `content-format` | 아니오 | `plain` | `markdown`이면 구조화된 Notion 블록을 생성 |
+| `content-format` | 아니오 | `plain` | `markdown`이면 링크와 `**굵게**` 서식을 포함한 Notion 블록을 생성 |
 | `image-file-uploads` | 아니오 | `[]` | Notion 파일 업로드 ID의 JSON 배열 |
 | `notion-token` | 예 | - | Notion 통합 토큰 |
 

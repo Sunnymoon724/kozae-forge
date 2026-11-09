@@ -7,7 +7,7 @@ Appends plain text or structured Markdown blocks and optional image blocks to an
 | Input | Required | Default | Description |
 |---|---:|---|---|
 | `content-file` | Yes | - | Content file path |
-| `content-format` | No | `plain` | Use `markdown` to create headings, lists, checkboxes, dividers, and links as Notion blocks |
+| `content-format` | No | `plain` | Use `markdown` to create headings, lists, checkboxes, dividers, links, and `**bold**` text as Notion blocks |
 | `page-id` | Yes | - | Existing Notion page ID |
 | `notion-token` | Yes | - | Notion integration token |
 | `image-file-uploads` | No | `[]` | JSON array of Notion file upload IDs |

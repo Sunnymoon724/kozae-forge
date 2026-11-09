@@ -18,7 +18,7 @@ Creates one Notion database entry with its initial properties and content.
 | `date-property` | No | Empty | Date property name |
 | `date` | No | Empty | Date value |
 | `content-file` | Yes | - | Content file |
-| `content-format` | No | `plain` | Use `markdown` to create structured Notion blocks |
+| `content-format` | No | `plain` | Use `markdown` to create structured Notion blocks with links and `**bold**` text |
 | `image-file-uploads` | No | `[]` | JSON array of Notion file upload IDs |
 | `notion-token` | Yes | - | Notion integration token |
 

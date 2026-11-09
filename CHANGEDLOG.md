@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.4
+
+- Render inline Markdown bold text in Notion content while preserving headings, lists, and links.
+
 ## 0.7.3
 
 - Trust only the current checkout in review-branch commit and push Git commands so self-hosted runner services can publish generated pull requests.
