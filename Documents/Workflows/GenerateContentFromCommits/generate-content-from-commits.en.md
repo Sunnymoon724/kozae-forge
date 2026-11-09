@@ -6,7 +6,7 @@
 2. The workflow validates the dates and limits a range to 31 days.
 3. The repository is checked out once, and commits for all requested dates are collected together.
 4. Each date is processed separately. `prepare-content` and `request-content` use AI to write content in the requested format. Commit lists larger than `max-content-bytes` are summarized in chunks before one final document is generated.
-5. Dates without commits do not create Markdown files.
+5. Each generation job downloads its commit artifact into a path dedicated to the run, attempt, tag, and date. Dates without commits do not create Markdown files, even when a self-hosted runner retains files from another job.
 6. Files downloaded into a fresh temporary directory are combined into one `generated-content` artifact. If there are no commits, that artifact contains only `no-content.txt` so downstream artifact downloads remain valid and stale runner files are ignored.
 7. If the whole range has no commits, an empty marker keeps the collection artifact available, including the hidden collection directory.
 8. Downstream generation skips dates without a commit file.

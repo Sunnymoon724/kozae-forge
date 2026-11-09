@@ -206,16 +206,17 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: ${{ inputs.artifact-prefix }}collected-commits
-          path: .commit-data
+          path: ${{ runner.temp }}/forge-commits/${{ github.run_id }}-${{ github.run_attempt }}/${{ inputs.tag }}/${{ matrix.date }}
 
       - id: collect
         name: Load commits for this date
         env:
           DATE: ${{ matrix.date }}
+          COMMIT_DATA_DIR: ${{ runner.temp }}/forge-commits/${{ github.run_id }}-${{ github.run_attempt }}/${{ inputs.tag }}/${{ matrix.date }}
         shell: node {0}
         run: |
           const fs = require('node:fs');
-          const path = `.commit-data/${process.env.DATE}.txt`;
+          const path = require('node:path').join(process.env.COMMIT_DATA_DIR, `${process.env.DATE}.txt`);
           const commits = fs.existsSync(path) ? fs.readFileSync(path, 'utf8') : '';
           fs.appendFileSync(process.env.GITHUB_OUTPUT, `commits<<EOF\n${commits}\nEOF\nhas-content=${commits ? 'true' : 'false'}\n`);
 

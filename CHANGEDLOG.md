@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.5
+
+- Isolate each generated commit file by run, attempt, tag, and date so self-hosted runners cannot reuse another member's data.
+
 ## 0.7.4
 
 - Render inline Markdown bold text in Notion content while preserving headings, lists, and links.
