@@ -5,7 +5,7 @@ This reusable Workflow attempts to merge the source branch directly into the tar
 ## 1. Process
 
 1. If `source-sha` is provided, verify that the source branch still points to that commit. Skip stale runs when a newer push has advanced the branch.
-2. Ask GitHub to merge the source branch into the target. On success, no pull request is created.
+2. Compare the branches' commit trees. If their file contents are identical, skip the merge without creating a commit or pull request. Otherwise, ask GitHub to merge the source branch into the target.
 3. If GitHub reports a merge conflict, reuse an open pull request or create one, then notify Discord if a webhook is configured.
 
 Text conflicts may be resolved in the pull request interface. Binary assets such as Unreal `.uasset` files usually need to be resolved locally and pushed to the source branch.
@@ -67,6 +67,7 @@ jobs:
 ## 3. Notes
 
 - The Workflow composes the focused `merge-branch` and `ensure-pull-request` Actions. Discord delivery uses `notify-webhook`.
+- A source branch with the same file contents as the target is left unchanged, even if it has an additional merge commit.
 - This Workflow does not build or test the project. If there is no merge conflict, it updates the target branch directly.
 - Only merge conflicts create a pull request. Other errors, including token permissions or branch protection, fail the Workflow.
 - The `build-result` input remains for compatibility with existing callers. Passing `failure` creates a PR and sends a Discord notification, as before.

@@ -37,6 +37,21 @@ async function main() {
     return;
   }
 
+  const targetRef = p.INPUT_TARGET_BRANCH.split('/').map(encodeURIComponent).join('/');
+  const target = await request(`/git/ref/heads/${targetRef}`);
+  if (!target.ok) throw new Error(`Could not read target branch (${target.status}): ${JSON.stringify(target.data)}`);
+  const [sourceCommit, targetCommit] = await Promise.all([
+    request(`/git/commits/${encodeURIComponent(sourceSha)}`),
+    request(`/git/commits/${encodeURIComponent(target.data.object.sha)}`),
+  ]);
+  if (!sourceCommit.ok) throw new Error(`Could not read source commit (${sourceCommit.status}): ${JSON.stringify(sourceCommit.data)}`);
+  if (!targetCommit.ok) throw new Error(`Could not read target commit (${targetCommit.status}): ${JSON.stringify(targetCommit.data)}`);
+  if (sourceCommit.data.tree.sha === targetCommit.data.tree.sha) {
+    console.log(`The source and target branches have identical file contents; skipping the merge.`);
+    fs.appendFileSync(p.GITHUB_OUTPUT, 'outcome=unchanged\n');
+    return;
+  }
+
   const merged = await request('/merges', {
     method: 'POST',
     body: {

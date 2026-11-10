@@ -1,6 +1,6 @@
 # 브랜치 병합 시도
 
-원본 브랜치를 대상 브랜치에 병합합니다. 충돌은 결과로만 알리며 Pull Request 생성 여부는 호출 Workflow가 결정합니다.
+원본 브랜치를 대상 브랜치에 병합합니다. 두 브랜치의 파일 내용이 같으면 병합을 건너뜁니다. 충돌은 결과로만 알리며 Pull Request 생성 여부는 호출 Workflow가 결정합니다.
 
 ## 입력값
 
@@ -17,7 +17,7 @@
 
 | 출력값 | 기본값 | 설명 |
 |---|---|---|
-| `outcome` | - | `merged`, `conflict`, `stale` 중 한 값 |
+| `outcome` | - | `merged`, `conflict`, `stale`, `unchanged` 중 한 값 |
 
 ## 입력 예시
 
@@ -40,3 +40,4 @@ outcome: conflict
 ```
 
 HTTP 409만 병합 충돌로 취급합니다. 권한 및 브랜치 규칙 오류는 Action을 실패시킵니다.
+`unchanged`는 원본과 대상 커밋의 파일 내용이 같아 병합 커밋을 만들지 않았다는 뜻입니다.

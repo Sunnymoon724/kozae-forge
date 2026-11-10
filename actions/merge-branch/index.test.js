@@ -12,11 +12,16 @@ function run(action, scenario, overrides = {}) {
       global.fetch = async (url, options = {}) => {
         const scenario = process.env.TEST_SCENARIO;
         const isMerge = url.endsWith('/merges');
+        const isTargetRef = url.endsWith('/git/ref/heads/main');
+        const isCommit = url.includes('/git/commits/');
         let status = isMerge ? 201 : 200;
-        let body = isMerge ? {sha: 'merged-sha'} : {object: {sha: 'source-sha'}};
+        let body = isMerge ? {sha: 'merged-sha'} : isCommit
+          ? {tree: {sha: scenario === 'unchanged' || url.endsWith('/source-sha') ? 'same-tree' : 'other-tree'}}
+          : {object: {sha: isTargetRef ? 'target-sha' : 'source-sha'}};
         if (isMerge && scenario === 'conflict') { status = 409; body = {message: 'Conflict'}; }
         if (isMerge && scenario === 'forbidden') { status = 403; body = {message: 'Forbidden'}; }
         if (isMerge && scenario === 'already-merged') { status = 204; body = null; }
+        if (isMerge && scenario === 'unchanged') throw new Error('Merge must be skipped for identical trees');
         return {status, ok: status >= 200 && status < 300, text: async () => body ? JSON.stringify(body) : ''};
       };
       require(${JSON.stringify(action)});
@@ -43,7 +48,7 @@ function run(action, scenario, overrides = {}) {
 }
 
 const action = path.join(__dirname, 'index.js');
-for (const [scenario, outcome] of [['merged', 'merged'], ['already-merged', 'merged'], ['conflict', 'conflict']]) {
+for (const [scenario, outcome] of [['merged', 'merged'], ['already-merged', 'merged'], ['conflict', 'conflict'], ['unchanged', 'unchanged']]) {
   test(`merge-branch returns ${outcome} for ${scenario}`, () => {
     const {result, output} = run(action, scenario);
     assert.equal(result.status, 0, result.stderr);

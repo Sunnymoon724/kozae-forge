@@ -1,6 +1,6 @@
 # merge-branch
 
-A GitHub Action that attempts to merge one branch into another. It reports a merge conflict without creating a pull request; the calling Workflow decides what to do next.
+A GitHub Action that attempts to merge one branch into another. It skips the merge when both branches have the same file contents. It reports a merge conflict without creating a pull request; the calling Workflow decides what to do next.
 
 ## Inputs
 
@@ -17,7 +17,7 @@ A GitHub Action that attempts to merge one branch into another. It reports a mer
 
 | Output | Default | Description |
 |---|---|---|
-| `outcome` | - | One value: `merged`, `conflict`, or `stale` |
+| `outcome` | - | One value: `merged`, `conflict`, `stale`, or `unchanged` |
 
 ## Input example
 
@@ -40,3 +40,4 @@ outcome: conflict
 ```
 
 Only HTTP 409 is treated as a merge conflict. Permission and branch-rule errors fail the Action.
+`unchanged` means the source and target commit trees are identical; no merge commit is created.

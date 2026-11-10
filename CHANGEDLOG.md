@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.7.7
+
+- Archive Notion page blocks sequentially and retry temporary HTTP 409 conflicts when clearing a page.
+
+## 0.7.6
+
+- Skip branch merges when the source and target commit trees have identical file contents, avoiding history-only merge commits.
+
 ## 0.7.5
 
 - Isolate each generated commit file by run, attempt, tag, and date so self-hosted runners cannot reuse another member's data.
